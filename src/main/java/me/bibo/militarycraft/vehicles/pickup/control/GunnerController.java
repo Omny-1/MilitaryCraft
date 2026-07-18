@@ -1,0 +1,39 @@
+/*
+ * Decompiled with CFR 0.152.
+ * 
+ * Could not load the following classes:
+ *  org.bukkit.Input
+ *  org.bukkit.Location
+ *  org.bukkit.entity.Player
+ */
+package me.bibo.militarycraft.vehicles.pickup.control;
+
+import me.bibo.militarycraft.vehicles.pickup.PickupRuntime;
+import me.bibo.militarycraft.vehicles.pickup.combat.GunManager;
+import me.bibo.militarycraft.vehicles.pickup.config.PickupConfig;
+import me.bibo.militarycraft.vehicles.pickup.control.Hud;
+import me.bibo.militarycraft.vehicles.pickup.util.MathUtil;
+import me.bibo.militarycraft.vehicles.pickup.vehicle.Pickup;
+import org.bukkit.Input;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+
+public final class GunnerController {
+    private GunnerController() {
+    }
+
+    public static void aim(PickupRuntime plugin, Pickup pickup, Player gunner, PickupConfig cfg) {
+        Location eye = gunner.getLocation();
+        pickup.setGunYaw(eye.getYaw());
+        double targetPitch = MathUtil.clamp(eye.getPitch(), -cfg.gunMaxElevation, cfg.gunMaxDepression);
+        pickup.setGunPitch(MathUtil.approach(pickup.gunPitch(), targetPitch, cfg.gunPitchSpeed));
+        Input in = gunner.getCurrentInput();
+        if (in.isJump()) {
+            GunManager.fire(plugin, pickup, gunner);
+        }
+        if (pickup.world().getFullTime() % (long)cfg.hudInterval == 0L) {
+            Hud.send(pickup, gunner);
+        }
+    }
+}
+

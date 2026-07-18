@@ -1,0 +1,577 @@
+name: MilitaryCraft
+version: ${project.version}
+main: me.bibo.militarycraft.MilitaryCraftPlugin
+api-version: '1.21'
+folia-supported: false
+author: bibo
+description: "Unified military plugin: vehicles, weapons, gear and support systems for Paper 1.21.4"
+
+commands:
+  mc:
+    aliases: [militarycraft]
+    description: MilitaryCraft root command.
+    usage: /mc <menu|reload|modules|cleanup|module> ...
+    permission: militarycraft.use
+  shoot:
+    description: Fire Artillery "Belochka" at real X/Z coordinates while operating it.
+    usage: /shoot <x> <z>
+    permission: svoart.use
+    aliases: [arta]
+  artillery:
+    description: SvoArtillery compatibility command.
+    usage: /artillery <give|create|remove|list|reload>
+    permission: svoart.use
+    aliases: [artillert]
+  tank:
+    description: TankCraft main command (give, spawn, place, remove, cleanup, list, reload).
+    usage: /tank <give|spawn|place|remove|cleanup|list|reload>
+    permission: tankcraft.use
+  kamaz:
+    description: KamazCraft main command (give, spawn, place, remove, cleanup, list, reload).
+    usage: /kamaz <give|spawn|place|remove|cleanup|list|reload>
+    permission: kamazcraft.use
+    aliases: [pushinka, kamazcraft]
+  jet:
+    description: JetCraft main command (give, spawn, remove, list, reload, cleanup).
+    usage: /jet <give|spawn|place|remove|list|reload|cleanup>
+    permission: jetcraft.use
+  nuke:
+    description: Call a nuclear airstrike at your target location.
+    usage: /nuke [item|reload|place]
+    permission: nuke.use
+    aliases: [nukestrike, yaderka, yadernyudar]
+  tck:
+    description: TCKBus main command.
+    usage: /tck <give|place|setdrop|cleardrop|showdrop|remove|list|reload|cleanup>
+    permission: tckbus.use
+    aliases: [tckbus, bus]
+  helicopter:
+    description: HeliCraft main command (give, spawn, place, remove, list, reload, cleanup).
+    usage: /helicopter <give|spawn|place|remove|list|reload|cleanup>
+    permission: helicraft.use
+    aliases: [heli, verto, vertolet]
+  airship:
+    description: AirshipCraft main command (give, spawn, place, remove, list, reload, cleanup).
+    usage: /airship <give|spawn|place|remove|list|reload|cleanup>
+    permission: airshipcraft.use
+    aliases: [dirizhabl, zeppelin, dirigible]
+  drone:
+    description: DroneCraft / UAV main command.
+    usage: /drone <give|spawn|place|fire|exit|remove|list|reload|cleanup>
+    permission: dronecraft.use
+    aliases: [bpla, uav]
+  moto:
+    description: Main MotoCraft command.
+    usage: /moto <give|spawn|place|remove|cleanup|list|reload>
+    aliases: [motorcycle, bike, motocraft]
+  pickup:
+    description: PickupCraft main command (give, spawn, place, remove, cleanup, list, reload, migrate).
+    usage: /pickup <give|spawn|place|remove|cleanup|list|reload|migrate>
+    permission: pickupcraft.use
+  train:
+    description: TrainCraft main command.
+    usage: /train <give|place|remove|removeall|list|reload>
+    aliases: [poezd]
+  pvo:
+    description: AntiAirCraft main command (give, place, remove, list, reload, cleanup).
+    usage: /pvo <give|place|remove|list|reload|cleanup>
+    permission: antiaircraft.use
+    aliases: [antiair, aa, ciws, flak]
+  airstrike:
+    description: Call an airstrike at your target location.
+    usage: /airstrike [item|reload]
+    permission: airstrike.use
+    aliases: [strike, aviaudar]
+
+  vehiclecamera:
+    description: VehicleCamera admin command.
+    usage: /vehiclecamera reload
+    aliases: [vcam]
+    permission: vehiclecamera.admin
+
+  warkit:
+    description: WarKit equipment command.
+    usage: /warkit <list|give|giveall|reload>
+    permission: warkit.admin
+    aliases: [wk]
+
+permissions:
+  militarycraft.use:
+    description: Basic use of MilitaryCraft commands/items.
+    default: true
+  militarycraft.admin:
+    description: Admin access to every MilitaryCraft module.
+    default: op
+  militarycraft.menu:
+    description: Open the MilitaryCraft graphical command menu.
+    default: true
+
+  militarycraft.tank.use:
+    description: Enter and drive tanks.
+    default: true
+  militarycraft.tank.place:
+    description: Place tanks from the placer item.
+    default: true
+  militarycraft.tank.give:
+    description: Use /mc tank give to create placer items.
+    default: op
+  militarycraft.tank.spawn:
+    description: Use /mc tank spawn|place to create a tank directly.
+    default: op
+  militarycraft.tank.remove:
+    description: Use /mc tank remove to delete a tank.
+    default: op
+  militarycraft.tank.list:
+    description: List active tanks and their positions.
+    default: op
+
+  tankcraft.use:
+    description: Allows the /tank command and basic tank usage.
+    default: true
+    children:
+      tankcraft.drive: true
+  tankcraft.drive:
+    description: Enter and drive tanks.
+    default: true
+  tankcraft.place:
+    description: Place tanks from the placer item.
+    default: true
+  tankcraft.give:
+    description: Give tank placer items.
+    default: true
+  tankcraft.spawn:
+    description: Spawn tanks with /tank spawn.
+    default: true
+  tankcraft.admin:
+    description: Admin commands (remove, cleanup, reload).
+    default: op
+
+  militarycraft.kamaz.use:
+    description: Enter and drive Kamaz trucks.
+    default: true
+  militarycraft.kamaz.place:
+    description: Place Kamaz trucks from the placer item.
+    default: true
+  militarycraft.kamaz.give:
+    description: Use /mc kamaz give to create placer items.
+    default: op
+  militarycraft.kamaz.spawn:
+    description: Use /mc kamaz spawn|place to create a Kamaz directly.
+    default: op
+  militarycraft.kamaz.remove:
+    description: Use /mc kamaz remove to delete a Kamaz.
+    default: op
+  militarycraft.kamaz.list:
+    description: List active Kamaz trucks and their positions.
+    default: op
+
+  kamazcraft.use:
+    description: Drive and use Kamaz trucks.
+    default: true
+  kamazcraft.place:
+    description: Place Kamaz trucks from the placer item.
+    default: true
+  kamazcraft.give:
+    description: Use /kamaz give to create placer items.
+    default: true
+  kamazcraft.spawn:
+    description: Use /kamaz spawn to create a Kamaz directly.
+    default: true
+  kamazcraft.admin:
+    description: Admin commands and spawn-limit bypass.
+    default: op
+
+  militarycraft.jet.use:
+    description: Enter and fly jets.
+    default: true
+  militarycraft.jet.place:
+    description: Place jets from the placer item.
+    default: true
+  militarycraft.jet.give:
+    description: Use /mc jet give to create placer items.
+    default: op
+  militarycraft.jet.spawn:
+    description: Use /mc jet spawn|place to create a jet directly.
+    default: op
+  militarycraft.jet.remove:
+    description: Use /mc jet remove to delete a jet.
+    default: op
+  militarycraft.jet.list:
+    description: List active jets and their positions.
+    default: op
+
+  jetcraft.use:
+    description: Fly and use jets, and run /jet give|spawn.
+    default: true
+  jetcraft.place:
+    description: Place jets from the placer item.
+    default: true
+  jetcraft.admin:
+    description: Admin commands (remove, reload, spawn for others).
+    default: op
+
+  militarycraft.helicopter.use:
+    description: Enter and fly helicopters.
+    default: true
+  militarycraft.helicopter.place:
+    description: Place helicopters from the placer item.
+    default: true
+  militarycraft.helicopter.give:
+    description: Use /mc helicopter give to create placer items.
+    default: op
+  militarycraft.helicopter.spawn:
+    description: Use /mc helicopter spawn|place to create a helicopter directly.
+    default: op
+  militarycraft.helicopter.remove:
+    description: Use /mc helicopter remove to delete a helicopter.
+    default: op
+  militarycraft.helicopter.list:
+    description: List active helicopters and their positions.
+    default: op
+
+  helicraft.use:
+    description: Ride and use helicopters, and run /helicopter give|spawn.
+    default: true
+  helicraft.place:
+    description: Place helicopters from the placer item.
+    default: true
+  helicraft.admin:
+    description: Admin commands (remove, reload, spawn for others, cleanup).
+    default: op
+
+  militarycraft.airship.use:
+    description: Enter and fly airships.
+    default: true
+  militarycraft.airship.place:
+    description: Place airships from the placer item.
+    default: true
+  militarycraft.airship.give:
+    description: Use /mc airship give to create placer items.
+    default: op
+  militarycraft.airship.spawn:
+    description: Use /mc airship spawn|place to create an airship directly.
+    default: op
+  militarycraft.airship.remove:
+    description: Use /mc airship remove to delete an airship.
+    default: op
+  militarycraft.airship.list:
+    description: List active airships and their positions.
+    default: op
+
+  airshipcraft.use:
+    description: Ride and use airships, and run /airship give|spawn.
+    default: true
+  airshipcraft.place:
+    description: Place airships from the placer item.
+    default: true
+  airshipcraft.admin:
+    description: Admin commands (remove, reload, spawn for others, cleanup).
+    default: op
+
+  militarycraft.drone.use:
+    description: Enter and fly drones.
+    default: true
+  militarycraft.drone.place:
+    description: Place drones from the placer item.
+    default: true
+  militarycraft.drone.fire:
+    description: Use /mc drone fire while piloting.
+    default: true
+  militarycraft.drone.give:
+    description: Use /mc drone give to create placer items.
+    default: op
+  militarycraft.drone.spawn:
+    description: Use /mc drone spawn|place to create a drone directly.
+    default: op
+  militarycraft.drone.remove:
+    description: Use /mc drone remove to delete a drone.
+    default: op
+  militarycraft.drone.list:
+    description: List active drones and their positions.
+    default: op
+
+  dronecraft.use:
+    description: Pilot and use UAVs, and run /drone give|spawn.
+    default: true
+  dronecraft.place:
+    description: Place UAVs from the placer item.
+    default: true
+  dronecraft.admin:
+    description: Admin commands (remove, reload, spawn for others).
+    default: op
+
+  militarycraft.moto.use:
+    description: Drive or ride motorcycles.
+    default: true
+  militarycraft.moto.place:
+    description: Place motorcycles from tagged items.
+    default: true
+  militarycraft.moto.give:
+    description: Give motorcycle placer items.
+    default: op
+  militarycraft.moto.spawn:
+    description: Spawn motorcycles directly.
+    default: op
+  militarycraft.moto.remove:
+    description: Remove motorcycles.
+    default: op
+  militarycraft.moto.list:
+    description: List active motorcycles and their positions.
+    default: op
+
+  motocraft.use:
+    description: Ride MotoCraft motorcycles as driver or passenger.
+    default: true
+  motocraft.place:
+    description: Place a motorcycle using its item.
+    default: true
+  motocraft.give:
+    description: Create motorcycle placer items with /moto give.
+    default: op
+  motocraft.spawn:
+    description: Spawn motorcycles directly with commands.
+    default: op
+  motocraft.admin:
+    description: Reload, remove, purge and bypass placement limits.
+    default: op
+
+  militarycraft.pickup.drive:
+    description: Drive armed pickup trucks.
+    default: true
+  militarycraft.pickup.passenger:
+    description: Ride as a pickup passenger.
+    default: true
+  militarycraft.pickup.gun:
+    description: Operate a pickup-mounted gun.
+    default: true
+  militarycraft.pickup.place:
+    description: Place pickup trucks from tagged items.
+    default: true
+  militarycraft.pickup.give:
+    description: Give pickup placer items.
+    default: op
+  militarycraft.pickup.spawn:
+    description: Spawn pickup trucks directly.
+    default: op
+  militarycraft.pickup.remove:
+    description: Remove pickup trucks.
+    default: op
+  militarycraft.pickup.list:
+    description: List active pickup trucks and their positions.
+    default: op
+
+  pickupcraft.use:
+    description: Allows the /pickup command and basic pickup usage.
+    default: true
+    children:
+      pickupcraft.drive: true
+      pickupcraft.passenger: true
+      pickupcraft.gun: true
+      pickupcraft.place: true
+  pickupcraft.drive:
+    description: Sit in the driver's seat and steer the pickup.
+    default: true
+  pickupcraft.passenger:
+    description: Sit in the passenger seat.
+    default: true
+  pickupcraft.gun:
+    description: Sit in the gunner's seat and fire the machine gun.
+    default: true
+  pickupcraft.place:
+    description: Place pickups from the placer item.
+    default: true
+  pickupcraft.give:
+    description: Give pickup placer items.
+    default: op
+  pickupcraft.spawn:
+    description: Spawn pickups with /pickup spawn.
+    default: op
+  pickupcraft.admin:
+    description: Admin commands (remove, cleanup, reload, migrate).
+    default: op
+
+  militarycraft.train.use:
+    description: Ride trains and operate the locomotive.
+    default: true
+  militarycraft.train.place:
+    description: Place trains from tagged items.
+    default: true
+  militarycraft.train.give:
+    description: Give train placer items.
+    default: op
+  militarycraft.train.spawn:
+    description: Spawn trains directly.
+    default: op
+  militarycraft.train.remove:
+    description: Remove trains.
+    default: op
+  militarycraft.train.list:
+    description: List active trains and their positions.
+    default: op
+
+  traincraft.use:
+    description: Sit in TrainCraft trains by right-clicking them.
+    default: true
+  traincraft.place:
+    description: Place and remove trains with the TrainCraft item.
+    default: true
+  traincraft.give:
+    description: Use /train give.
+    default: op
+  traincraft.admin:
+    description: Admin commands (place, remove, removeall, reload).
+    default: op
+
+  militarycraft.artillery.give:
+    description: Give Artillery "Belochka" placer items.
+    default: op
+  militarycraft.artillery.create:
+    description: Create artillery at the targeted block.
+    default: op
+  militarycraft.artillery.spawn:
+    description: Spawn artillery on nearby terrain.
+    default: op
+  militarycraft.artillery.place:
+    description: Place artillery from tagged items.
+    default: true
+  militarycraft.artillery.enter:
+    description: Enter an artillery targeting camera.
+    default: true
+  militarycraft.artillery.fire:
+    description: Fire a three-shell artillery salvo at X/Z coordinates.
+    default: true
+  militarycraft.artillery.exit:
+    description: Exit an artillery targeting camera.
+    default: true
+  militarycraft.artillery.rotate:
+    description: Rotate an artillery installation.
+    default: true
+  militarycraft.artillery.remove:
+    description: Remove artillery installations.
+    default: op
+  militarycraft.artillery.list:
+    description: List registered artillery installations.
+    default: op
+  militarycraft.artillery.cleanup:
+    description: Remove stale artillery state and rebuild loaded models.
+    default: op
+  militarycraft.artillery.damage:
+    description: Damage artillery by hand.
+    default: true
+
+  svoart.use:
+    description: Operate Artillery "Belochka" and use /shoot.
+    default: true
+  svoart.admin:
+    description: Create, remove and reload SvoArtillery-compatible installations.
+    default: op
+    children:
+      svoart.use: true
+
+  militarycraft.antiair.use:
+    description: Inspect Anti-Air turrets and add fuel.
+    default: true
+  militarycraft.antiair.place:
+    description: Place Anti-Air turrets from tagged items.
+    default: true
+  militarycraft.antiair.give:
+    description: Give Anti-Air turret placer items.
+    default: op
+  militarycraft.antiair.spawn:
+    description: Spawn Anti-Air turrets directly.
+    default: op
+  militarycraft.antiair.mode:
+    description: Change Anti-Air turret targeting mode.
+    default: true
+  militarycraft.antiair.remove:
+    description: Remove Anti-Air turrets.
+    default: op
+  militarycraft.antiair.list:
+    description: List loaded Anti-Air turrets.
+    default: op
+  militarycraft.antiair.cleanup:
+    description: Remove Anti-Air turret entities.
+    default: op
+  militarycraft.antiair.damage:
+    description: Damage Anti-Air turrets by hand or projectile.
+    default: true
+
+  antiaircraft.use:
+    description: Open, configure and use AntiAirCraft turrets, and run /pvo give|place.
+    default: true
+  antiaircraft.place:
+    description: Place AntiAirCraft turrets from the placer item.
+    default: true
+  antiaircraft.admin:
+    description: Admin commands (remove any, reload, give to others, cleanup).
+    default: op
+
+  tckbus.use:
+    description: Run the basic /tck subcommands.
+    default: op
+  tckbus.place:
+    description: Place buses from the placer item.
+    default: op
+  tckbus.admin:
+    description: Admin commands (set drop, remove any, reload, give to others, cleanup).
+    default: op
+  tckbus.immune:
+    description: Players with this permission are never snatched by TCK workers.
+    default: false
+
+  militarycraft.airstrike.give:
+    description: Give Airstrike Beacon items.
+    default: op
+  militarycraft.airstrike.call:
+    description: Call an airstrike at a looked-at block or coordinates.
+    default: op
+  militarycraft.airstrike.list:
+    description: List active airstrikes.
+    default: op
+  militarycraft.airstrike.cleanup:
+    description: Cancel active airstrikes.
+    default: op
+
+  airstrike.use:
+    description: Can use the original AirstrikePlugin command and item.
+    default: op
+  airstrike.give:
+    description: Can give airstrike beacon items.
+    default: op
+  airstrike.reload:
+    description: Can reload the AirstrikePlugin config.
+    default: op
+  airstrike.bypass-cooldown:
+    description: Bypasses AirstrikePlugin cooldown.
+    default: op
+
+  nuke.use:
+    description: Can use the original NukeStrike command and item.
+    default: op
+  nuke.give:
+    description: Can give nuke briefcase items.
+    default: op
+  nuke.reload:
+    description: Can reload the NukeStrike config.
+    default: op
+  nuke.bypass-cooldown:
+    description: Bypasses NukeStrike cooldown.
+    default: op
+
+  vehiclecamera.admin:
+    description: Reload the VehicleCamera config.
+    default: op
+
+  warkit.admin:
+    description: Access to WarKit equipment commands.
+    default: op
+
+  militarycraft.warkit.give:
+    description: Give individual WarKit items.
+    default: op
+  militarycraft.warkit.giveall:
+    description: Give every supported WarKit item.
+    default: op
+  militarycraft.warkit.list:
+    description: List supported WarKit items and their functions.
+    default: true

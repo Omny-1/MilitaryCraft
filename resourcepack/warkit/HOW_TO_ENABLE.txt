@@ -1,0 +1,77 @@
+============================================================
+  WarKit resource pack with 3D weapon models (Minecraft 1.21.4)
+============================================================
+
+All weapons work without this pack and use their vanilla appearance.
+Install the pack when you want custom 3D models in players' hands. It is
+already structured as a safe placeholder: until custom models are added,
+weapons keep their vanilla appearance.
+
+Structure (Minecraft 1.21.4 item-model system):
+
+  pack.mcmeta
+  assets/warkit/items/<id>.json          - item_model mapping for warkit:<id>
+  assets/warkit/models/item/<id>.json    - model definition (currently a vanilla parent)
+  assets/warkit/textures/item/<id>.png   - texture for a custom model
+
+Item IDs: rifle, pistol, grenade_launcher, patriot, frag_grenade,
+smoke_grenade, flash_grenade, impulse_grenade, flamethrower,
+chemical_sprayer, maxim, barbed_wire.
+
+------------------------------------------------------------
+STEP 1. Add custom models (optional)
+------------------------------------------------------------
+
+Create a weapon model in Blockbench using the "Java Block/Item" format.
+Export the model to assets/warkit/models/item/<id>.json and its texture
+to assets/warkit/textures/item/<id>.png. Do not change
+assets/warkit/items/<id>.json; it already points to warkit:item/<id>.
+
+Leave the placeholder files unchanged until a custom model is ready.
+
+------------------------------------------------------------
+STEP 2. Build the ZIP archive
+------------------------------------------------------------
+
+Archive the contents of the resourcepack directory. pack.mcmeta and the
+assets directory must be at the root of the ZIP, not inside an extra
+directory. For example, name the archive WarKit.zip.
+
+------------------------------------------------------------
+STEP 3. Distribute the pack
+------------------------------------------------------------
+
+Option A, automatic server distribution:
+
+  1. Upload WarKit.zip to a direct-download URL.
+  2. Configure server.properties:
+
+       resource-pack=DIRECT_ZIP_URL
+       resource-pack-sha1=<file SHA-1>
+       require-resource-pack=false
+
+     Use true for require-resource-pack when the pack must be mandatory.
+     On Windows, calculate the hash with:
+
+       certutil -hashfile WarKit.zip SHA1
+
+  3. Restart the server. Players can accept the pack when they connect.
+
+Option B, local installation:
+
+Place WarKit.zip in .minecraft/resourcepacks and enable it in Minecraft.
+
+------------------------------------------------------------
+STEP 4. Enable models in the plugin
+------------------------------------------------------------
+
+Set the following in plugins/WarKit/config.yml:
+
+  resource-pack:
+    models: true
+
+Run /warkit reload, then issue fresh items with /warkit give so the new
+item_model is applied. Enable models only while the resource pack is
+being distributed; otherwise custom items can render as missing models.
+
+============================================================

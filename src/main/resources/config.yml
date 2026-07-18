@@ -1,0 +1,2363 @@
+# MilitaryCraft - one config.yml for every integrated module.
+# Each module reads its own top-level section via core.config().section("<id>").
+# The `modules:` block below gates which modules actually enable
+# (ModuleManager checks modules.<id>.enabled, default true).
+
+modules:
+  tank:
+    enabled: true
+  kamaz:
+    enabled: true
+  pickup:
+    enabled: true
+  jet:
+    enabled: true
+  helicopter:
+    enabled: true
+  airship:
+    enabled: true
+  drone:
+    enabled: true
+  moto:
+    enabled: true
+  train:
+    enabled: true
+  antiair:
+    enabled: true
+  airstrike:
+    enabled: true
+  nuke:
+    enabled: true
+  warkit:
+    enabled: true
+  tckbus:
+    enabled: true
+  artillery:
+    enabled: true
+  camera:
+    enabled: true
+
+command-access:
+  # false = non-op players cannot run MilitaryCraft commands by default, even if
+  # plugin.yml grants the old compatibility permission nodes to everyone.
+  # true = use normal Bukkit permissions exactly as declared by plugin.yml and
+  # any permissions plugin.
+  allow-non-op-commands: false
+  # If true, a non-op player with militarycraft.admin bypasses this command gate.
+  honor-admin-permission: true
+  deny-message: "&cOnly operators can use MilitaryCraft commands."
+  # Commands that remain usable by non-op players when allow-non-op-commands is false.
+  # Registered context rules still decide whether the action is valid right now:
+  #   artillery.fire/exit require an active artillery session;
+  #   artillery.enter requires nearby/selected artillery;
+  #   drone.fire/exit require the player to be piloting a UAV.
+  allowed-non-op-actions:
+    - artillery.enter
+    - artillery.fire
+    - artillery.exit
+    - drone.fire
+    - drone.exit
+
+# Per-module sections below preserve the movement, weapon, model and gameplay
+# settings ported from each original plugin.
+
+camera:
+  # ─────────────────────────────────────────────────────────────
+  #  VehicleCamera - different third-person camera distance for each vehicle
+  # ─────────────────────────────────────────────────────────────
+  #
+  # How it works:
+  #   The plugin checks which entity the player is riding, reads its scoreboard tags,
+  #   and if one of the tags is listed below, gives the player a temporary "scale"
+  #   attribute. Higher scale moves the third-person camera farther back in F5.
+  #   The player model also grows, but vehicle modules hide the driver, so this is
+  #   not visible in normal gameplay.
+  #
+  # Important scale notes:
+  #   * scale = 1.0 is normal size, roughly the vanilla 4-block camera distance.
+  #   * Higher scale moves the camera farther back, but also increases the player's hitbox.
+  #     Flying vehicles usually tolerate this; ground tanks can get stuck or suffocate
+  #     with values that are too high.
+  #   * Allowed range: 0.0625 .. 16.0, clamped outside that range.
+  #   * The exact camera distance depends on the model, so tune it in game.
+  
+  # How often, in ticks, to re-check what the player is riding. 20 ticks = 1 second.
+  # 5 = four times per second: responsive and cheap.
+  reconcile-interval: 5
+  
+  # Mapping: vehicle scoreboard tag -> player scale while riding it.
+  # These tags are already applied by the vehicle modules to their entities, including seats.
+  # To add a new vehicle, add its tag and scale value here.
+  vehicles:
+    tankcraft_entity: 1.8       # tank: on the ground, so keep it modest
+    jetcraft_entity: 3.2        # jet: medium distance
+    airshipcraft_entity: 7.0    # airship: much farther back because it is huge
+    helicraft_entity: 3.2       # helicopter: same as the jet
+    # antiaircraft_entity: 2.0  # uncomment if players actually sit in Anti-Air
+
+# ─────────────────────────────────────────────────────────────
+#  tank - drivable/shootable tank (ported from TankCraft)
+#  Distances in blocks, speeds in blocks/tick, angles in degrees.
+# ─────────────────────────────────────────────────────────────
+tank:
+  # ============================================================
+  #  TankCraft configuration
+  #  All distances are in blocks, all speeds in blocks/tick
+  #  (1 block/tick = 20 blocks/second). Angles are in degrees.
+  # ============================================================
+
+  movement:
+    # Top forward speed (blocks/tick). km/h shown in HUD = speed * 72.
+    # 0.25 = 18 km/h.
+    max-forward-speed: 0.25
+    # Top reverse speed.
+    max-reverse-speed: 0.12
+    # How quickly speed builds up / bleeds off (blocks/tick^2).
+    acceleration: 0.025
+    braking: 0.045
+    # Passive friction applied every tick when no throttle is held.
+    friction: 0.02
+    # How fast the hull rotates toward the camera (degrees/tick).
+    turn-speed: 6.0
+    # Max height (blocks) the tank can climb in one step. 1.2 reliably mounts a
+    # full block (with margin) while still blocking 2-high walls.
+    max-step-up: 1.2
+    # How fast (blocks/tick) the tank ramps UP onto a step. It only climbs while
+    # actually driving forward onto a mountable step, so it can't be shoved up a
+    # tree/wall by nudging in or swinging the camera. Lower = gentler climb.
+    climb-rate: 0.5
+    # How far below the tank we look for ground before it is "falling".
+    ground-snap-distance: 2.0
+    # Downward acceleration while airborne (blocks/tick^2).
+    gravity: 0.08
+    # Terminal falling speed. Kept below ground-snap-distance so the tank cannot
+    # skip through terrain between ticks while falling.
+    max-fall-speed: 1.8
+    # Damage the tank takes on a hard landing, scaled by how fast it was falling
+    # past the threshold. Set fall-damage to 0 to disable.
+    fall-damage: 16.0
+    fall-damage-threshold: 0.9
+
+  turret:
+    # Max barrel elevation up / depression down (degrees).
+    max-elevation: 30.0
+    max-depression: 12.0
+    # How fast the barrel pitch follows the camera (degrees/tick).
+    pitch-speed: 8.0
+
+  weapon:
+    # Ticks after boarding during which the gun is locked ("Loading ammunition"),
+    # so the right-click that mounts the tank can't instantly fire. 40 = 2 seconds.
+    mount-grace-ticks: 40
+    # Ticks between shots (reload). 20 ticks = 1 second.
+    reload-ticks: 50
+    # Initial shell speed (blocks/tick).
+    shell-speed: 2.6
+    # Downward acceleration applied to the shell each tick -> the arc.
+    shell-gravity: 0.035
+    # Collision sub-steps per tick (higher = more accurate, more cost).
+    shell-substeps: 4
+    # Shell self-destructs after this many ticks if it hits nothing.
+    shell-lifetime-ticks: 120
+    # Explosion power of the shell on impact (TNT = 4, creeper = 3).
+    explosion-power: 3.0
+    # Whether the shell explosion breaks terrain blocks.
+    break-blocks: true
+    # Whether the shell explosion sets fire.
+    set-fire: false
+    # Extra direct damage a shell deals to another tank it hits.
+    shell-tank-damage: 55.0
+    # Small horizontal recoil bump on fire. The code caps it so it cannot throw
+    # the tank upward or cause a strong terrain-correction jump.
+    recoil: 0.03
+    # Random inaccuracy cone of the gun, in degrees (0 = perfectly accurate).
+    spread-degrees: 1.5
+    # Shell fizzles harmlessly after travelling this many blocks.
+    shell-max-range: 160.0
+    # Safety cap for in-flight custom shells.
+    max-active-shells: 80
+    # Overheat only matters if you SPAM fire while the gun is still reloading.
+    # A normal shot (fired when ready) never costs HP. After this many wasted
+    # fire-presses during a single reload, the gun overheats and the tank is hurt.
+    overheat-spam-threshold: 10
+    # HP lost per overheat, as a percent of the tank's max HP (0 disables).
+    overheat-damage-percent: 2.0
+
+  durability:
+    # Damage one (non-charged) creeper blast deals to a tank at point blank.
+    # max-health is derived as creeper-damage * creepers-to-destroy.
+    creeper-damage: 50.0
+    creepers-to-destroy: 4.0
+
+  combat:
+    # Driving into mobs/players damages them and knocks them back.
+    ramming-enabled: true
+    ramming-damage: 4.0
+    ramming-knockback: 0.9
+    # Speed (blocks/tick) the tank must exceed for ramming to apply.
+    ramming-min-speed: 0.12
+    # Per-victim cooldown and forward cone for ramming. Prevents corner-pinning
+    # a player/mob for damage every tick.
+    ramming-cooldown-ms: 600
+    ramming-cone-degrees: 85.0
+    # How often tank bodies sweep for vanilla projectiles (arrows, tridents, fireballs).
+    # 2 halves the hot-path scan cost while keeping hits responsive.
+    projectile-sweep-interval-ticks: 2
+    # Weapon damage TO THE TANK ITSELF, as a percent of its max HP per hit.
+    # New keys intentionally live under combat so existing saved configs use these defaults.
+    weapon-melee-percent: 4.0
+    weapon-arrow-percent: 6.0
+    weapon-fireball-percent: 12.0
+    # Minimum ms between melee hits from the same attacker.
+    weapon-melee-cooldown-ms: 250
+
+  hud:
+    # How often (in ticks) to refresh the driver's action-bar HUD.
+    update-interval-ticks: 4
+
+  water:
+    # If the whole tank goes under water its engine stalls (can't drive) and the
+    # hull slowly floods, taking damage until it breaks apart.
+    drown-enabled: true
+    # HP lost per second while fully submerged, as a percent of max HP.
+    # 2.5 = the tank breaks after ~40s underwater.
+    drown-damage-percent: 2.5
+
+  effects:
+    # Legacy key: controls the short spark/flame impact afterglow. 20 ticks = 1 second.
+    impact-smoke-duration: 25
+    # Radius of the short impact afterglow (blocks).
+    impact-smoke-radius: 3.5
+    # Movement/condition feedback. These are lightweight particles/sounds, not
+    # persistent entities.
+    track-dust: true
+    engine-sound: true
+    damage-smoke: true
+
+  placement:
+    # Consume one placer item when a tank is placed.
+    consume-item: true
+
+  destruction:
+    # Drop a placer item when a tank is destroyed.
+    drop-item-on-destroy: false
+    # Fling a few model blocks as debris when destroyed.
+    debris: true
+
+  # Blocks used for the model parts. Must be valid Bukkit Material names
+  # of *blocks*. Tweak to recolor your tank.
+  model:
+    hull-block: GREEN_CONCRETE
+    turret-block: GREEN_CONCRETE
+    detail-block: MOSS_BLOCK
+    track-block: BLACK_CONCRETE
+    wheel-block: POLISHED_BLACKSTONE
+    barrel-block: POLISHED_BLACKSTONE
+    # Hull side number shown on the turret (set to '' to hide).
+    turret-number: '1-81'
+    # Height (blocks) of the driver's seat/camera above the tank's ground point.
+    # Raise this if the camera sits too low inside the (now 2x larger) hull;
+    # lower it for a hull-down view. Applied live on /tank reload.
+    seat-height: 1.6
+
+  debug: false
+kamaz:
+  # ============================================================
+  #  KamazCraft - Kamaz "Pushinka"
+  #  All distances are in blocks, all speeds in blocks/tick
+  #  (1 block/tick = 20 blocks/second). Angles are in degrees.
+  # ============================================================
+
+  movement:
+    # Top forward speed (blocks/tick). km/h in the HUD = speed * 72.
+    # 0.65 ≈ 47 km/h — fast, but it takes a while to get there (see acceleration).
+    max-forward-speed: 0.65
+    # Top reverse speed.
+    max-reverse-speed: 0.18
+    # How quickly speed builds up (blocks/tick^2). Deliberately low so the heavy
+    # truck takes ~6 seconds to reach top speed: 0.65 / 0.0054167 ~= 120 ticks = 6 s.
+    acceleration: 0.0054167
+    # How fast speed bleeds off when reversing direction.
+    braking: 0.03
+    # Passive friction applied every tick when no throttle is held (coast-down).
+    friction: 0.015
+    # How fast the hull rotates toward the camera (degrees/tick). Lower than the
+    # tank - a monstrous truck turns heavy.
+    turn-speed: 5.0
+    # Visual left/right angle for the front wheels while steering.
+    front-wheel-steer-angle: 28.0
+    # Max height (blocks) the truck can climb in one step.
+    max-step-up: 1.2
+    # How fast (blocks/tick) the truck ramps UP onto a step.
+    climb-rate: 0.5
+    # How far below the truck we look for ground before it is "falling".
+    ground-snap-distance: 2.0
+    # Downward acceleration while airborne (blocks/tick^2).
+    gravity: 0.08
+    # Damage on a hard landing, scaled by how fast it was falling past the threshold.
+    # Set fall-damage to 0 to disable.
+    fall-damage: 16.0
+    fall-damage-threshold: 0.9
+
+  run-over:
+    # The signature mechanic. Drive into living things and:
+    #  * at/above the fling threshold -> LAUNCH them away (lightly hurt);
+    #  * below it -> CRUSH them for a painful but NON-LETHAL amount.
+    enabled: true
+    # The truck must be moving at least this fast (blocks/tick) to hit anything.
+    min-speed: 0.05
+    # Extra margin (blocks) around the body within which victims are caught.
+    reach: 0.6
+    # Minimum time between hits on the SAME victim (ms) — keeps it punchy, not a grinder.
+    hit-cooldown-ms: 600
+    # Fraction of top speed at/above which the truck FLINGS instead of crushing.
+    # 0.92 = you must be at nearly full throttle.
+    fling-speed-fraction: 0.92
+    # Full-speed launch: horizontal impulse + upward impulse + a modest bit of damage.
+    fling-knockback: 2.4
+    fling-vertical: 0.85
+    fling-damage: 6.0
+    # Below full speed: a painful crush + a small shove.
+    crush-damage: 9.0
+    crush-knockback: 0.6
+    # The crush NEVER reduces a victim below this much health (so it can't kill).
+    # 4.0 = leaves them at >= 2 hearts, painful but not lethal.
+    crush-min-health: 4.0
+
+  durability:
+    # Damage one (non-charged) creeper blast deals at point blank.
+    # max-health is derived as creeper-damage * creepers-to-destroy.
+    # 50 * 3 = 150 -> the Kamaz dies to 3 creeper blasts (tank takes 4).
+    creeper-damage: 50.0
+    creepers-to-destroy: 3.0
+    # Weapon damage TO THE TRUCK ITSELF, as a percent of its max HP per hit.
+    weapon-melee-percent: 4.0
+    weapon-arrow-percent: 6.0
+    weapon-fireball-percent: 12.0
+    # Minimum ms between melee hits from the same attacker.
+    weapon-melee-cooldown-ms: 250
+
+  water:
+    # If the whole truck goes under water its engine stalls (can't drive) and the
+    # hull slowly floods, taking damage until it breaks apart.
+    drown-enabled: true
+    # HP lost per second while fully submerged, as a percent of max HP.
+    drown-damage-percent: 2.5
+
+  hud:
+    # How often (in ticks) to refresh the driver's action-bar HUD.
+    update-interval-ticks: 4
+
+  placement:
+    # Consume one placer item when a Kamaz is placed.
+    consume-item: true
+    # Spawn safety limits. Players with kamazcraft.admin bypass the count/cooldown
+    # limits, but still go through the physical space check.
+    max-trucks-total: 30
+    max-trucks-per-player: 1
+    spawn-cooldown-seconds: 30
+    # Minimum distance between truck anchors when placing/spawning.
+    min-truck-spacing: 5.5
+
+  destruction:
+    # Drop a placer item when a Kamaz is destroyed.
+    drop-item-on-destroy: false
+    # Fling a few model blocks as debris when destroyed.
+    debris: true
+
+  performance:
+    # Expensive background scans are throttled; movement/render still ticks every tick.
+    projectile-sweep-interval-ticks: 3
+    water-check-interval-ticks: 5
+    run-over-scan-interval-ticks: 2
+
+  # Blocks used for the model parts. Must be valid Bukkit Material names of *blocks*.
+  # Tweak to recolor your Kamaz. For a more olive/khaki look try GREEN_TERRACOTTA
+  # for hull-block/cab-block.
+  model:
+    hull-block: GREEN_CONCRETE
+    cab-block: GREEN_CONCRETE
+    chassis-block: BLACK_CONCRETE
+    wheel-block: BLACK_CONCRETE
+    hub-block: GRAY_CONCRETE
+    glass-block: TINTED_GLASS
+    detail-block: MOSS_BLOCK
+    light-block: SEA_LANTERN
+    bumper-block: POLISHED_BLACKSTONE
+    # Height (blocks) of the driver's seat/camera above the truck's ground point.
+    # Raise if the camera sits too low inside the body; lower for a hull-down view.
+    seat-height: 3.2
+    # How far (blocks) the camera is pushed toward the rear, so F5 clears the tall
+    # cab and you can actually see ahead. Bigger = further back.
+    seat-back-offset: 1.5
+    # Height (blocks) at which passengers sit inside the armoured troop compartment.
+    # There are 6 passenger seats (+1 driver). Passengers ride along but don't steer.
+    passenger-seat-height: 1.4
+
+  debug: false
+jet:
+  # ============================================================
+  #  JetCraft configuration
+  #  Distances in blocks, speeds in blocks/tick (1 b/t = 20 b/s).
+  #  Angles in degrees. The jet is one rigid body steered by the
+  #  camera; A/D roll, W/S throttle, Space afterburner.
+  #
+  #  IMPORTANT: the jet can ONLY be destroyed by accumulated damage
+  #  (calibrated so two creeper blasts = full HP). Crashing into
+  #  terrain deals damage too — it never instantly deletes the jet.
+  # ============================================================
+
+  # Ticks after boarding during which weapons are locked ("Loading ammunition"),
+  # so the right-click that mounts the jet can't instantly fire. 40 = 2 seconds.
+  mount-grace-ticks: 40
+
+  flight:
+    # Top cruising speed (blocks/tick) with throttle held (W). 0.9 = 65 km/h.
+    max-speed: 1.6
+    # Speed reached while holding the afterburner (Space), if not overheated.
+    boost-speed: 2.6
+    # How quickly speed builds up (blocks/tick^2) and bleeds off when braking (S).
+    acceleration: 0.06
+    braking: 0.12
+    # Natural drag when W is released. Lower = longer glide before speed reaches 0.
+    coast-deceleration: 0.025
+    # How fast the nose yaws toward where the camera looks (degrees/tick).
+    # Higher = more nimble / tighter turns.
+    turn-rate: 6.0
+    # How fast the nose pitches toward the camera (degrees/tick).
+    pitch-rate: 6.0
+    # Maximum nose-up / nose-down attitude the camera can command (degrees).
+    max-pitch: 85.0
+    # Roll rate while holding A/D (degrees/tick). High = snappy barrel rolls.
+    roll-speed: 16.0
+    # How fast roll eases back to the auto-bank angle when A/D released.
+    roll-return-speed: 9.0
+    # Auto-bank: degrees of bank per degree/tick of turn rate (visual style).
+    auto-bank-factor: 4.0
+    # Cap on the automatic bank angle (degrees).
+    max-bank: 35.0
+    # Downward acceleration applied when slower than lift-speed (stall sink).
+    gravity: 0.10
+    # At/above this speed the wings fully cancel gravity (level flight).
+    lift-speed: 0.70
+    # Touching terrain faster than this is a KAMIKAZE crash: the jet is destroyed
+    # AND the impact point explodes (crater + fire, see the 'crash' section below).
+    # Slower than this = a clean stop / landing, no damage.
+    crash-speed: 0.65
+    # At or below this speed the jet STALLS and drops fast. ~0.14 b/t = 10 km/h.
+    # (Used by the unmanned glide after a bail-out.)
+    stall-speed: 0.14
+    # Downward speed (blocks/tick) while stalled. 0.7 = 14 b/s — falls quickly.
+    stall-sink: 0.7
+    # Let the jet rest on the ground when slow and roughly level (landing).
+    ground-rest: true
+    # ----- Anti-camp altitude loss -----
+    # While AIRBORNE, the jet must keep its speed up or it loses altitude. The
+    # slower it goes the harder it drops. This does NOT apply near the ground, so
+    # taking off and landing are never affected — only players who slow to a crawl
+    # in mid-air (e.g. to aim) get pushed back down. Speeds are in km/h.
+    stall:
+      # Below this you begin to lose altitude.
+      fall-kmh: 90.0
+      # Below this you sink fairly fast.
+      fast-kmh: 60.0
+      # Below this you drop almost immediately.
+      critical-kmh: 30.0
+      # Downward speed (blocks/tick) in each band.
+      sink-mild: 0.22      # between fast-kmh and fall-kmh
+      sink-fast: 0.5       # between critical-kmh and fast-kmh
+      sink-critical: 0.9   # below critical-kmh
+      # Blocks of clear air needed below the jet before the rule kicks in. Within
+      # this many blocks of the ground it's treated as takeoff/landing (no penalty).
+      clearance-blocks: 5
+
+  # Kamikaze crash: explosion left at the point the jet slams into terrain.
+  crash:
+    # Explosion power of the impact crater (TNT = 4, creeper = 3).
+    explosion-power: 4.0
+    # Whether the crash breaks terrain (leaves a crater) and starts fire.
+    break-blocks: true
+    set-fire: true
+
+  afterburner:
+    # Holding Space heats the engines by this much per tick (0.02 => ~2.5 s to
+    # overheat from cold). When heat hits 1.0 the afterburner cuts out.
+    heat-per-tick: 0.02
+    # Heat shed per tick when not boosting (0.012 => ~4 s to fully cool).
+    cool-per-tick: 0.012
+    # After an overheat, the afterburner stays locked until heat drops to this.
+    resume-threshold: 0.35
+
+  weapons:
+    # Hard cap for all custom rockets/bombs currently flying. Prevents packet/TPS
+    # spikes if many pilots hold fire at once.
+    max-active-munitions: 96
+    rockets:
+      # Minimum ticks between rocket shots (fire rate). 6 ticks = ~3.3/sec.
+      reload-ticks: 6
+      # Rockets carried before you must let them regenerate.
+      magazine: 12
+      # One rocket is replenished every this-many ticks (40 = 2 s), up to magazine.
+      regen-ticks: 40
+      # Rocket speed (blocks/tick) and the gravity that bends its path (0 = flat).
+      speed: 3.4
+      gravity: 0.0
+      # Collision sub-steps per tick (higher = more accurate, more cost).
+      substeps: 4
+      # Self-destructs after this many ticks if it hits nothing.
+      lifetime-ticks: 80
+      # Fizzles harmlessly after travelling this many blocks.
+      max-range: 220.0
+      # Explosion power on impact (TNT = 4, creeper = 3).
+      explosion-power: 2.0
+      # Whether the rocket explosion breaks terrain / sets fire.
+      break-blocks: true
+      set-fire: false
+      # Extra direct damage a rocket deals to another jet it hits.
+      jet-damage: 35.0
+      # Random inaccuracy cone (degrees, 0 = perfectly accurate).
+      spread-degrees: 1.2
+    bombs:
+      # Minimum ticks between bombs (fire rate). 30 ticks = 1.5 s.
+      reload-ticks: 30
+      # Bombs carried before you must let them regenerate.
+      load: 6
+      # One bomb is replenished every this-many ticks (110 = 5.5 s), up to load.
+      regen-ticks: 110
+      # Gravity that pulls the falling bomb into an arc (blocks/tick^2).
+      gravity: 0.06
+      substeps: 4
+      lifetime-ticks: 200
+      # Big crater on impact.
+      explosion-power: 5.0
+      break-blocks: true
+      set-fire: true
+      jet-damage: 70.0
+      # Fraction of the jet's velocity the bomb keeps when released (leads ahead).
+      inherit-velocity: 1.0
+
+  durability:
+    # Damage one (non-charged) creeper blast deals to a jet at point blank.
+    # max-health is derived as creeper-damage * creepers-to-destroy.
+    creeper-damage: 50.0
+    creepers-to-destroy: 2.0
+
+  combat:
+    # Weapon damage TO THE JET ITSELF, as a percent of its max HP per hit.
+    weapon-melee-percent: 5.0
+    weapon-arrow-percent: 8.0
+    weapon-fireball-percent: 16.0
+    # Minimum ms between melee hits from the same attacker.
+    weapon-melee-cooldown-ms: 250
+
+  # Atmosphere ceiling: above max-y the thin air slowly tears the jet apart — it
+  # takes damage over time and the pilot is warned. Keeps
+  # players from escaping by flying absurdly high. enabled: false to disable.
+  altitude:
+    enabled: true
+    max-y: 240
+    # Base damage per interval while above the ceiling.
+    damage: 2.0
+    # Extra damage per 10 blocks above the ceiling (0 = flat).
+    damage-per-10-blocks: 1.0
+    # How often (ticks) the damage + warning is applied. 20 = once per second.
+    interval-ticks: 20
+    message: "Atmospheric pressure is crushing you - altitude too high!"
+
+  effects:
+    # Continuous afterburner trail from the engine nozzles while flying.
+    engine-trail: true
+    # Legacy keys: short spark/flame impact afterglow, in ticks, and its radius.
+    impact-smoke-duration: 120
+    impact-smoke-radius: 3.5
+    # Slow-falling granted to the pilot when they bail out (Shift), in ticks.
+    eject-slowfall-ticks: 120
+
+  hud:
+    # How often (ticks) to refresh the pilot's action-bar HUD.
+    update-interval-ticks: 4
+
+  placement:
+    # Consume one placer item when a jet is placed.
+    consume-item: true
+
+  destruction:
+    # Drop a placer item when a jet is destroyed.
+    drop-item-on-destroy: false
+    # Fling a few model blocks as debris when destroyed.
+    debris: true
+
+  # Blocks used for the model parts. Must be valid Bukkit Material names of
+  # *blocks*. Tweak to repaint the jet (default = blue-grey Flanker camo).
+  model:
+    body-block: LIGHT_BLUE_TERRACOTTA
+    wing-block: LIGHT_BLUE_TERRACOTTA
+    nose-block: LIGHT_GRAY_CONCRETE
+    canopy-block: BLACK_STAINED_GLASS
+    engine-block: GRAY_CONCRETE
+    nozzle-block: POLISHED_BLACKSTONE
+    missile-block: WHITE_CONCRETE
+    accent-block: RED_CONCRETE
+    # Tail/board number painted near the nose (set to '' to hide).
+    tail-number: '36'
+    # ----- Render smoothing (fixes "the jet jerks fore/aft while flying") -----
+    # How many ticks the model parts take to follow the moving jet on the client.
+    # The camera (ridden) is smoothly interpolated, so the model must interpolate
+    # too or it twitches against it.
+    #   0 = parts SNAP every tick → visible 20Hz twitch (do NOT use)
+    #   1 = lerp finishes exactly each tick → smoothest, locked to real-time (default)
+    #   2..3 = smoother but the model lags a bit behind the jet at high speed
+    # /jet reload now applies this to already-spawned jets too (no respawn needed).
+    teleport-duration: 1
+    # Ticks to smooth attitude (pitch/roll/yaw) changes. 1 = crispest, 2 = softer.
+    interpolation-duration: 2
+
+  debug: false
+helicopter:
+  # ============================================================
+  #  HeliCraft configuration  (Helicopter)
+  #  Distances in blocks, speeds in blocks/tick (1 b/t = 20 b/s).
+  #  Angles in degrees. The helicopter hovers with no vertical
+  #  input (like a real chopper at flat pitch). The mouse steers
+  #  heading + altitude trim; W/S = forward/reverse; Space =
+  #  collective boost (limited by an engine heat gauge).
+  #
+  #  IMPORTANT: the helicopter can ONLY be destroyed by accumulated
+  #  damage, calibrated so TWO creeper blasts at point blank = full
+  #  HP. Bumping terrain just stops it at low speed; ramming a wall
+  #  at speed is a kamikaze crash.
+  # ============================================================
+
+  flight:
+    # Top forward speed (blocks/tick) with throttle held (W).
+    max-speed: 0.62
+    # Top reverse speed (blocks/tick) with S held. Slower than forward.
+    reverse-speed: 0.28
+    # How quickly speed builds up / bleeds off (blocks/tick^2).
+    acceleration: 0.03
+    braking: 0.04
+    # How fast the nose yaws toward where the camera looks (degrees/tick).
+    turn-rate: 3.6
+    # A visual bank into turns (degrees of roll per degree/tick of yaw).
+    bank-factor: 1.2
+    max-bank: 18.0
+    roll-return-speed: 2.5
+
+    # --- vertical / hover ---
+    # Climb / sink rate (blocks/tick) commanded by looking up / down with the mouse.
+    trim-climb-rate: 0.24
+    # How far you must tilt the camera (deg) to reach full trim climb/sink.
+    trim-full-pitch: 55.0
+    # How fast the vertical speed eases toward its target (blocks/tick^2).
+    vertical-accel: 0.03
+    # Residual lift drift when perfectly level & no input (0 = dead hover).
+    neutral-drift: 0.0
+    # Extra climb (blocks/tick) added while holding Space (collective boost).
+    boost-climb: 0.45
+    # Cap on descent speed (blocks/tick).
+    max-sink: 0.5
+    # Let the helicopter settle gently onto the ground when it touches down.
+    ground-rest: true
+
+  # Full-speed wall crash: ramming terrain at (almost) top speed DESTROYS the
+  # helicopter and blows a crater at the impact point. Slower bumps just stop it.
+  crash:
+    # Minimum horizontal speed (blocks/tick) for a wall impact to count as a crash.
+    speed: 0.55
+    # Crater explosion power at the impact point (TNT = 4, creeper = 3).
+    explosion-power: 3.5
+    break-blocks: true
+    set-fire: false
+
+  # How many people can be aboard at once (1 pilot + the rest are passengers).
+  # Only the FIRST to board pilots; the others just ride along. Capped by the
+  # number of passenger seats in the model -> hard max 4.
+  seats:
+    capacity: 4
+
+  # Engine heat (the "collective boost" limiter): holding Space heats the engine;
+  # when it overheats the boost cuts out until it cools. Stops infinite climbing.
+  engine:
+    heat-per-tick: 0.018      # ~2.8 s of continuous boost before overheat
+    cool-per-tick: 0.011      # ~4.5 s to fully cool
+    resume-threshold: 0.30    # after overheat, locked until heat drops to this
+
+  weapons:
+    # Ticks after boarding during which weapons are locked ("Loading ammunition"),
+    # so the right-click that boards the helicopter can't instantly fire. 40 = 2 s.
+    mount-grace-ticks: 40
+    # Hard cap on simultaneous in-flight rockets + bombs (anti-lag).
+    max-active-munitions: 96
+    rockets:
+      # Minimum ticks between rocket shots (fire-rate cooldown).
+      reload-ticks: 5
+      # Rockets carried before you must let them regenerate.
+      magazine: 18
+      # One rocket is replenished every this-many ticks, up to magazine.
+      regen-ticks: 45
+      # Rocket flight speed (blocks/tick); the helicopter's own forward speed is added.
+      speed: 3.4
+      # Gravity on the rocket (0 = perfectly flat flight).
+      gravity: 0.0
+      # Collision sub-steps per tick.
+      substeps: 4
+      # Self-destructs after this many ticks if it somehow hits nothing.
+      lifetime-ticks: 80
+      # Self-destructs beyond this range (blocks) from the muzzle.
+      max-range: 200.0
+      # --- impact explosion ---
+      explosion-power: 2.0
+      break-blocks: true
+      set-fire: false
+      # Small random spread per shot (degrees) for a ripple-fire look.
+      spread-degrees: 1.5
+      # Extra direct damage a rocket deals to another helicopter it directly hits.
+      heli-damage: 35.0
+    bombs:
+      # Minimum ticks between bomb drops (fire-rate cooldown). 24 ticks = 1.2 s.
+      cooldown-ticks: 24
+      # Bombs carried before you must let them regenerate.
+      load: 12
+      # One bomb is replenished every this-many ticks (90 = 4.5 s), up to load.
+      # NOTE: this timer only advances while the drop cooldown has fully recovered
+      # (i.e. when you are NOT mid-drop) — it does not run in parallel with the
+      # cooldown, so you can't bomb continuously forever; you refill only after you
+      # stop dropping for a moment.
+      regen-ticks: 90
+      # Gravity that pulls the falling bomb into an arc (blocks/tick^2).
+      gravity: 0.045
+      # Collision sub-steps per tick (higher = more accurate, more cost).
+      substeps: 4
+      # Self-destructs after this many ticks if it somehow hits nothing.
+      lifetime-ticks: 240
+      # Fraction of the helicopter's velocity the bomb keeps when released.
+      inherit-velocity: 1.0
+      # --- impact / "selected area" explosion ---
+      explosion-power: 4.5      # blast radius (TNT = 4, creeper = 3)
+      break-blocks: true        # carve a crater in terrain
+      set-fire: false           # leave fire on the crater
+      # Extra direct damage a bomb deals to another helicopter it directly hits.
+      heli-damage: 60.0
+
+  durability:
+    # Damage one (non-charged) creeper blast deals to the helicopter at point blank.
+    # max-health is derived as creeper-damage * creepers-to-destroy.
+    creeper-damage: 50.0
+    # The helicopter is destroyed by this many point-blank creeper blasts.
+    creepers-to-destroy: 2.0
+    # How far from any part of the helicopter a blast still counts as "contact".
+    contact-radius: 3.0
+
+  combat:
+    # Weapon damage TO THE HELICOPTER ITSELF, as a percent of its max HP per hit.
+    weapon-melee-percent: 6.0
+    weapon-arrow-percent: 10.0
+    weapon-fireball-percent: 20.0
+    # Minimum ms between melee hits from the same attacker.
+    weapon-melee-cooldown-ms: 250
+
+  # Atmosphere ceiling: above max-y the thin air slowly tears the helicopter apart — it
+  # takes damage over time and the pilot is warned. Keeps
+  # players from escaping by floating absurdly high. enabled: false to disable.
+  altitude:
+    enabled: true
+    max-y: 240
+    # Base damage per interval while above the ceiling.
+    damage: 2.0
+    # Extra damage per 10 blocks above the ceiling (0 = flat).
+    damage-per-10-blocks: 1.0
+    # How often (ticks) the damage + warning is applied. 20 = once per second.
+    interval-ticks: 20
+    message: "Atmospheric pressure is crushing you - altitude too high!"
+
+  effects:
+    # Continuous exhaust/smoke trail from the engine deck while moving.
+    engine-trail: true
+    # Ambient steam/heat puff from under the rotor while boosting (Space).
+    burner-steam: true
+    # Legacy keys: short spark/flame impact afterglow, in ticks, and its radius.
+    impact-smoke-duration: 160
+    impact-smoke-radius: 4.0
+    # Smoke trail density behind a falling bomb (particles per emitting sub-step).
+    bomb-trail-density: 1
+    # Slow-falling granted to the pilot when they bail out (Shift), in ticks.
+    eject-slowfall-ticks: 160
+
+  hud:
+    # How often (ticks) to refresh the pilot's action-bar HUD.
+    update-interval-ticks: 4
+
+  # Anti-grief / anti-lag spawn limits. 0 = unlimited. Admins bypass max-per-player.
+  # Counts only helicopters in loaded chunks.
+  limits:
+    max-per-player: 3
+    max-loaded: 40
+
+  placement:
+    # Consume one placer item when a helicopter is placed.
+    consume-item: true
+    # Height (blocks) above the clicked block the cabin is placed at.
+    spawn-height: 2.5
+
+  destruction:
+    # Drop a placer item when a helicopter is destroyed.
+    drop-item-on-destroy: false
+    # Fling a few model blocks as debris when destroyed.
+    debris: true
+
+  # Performance: a helicopter is many display entities.
+  performance:
+    # View-range MULTIPLIER of the model parts (1.0 = vanilla default). Kept high
+    # so the model does NOT get culled when VehicleCamera pushes the F5 camera far
+    # out (a low value made distant parts flicker/vanish).
+    view-range: 4.0
+
+  # Model render smoothing (ticks). Matches the airship's SMOOTH values (both = 3):
+  # the parts ease between positions/angles so flight and the spinning rotor look
+  # fluid instead of stuttering. Keep teleport-duration == interpolation-duration
+  # so body motion and rotation stay in sync (a mismatch causes the jerk/wobble).
+  # Also: blocks used for the model parts (valid Bukkit block Material names).
+  # Defaults paint an olive-green Mi-8-style military transport helicopter.
+  model:
+    teleport-duration: 3
+    interpolation-duration: 3
+    # Tail number painted on the boom (set to '' to hide).
+    tail-number: '24'
+    body-block: GREEN_TERRACOTTA     # main cabin/fuselage (olive)
+    camo-block: GREEN_CONCRETE_POWDER # two-tone camo panels (roof/boom/fin)
+    glass-block: BLACK_CONCRETE        # cockpit/cabin windows (dark solid)
+    rotor-block: POLISHED_BLACKSTONE # main + tail rotor blades
+    hub-block: IRON_BLOCK            # rotor mast/hub, hardpoint caps
+    gear-block: BLACK_CONCRETE       # wheels/gear
+    engine-block: GRAY_CONCRETE      # engine deck, rocket pods
+    accent-block: RED_CONCRETE       # markings/stars
+
+  debug: false
+airship:
+  # ============================================================
+  #  AirshipCraft configuration  (Airship)
+  #  Distances in blocks, speeds in blocks/tick (1 b/t = 20 b/s).
+  #  Angles in degrees. The airship is lighter-than-air: with no
+  #  vertical input it HOVERS in place (neutral buoyancy). The
+  #  mouse steers heading + altitude trim; W/S = forward/reverse;
+  #  Space = lift boost (limited by a ballast/burner heat gauge).
+  #
+  #  IMPORTANT: the airship can ONLY be destroyed by accumulated
+  #  damage, calibrated so ONE creeper blast at point blank = full
+  #  HP. Bumping terrain just stops it — it is never instant-killed.
+  # ============================================================
+  
+  flight:
+    # Top forward speed (blocks/tick) with throttle held (W). 0.35 = ~25 km/h.
+    max-speed: 0.36
+    # Top reverse speed (blocks/tick) with S held. Slower than forward.
+    reverse-speed: 0.16
+    # How quickly speed builds up / bleeds off (blocks/tick^2). Tiny = heavy inertia.
+    acceleration: 0.010
+    braking: 0.018
+    # How fast the nose yaws toward where the camera looks (degrees/tick).
+    # Low = ponderous, ocean-liner turns befitting a giant airship.
+    turn-rate: 1.6
+    # A faint visual bank into turns (degrees of roll per degree/tick of yaw).
+    bank-factor: 1.4
+    max-bank: 10.0
+    roll-return-speed: 1.5
+  
+    # --- buoyancy / vertical ---
+    # Climb / sink rate (blocks/tick) commanded by looking up / down with the mouse.
+    # This is vectored buoyancy: even hovering, look up to rise, down to sink.
+    trim-climb-rate: 0.16
+    # How far you must tilt the camera (deg) to reach full trim climb/sink.
+    trim-full-pitch: 55.0
+    # How fast the vertical speed eases toward its target (blocks/tick^2). Floaty.
+    vertical-accel: 0.012
+    # Residual buoyancy drift when perfectly level & no input (0 = dead hover).
+    # Slightly positive feels "alive" like a real balloon; 0 = rock-steady.
+    neutral-drift: 0.0
+    # Extra climb (blocks/tick) added while holding Space (the gas burner boost).
+    boost-climb: 0.34
+    # Extra sink (blocks/tick) while holding the descend key combo (look down hard).
+    # (Descent is driven by the mouse trim above; this caps a fast dive.)
+    max-sink: 0.30
+    # Let the airship settle gently onto the ground when it touches down.
+    ground-rest: true
+  
+  # Full-speed wall crash: ramming terrain at (almost) top speed DESTROYS the
+  # airship and blows a crater at the impact point. Slower bumps just stop it
+  # (a giant slow blimp doesn't "crash" at a crawl).
+  crash:
+    # Minimum horizontal speed (blocks/tick) for a wall impact to count as a crash.
+    # Forward top speed is flight.max-speed (0.36); reverse (0.16) never crashes.
+    speed: 0.30
+    # Crater explosion power at the impact point (TNT = 4, creeper = 3).
+    explosion-power: 4.0
+    break-blocks: true
+    set-fire: false
+  
+  # How many people can be aboard at once (1 pilot + the rest are passengers).
+  # Only the FIRST to board pilots; the others just ride along. Capped by the
+  # number of passenger seats in the model (2) -> hard max 3.
+  seats:
+    capacity: 3
+  
+  # Gas-burner / ballast heat: holding Space (lift boost) heats the burner; when it
+  # overheats the boost cuts out until it cools. Stops infinite vertical climbing.
+  burner:
+    heat-per-tick: 0.018      # ~2.8 s of continuous boost before overheat
+    cool-per-tick: 0.011      # ~4.5 s to fully cool
+    resume-threshold: 0.30    # after overheat, locked until heat drops to this
+  
+  weapons:
+    # Ticks after boarding during which bombs are locked ("Loading ammunition"),
+    # so the right-click that boards the airship can't instantly drop a bomb.
+    # 40 = 2 seconds.
+    mount-grace-ticks: 40
+    bombs:
+      # Minimum ticks between bomb drops (fire-rate cooldown). 24 ticks = 1.2 s.
+      cooldown-ticks: 24
+      # Bombs carried before you must let them regenerate.
+      load: 12
+      # One bomb is replenished every this-many ticks (90 = 4.5 s), up to load.
+      # NOTE: this timer only advances while the attack cooldown has fully recovered
+      # (i.e. when you are NOT mid-drop) — it does not run in parallel with the
+      # cooldown, so you can't bomb continuously forever; you refill only after you
+      # stop dropping for a moment.
+      regen-ticks: 90
+      # Gravity that pulls the falling bomb into an arc (blocks/tick^2).
+      gravity: 0.045
+      # Collision sub-steps per tick (higher = more accurate, more cost).
+      substeps: 4
+      # Self-destructs after this many ticks if it somehow hits nothing.
+      lifetime-ticks: 240
+      # Fraction of the airship's velocity the bomb keeps when released.
+      inherit-velocity: 1.0
+      # --- impact / "selected area" explosion ---
+      explosion-power: 4.5      # blast radius (TNT = 4, creeper = 3)
+      break-blocks: true        # carve a crater in terrain
+      set-fire: false           # leave fire on the crater
+      # Extra direct damage a bomb deals to another airship it directly hits.
+      airship-damage: 60.0
+  
+  durability:
+    # Damage one (non-charged) creeper blast deals to the airship at point blank.
+    # max-health is derived as creeper-damage * creepers-to-destroy.
+    creeper-damage: 50.0
+    # The airship is destroyed by this many point-blank creeper blasts.
+    # The user asked for ONE creeper -> 1.0. Raise it to make the airship tankier.
+    creepers-to-destroy: 1.0
+    # How far from any part of the (huge) airship a blast still counts as "contact".
+    contact-radius: 3.0
+  
+  combat:
+    # Weapon damage TO THE AIRSHIP ITSELF, as a percent of its max HP per hit.
+    weapon-melee-percent: 6.0
+    weapon-arrow-percent: 10.0
+    weapon-fireball-percent: 20.0
+    # Minimum ms between melee hits from the same attacker.
+    weapon-melee-cooldown-ms: 250
+  
+  # Atmosphere ceiling: above max-y the thin air slowly tears the airship apart — it
+  # takes damage over time and the pilot is warned. Keeps
+  # players from escaping by floating absurdly high. enabled: false to disable.
+  altitude:
+    enabled: true
+    max-y: 240
+    # Base damage per interval while above the ceiling.
+    damage: 2.0
+    # Extra damage per 10 blocks above the ceiling (0 = flat).
+    damage-per-10-blocks: 1.0
+    # How often (ticks) the damage + warning is applied. 20 = once per second.
+    interval-ticks: 20
+    message: "Atmospheric pressure is crushing you - altitude too high!"
+  
+  effects:
+    # Continuous steam/smoke trail from the engine pods while moving.
+    engine-trail: true
+    # Ambient steam puff from the burner while boosting (Space).
+    burner-steam: true
+    # Legacy keys: short spark/flame impact afterglow, in ticks, and its radius.
+    impact-smoke-duration: 160
+    impact-smoke-radius: 4.0
+    # Smoke trail density behind a falling bomb (particles per emitting sub-step).
+    bomb-trail-density: 1
+    # Slow-falling granted to the pilot when they bail out (Shift), in ticks.
+    eject-slowfall-ticks: 160
+  
+  hud:
+    # How often (ticks) to refresh the pilot's action-bar HUD.
+    update-interval-ticks: 4
+  
+  # Anti-grief / anti-lag spawn limits. An airship is ~120 display entities, so a
+  # spammer could lag the server; these cap it. 0 = unlimited. Admins bypass
+  # max-per-player. Counts only airships in loaded chunks.
+  limits:
+    max-per-player: 3
+    max-loaded: 40
+  
+  placement:
+    # Consume one placer item when an airship is placed.
+    consume-item: true
+    # Height (blocks) above the clicked block the gondola is placed at.
+    spawn-height: 2.5
+  
+  destruction:
+    # Drop a placer item when an airship is destroyed.
+    drop-item-on-destroy: false
+    # Fling a few model blocks as debris when destroyed.
+    debris: true
+  
+  # Performance: an airship is many display entities. These keep it cheap.
+  performance:
+    # View-range MULTIPLIER of the model parts (1.0 = vanilla default ~ a few dozen
+    # blocks). A big sky airship should be visible from afar, so >1; higher = more
+    # clients render it = more load. 4.0 is a good "see it across the valley" value.
+    view-range: 4.0
+    # Smooth a part's move/turn over this many ticks (client-side interpolation).
+    interpolation-ticks: 2
+    # Octagonal envelope cross-sections (rounder, ~2x the envelope part count).
+    # Set false for a lighter, more faceted blimp on weak servers.
+    rounded-envelope: true
+  
+  # Blocks used for the model parts. Must be valid Bukkit Material names of *blocks*.
+  # Defaults paint a muted military airship: olive canvas, cold steel ribs,
+  # dark armored gondola, smoked glass and heavy iron hardware.
+  model:
+    envelope-block: GREEN_TERRACOTTA           # matte olive canvas skin
+    rib-block: TUFF_BRICKS                     # grey steel-like reinforcement bands
+    fin-block: POLISHED_TUFF                   # muted control fins
+    fitting-block: RAW_IRON_BLOCK              # heavy rivets, nose cap, propeller metal
+    gondola-block: POLISHED_DEEPSLATE          # dark armored cabin hull
+    trim-block: DEEPSLATE_TILES                # blackened trim and rails
+    window-block: BLACK_STAINED_GLASS          # smoked gondola windows
+    rigging-block: CHAIN                       # suspension chains/cables
+    engine-block: POLISHED_BLACKSTONE          # engine/propeller pods
+    ballast-block: RAW_IRON_BLOCK              # hanging iron ballast weights
+    # Name painted on the side of the envelope (set to '' to hide).
+    ship-name: ''
+  
+  debug: false
+drone:
+  # ============================================================
+  #  DroneCraft / UAV configuration
+  #  Distances in blocks, speeds in blocks/tick (1 b/t = 20 b/s).
+  #  Angles in degrees.
+  #
+  #  The UAV flies forward on its own (as if W were always held) —
+  #  you take control by right-clicking the UAV, ride it in first person and
+  #  STEER ONLY WITH THE CAMERA (look up to climb, down to dive).
+  #  Right-click fires a rocket (4 one-shot rockets, no reload). Left-click detonates.
+  #  2×Shift — leave (the UAV then keeps flying straight, doesn't fall).
+  #  Ramming the nose into terrain or a target detonates the warhead.
+  # ============================================================
+  
+  flight:
+    # Constant forward speed (blocks/tick). 1.7 ≈ 122 km/h.
+    speed: 1.7
+    # How fast the heading eases toward the camera (degrees/tick). Lower = wider,
+    # smoother turn arc (more plane-like); higher = sharper/snappier. ~16 ≈ a nice
+    # responsive arc at the speed above. Set very high (e.g. 90) for near-instant.
+    turn-rate: 16.0
+    # Max climb/dive the model is posed to (visual clamp).
+    max-pitch: 88.0
+    # Visual bank: cap and how strongly the airframe rolls into turns.
+    max-bank: 32.0
+    auto-bank-factor: 3.0
+    roll-return-speed: 8.0
+    # After you leave (or the battery dies) the UAV flies straight for this many
+    # ticks, then self-destructs if it hasn't already hit something. 600 = 30 s.
+    unmanned-lifetime-ticks: 600
+  
+  control:
+    # Max gap (ms) between the two Shift taps that count as "exit".
+    exit-double-tap-ms: 500
+    # The operator is shrunk to this scale while flying so the camera sits closer to
+    # the airframe (1.0 = normal size, 0.0625..1.0). 0.45 ≈ a tight on-board view.
+    operator-scale: 0.45
+  
+  # Kamikaze warhead (rammed into terrain or a target).
+  kamikaze:
+    # Minimum motion speed (blocks/tick) to arm the ram. The UAV always moves at
+    # 'speed', so this just disables detonation if it's somehow stationary.
+    arm-speed: 0.10
+    # If true, the UAV also auto-detonates when it flies within proximity-radius of a
+    # living target. Default false so you can approach a target and SHOOT ROCKETS at
+    # it without the UAV ramming itself into it. (Terrain ram always detonates.)
+    detonate-on-entity-contact: false
+    # Radius (blocks) for the above, when enabled.
+    proximity-radius: 1.2
+    # Safety: ticks after boarding before the warhead arms (20 = 1 s).
+    arm-delay-ticks: 20
+    # Explosion power (TNT = 4, creeper = 3). Bigger = wider crater/blast.
+    explosion-power: 6.0
+    # Flat direct damage dealt to every living thing right at the impact (half a
+    # heart = 1.0). 40 obliterates players/mobs caught point-blank.
+    direct-damage: 40.0
+    break-blocks: true
+    set-fire: false
+  
+  # Four one-shot rockets, fired with right-click. They do not reload.
+  rockets:
+    count: 4
+    # Minimum ticks between shots (fire pacing). 6 = ~3/sec.
+    reload-ticks: 6
+    # Rocket speed (blocks/tick) and collision sub-steps per tick.
+    speed: 2.6
+    substeps: 6
+    # Self-destruct after this many ticks / this many blocks travelled.
+    lifetime-ticks: 60
+    max-range: 120.0
+    # Weaker than the jet's rockets, but a direct hit kills soft targets.
+    explosion-power: 1.6
+    # Flat damage to the entity hit dead-on (a cow has 10). 16 = lethal.
+    direct-damage: 16.0
+    break-blocks: false
+    set-fire: false
+    # Random inaccuracy cone (degrees, 0 = perfectly accurate).
+    spread-degrees: 1.5
+  
+  # Battery / flight time. Set enabled: false for unlimited flight.
+  battery:
+    enabled: true
+    # Total powered flight, in ticks. 4800 = 240 s = 4 minutes.
+    flight-ticks: 4800
+    # Below this percent the HUD warns; at 0 the link is lost (UAV flies on).
+    low-percent: 20
+  
+  durability:
+    # Damage one (non-charged) creeper blast deals at point blank.
+    # max-health = creeper-damage * creepers-to-destroy.
+    creeper-damage: 50.0
+    # Fragile: one creeper blast destroys one by default.
+    creepers-to-destroy: 1.0
+  
+  # Weapon damage TO THE UAV, percent of max HP per hit, so it can be shot down
+  # (occupied or empty) — arrows / melee / fireballs hit its hitbox.
+  combat:
+    weapon-melee-percent: 20.0
+    weapon-arrow-percent: 25.0
+    weapon-fireball-percent: 50.0
+    weapon-melee-cooldown-ms: 250
+  
+  # Altitude ceiling: above max-y the signal degrades and the UAV takes damage.
+  altitude:
+    enabled: true
+    max-y: 300
+    damage: 2.0
+    damage-per-10-blocks: 1.0
+    interval-ticks: 20
+    message: "Signal is weakening - altitude too high!"
+  
+  # Ticks after boarding during which the warhead is "arming" (matches arm-delay).
+  mount-grace-ticks: 20
+  
+  effects:
+    # Continuous engine drone. Any Bukkit Sound name.
+    motor-sound: ENTITY_BEE_LOOP
+    motor-interval-ticks: 3
+    motor-volume: 0.6
+    motor-pitch: 1.5
+    # Rear propeller spin speed (degrees/tick) — purely visual.
+    prop-spin-per-tick: 90.0
+    # Faint prop-wash particles behind the propeller.
+    prop-wash: true
+    # Client-side smoothing of the model, in ticks (1..10). Position and rotation
+    # both use this value (they MUST match or the model jitters back-and-forth at
+    # speed). The model is teleported predictively so this adds no lag behind the
+    # camera. 2 = smooth + tight. Raise to 3 if your connection still micro-stutters;
+    # lower to 1 for the tightest tracking.
+    interpolation-ticks: 2
+    # Slow-falling granted to the operator on exit / eject, in ticks.
+    eject-slowfall-ticks: 120
+    # Fling a few model blocks as debris when destroyed.
+    debris: true
+  
+  hud:
+    # How often (ticks) to refresh the operator's action-bar HUD.
+    update-interval-ticks: 3
+  
+  placement:
+    # Consume one placer item when a UAV is deployed.
+    consume-item: true
+  
+  destruction:
+    # Drop a placer item when a UAV is destroyed.
+    drop-item-on-destroy: false
+  
+  # Blocks used for the model parts (PD-1 white/grey with black carbon booms).
+  model:
+    frame-block: WHITE_CONCRETE
+    arm-block: BLACK_CONCRETE
+    motor-block: POLISHED_BLACKSTONE
+    prop-block: LIGHT_GRAY_STAINED_GLASS
+    camera-block: BLACK_CONCRETE
+    warhead-block: LIGHT_GRAY_CONCRETE
+    accent-block: RED_CONCRETE
+  
+  debug: false
+moto:
+  # MotoCraft - red Soviet motorcycle with a right sidecar.
+  # Distances are in blocks, speed is in blocks/tick, angles are in degrees.
+  
+  movement:
+    # 0.9167 blocks/tick is about 66 km/h (blocks/tick x 72 = km/h).
+    max-forward-speed: 0.9167
+    max-reverse-speed: 0.10
+    acceleration: 0.012
+    braking: 0.035
+    friction: 0.008
+  
+    # Camera steering: the body turns toward the driver's view, like the Kamaz.
+    max-turn-speed: 4.8            # body turn speed, degrees/tick
+    handlebar-angle: 32.0          # max visible front wheel / handlebar angle
+    high-speed-turn-factor: 0.48   # unused with camera steering
+    steering-return-speed: 8.0     # unused with camera steering
+  
+    max-step-up: 1.1              # can climb a 1-block step
+    climb-rate: 0.5               # how quickly it pulls upward onto steps
+    ground-snap-distance: 1.6
+    gravity: 0.08
+    fall-damage: 10.0
+    fall-damage-threshold: 0.75
+  
+  impact:
+    enabled: true
+    min-speed: 0.08
+    reach: 0.25
+    hit-cooldown-ms: 750
+    high-speed-fraction: 0.75
+    high-speed-knockback: 1.55
+    high-speed-vertical: 0.48
+    high-speed-damage: 5.0
+    low-speed-damage: 2.0
+    low-speed-knockback: 0.38
+    # Slow impacts do not reduce the victim below half a heart by default.
+    low-speed-min-health: 1.0
+  
+  durability:
+    creeper-damage: 50.0
+    creepers-to-destroy: 1.5
+    weapon-melee-percent: 8.0
+    weapon-arrow-percent: 12.0
+    weapon-fireball-percent: 25.0
+    weapon-melee-cooldown-ms: 300
+  
+  water:
+    drown-enabled: true
+    drown-damage-percent: 5.0
+  
+  hud:
+    update-interval-ticks: 4
+  
+  placement:
+    consume-item: true
+    max-motorcycles-total: 20
+    max-motorcycles-per-player: 2
+    max-motorcycles-per-chunk: 4
+    spawn-cooldown-seconds: 10
+    min-motorcycle-spacing: 3.5
+  
+  destruction:
+    drop-item-on-destroy: false
+    debris: true
+  
+  performance:
+    projectile-sweep-interval-ticks: 1
+    water-check-interval-ticks: 5
+    transient-repair-interval-ticks: 20
+  
+  compatibility:
+    # Empty string disables special flat damage from AntiAirCraft rockets.
+    anti-air-scoreboard-tag: antiaircraft_entity
+  
+  model:
+    body-block: RED_CONCRETE
+    frame-block: POLISHED_BLACKSTONE
+    engine-block: IRON_BLOCK
+    wheel-block: BLACK_CONCRETE
+    hub-block: LIGHT_GRAY_CONCRETE
+    glass-block: TINTED_GLASS
+    seat-block: BLACK_WOOL
+    detail-block: GRAY_CONCRETE
+    light-block: SEA_LANTERN
+    indicator-block: ORANGE_CONCRETE
+    exhaust-block: SMOOTH_STONE
+  
+    # Height and forward/back offset of invisible temporary seats; lower means tighter seating.
+    driver-seat-height: 0.35
+    driver-seat-z: -0.32
+    pillion-seat-height: 0.4
+    sidecar-seat-height: 0.48
+  
+  debug: false
+pickup:
+  # ============================================================
+  #  PickupCraft configuration
+  #  All distances are in blocks, all speeds in blocks/tick
+  #  (1 block/tick = 20 blocks/second). Angles are in degrees.
+  #
+  #  The pickup has TWO crew seats: a driver (steers with WASD + camera)
+  #  and a gunner (independently aims the roof-mounted MG with their
+  #  own camera). Either seat can be empty; a lone gunner can still
+  #  man the gun on a parked pickup, and a lone driver can still drive.
+  # ============================================================
+  
+  movement:
+    # Top forward speed (blocks/tick). km/h shown in HUD = speed * 72.
+    max-forward-speed: 0.6
+    # Top reverse speed.
+    max-reverse-speed: 0.28
+    # Acceleration rate the instant W is tapped (blocks/tick^2).
+    acceleration: 0.02
+    # Acceleration rate once W has been held for accel-ramp-ticks straight -
+    # holding the throttle down keeps building speed faster, not just toward a
+    # fixed-rate ramp. Reverse (S) ramps the same way once actually reversing.
+    acceleration-max: 0.055
+    # Ticks of continuous hold to go from `acceleration` to `acceleration-max`.
+    accel-ramp-ticks: 40
+    # Braking is intentionally NOT progressive - it should feel immediate the
+    # moment S is pressed while still moving forward (and vice versa).
+    braking: 0.09
+    # Passive friction applied every tick when no throttle is held.
+    friction: 0.025
+    # How fast the hull rotates toward the driver's camera (degrees/tick).
+    turn-speed: 8.0
+    # Visual front wheel steering angle at full camera yaw difference.
+    front-wheel-steer-angle: 24.0
+    # Max height (blocks) the pickup can climb in one step. 1.2 reliably mounts a
+    # full block (with margin) while still blocking 2-high walls.
+    max-step-up: 1.2
+    # How fast (blocks/tick) the pickup ramps UP onto a step.
+    climb-rate: 0.5
+    # How far below the pickup we look for ground before it is "falling".
+    ground-snap-distance: 2.0
+    # Downward acceleration while airborne (blocks/tick^2).
+    gravity: 0.08
+    # Terminal falling speed. Kept below ground-snap-distance so the pickup cannot
+    # skip through terrain between ticks while falling.
+    max-fall-speed: 1.8
+    # Damage the pickup takes on a hard landing, scaled by how fast it was falling
+    # past the threshold. Set fall-damage to 0 to disable.
+    fall-damage: 10.0
+    fall-damage-threshold: 0.8
+  
+  gunner:
+    # Max MG elevation up / depression down (degrees). Deep depression lets the
+    # gunner cover targets close alongside the pickup.
+    max-elevation: 25.0
+    max-depression: 35.0
+    # How fast the barrel pitch follows the gunner's camera (degrees/tick).
+    # Yaw follows the gunner's camera instantly (full 360 traverse).
+    pitch-speed: 12.0
+  
+  weapon:
+    # Ticks after boarding the gunner seat during which the MG is locked, so the
+    # right-click that mounts the seat can't instantly fire. 6 = 0.3 seconds.
+    mount-grace-ticks: 6
+    # Ticks between shots. 3 ticks ~= 6.7 rounds/second.
+    fire-cooldown-ticks: 3
+    # Direct damage a bullet deals to a player/mob it hits. 3.0 = 1.5 hearts.
+    bullet-damage: 3.0
+    # Direct damage a bullet deals when it hits another pickup's hull.
+    pickup-damage: 3.0
+    # Bullets are hitscan (instant, no travel time/gravity) out to this range.
+    bullet-range: 55.0
+    # Random inaccuracy cone of the MG, in degrees (0 = perfectly accurate).
+    spread-degrees: 1.2
+    # Whether shots leave a quick tracer/impact particle trail.
+    tracer-effects: true
+    # Overheat: firing more than overheat-shot-limit rounds within the trailing
+    # overheat-window-ticks locks the gun for overheat-duration-ticks. Default:
+    # more than 15 rounds in 10s (200 ticks) locks firing for 3s (60 ticks).
+    overheat-shot-limit: 15
+    overheat-window-ticks: 200
+    overheat-duration-ticks: 60
+  
+  durability:
+    # Damage one (non-charged) creeper blast deals to a pickup at point blank.
+    # max-health is derived as creeper-damage * creepers-to-destroy. An
+    # unarmored pickup is far more fragile than a tank.
+    creeper-damage: 40.0
+    creepers-to-destroy: 1.5
+  
+  combat:
+    # Driving into mobs/players damages them and knocks them back.
+    ramming-enabled: true
+    ramming-damage: 3.0
+    ramming-knockback: 0.8
+    # Speed (blocks/tick) the pickup must exceed for ramming to apply.
+    ramming-min-speed: 0.15
+    # Per-victim cooldown and forward cone for ramming.
+    ramming-cooldown-ms: 600
+    ramming-cone-degrees: 80.0
+    # How often pickup bodies sweep for vanilla projectiles (arrows, tridents, fireballs).
+    projectile-sweep-interval-ticks: 2
+    # Weapon damage TO THE PICKUP ITSELF, as a percent of its max HP per hit.
+    # Higher than a tank's - there is no armor plate to stop small arms.
+    weapon-melee-percent: 8.0
+    weapon-arrow-percent: 10.0
+    weapon-fireball-percent: 25.0
+    # Minimum ms between melee hits from the same attacker.
+    weapon-melee-cooldown-ms: 250
+  
+  hud:
+    # How often (in ticks) to refresh the driver's/gunner's action-bar HUD.
+    update-interval-ticks: 4
+  
+  water:
+    # If the whole pickup goes under water its engine stalls (can't drive) and it
+    # slowly floods, taking damage until it breaks down.
+    drown-enabled: true
+    # HP lost per second while fully submerged, as a percent of max HP.
+    drown-damage-percent: 4.0
+  
+  effects:
+    # Legacy key: short spark/flame impact afterglow on a destroyed pickup's crater, in ticks.
+    impact-smoke-duration: 15
+    # Radius of the short impact afterglow (blocks).
+    impact-smoke-radius: 2.0
+    # Movement/condition feedback. Lightweight particles/sounds, not entities.
+    dust-trail: true
+    engine-sound: false
+    damage-smoke: true
+  
+  placement:
+    # Consume one placer item when a pickup is placed.
+    consume-item: true
+  
+  destruction:
+    # Drop a placer item when a pickup is destroyed.
+    drop-item-on-destroy: false
+    # Fling a few model blocks as debris when destroyed.
+    debris: true
+    # Fuel-tank explosion power when the pickup is destroyed (TNT = 4, creeper = 3).
+    explosion-power: 1.6
+    # Whether that explosion breaks terrain blocks / sets fire.
+    break-blocks: false
+    set-fire: false
+  
+  # Blocks used for the model parts. Must be valid Bukkit Material names of
+  # *blocks*. Tweak to recolor/re-skin your pickup.
+  model:
+    hull-block: WHITE_CONCRETE
+    frame-block: POLISHED_BLACKSTONE
+    detail-block: MOSS_BLOCK
+    seat-block: BLACK_WOOL
+    wheel-block: BLACK_CONCRETE
+    light-block: SHROOMLIGHT
+    mount-block: POLISHED_BLACKSTONE
+    barrel-block: POLISHED_BLACKSTONE
+    # Height (blocks) of the driver's/passenger's seat above the pickup's ground
+    # point. Crew ride as a normal seated passenger (a mounted rider is always
+    # posed sitting by vanilla - not overridable), which adds its own height on
+    # top of this number, so these values sit lower than the model's own floor.
+    # The whole pickup model was scaled up (taller body, bigger wheels) so a
+    # raised seat still looks proportionate. A new/replaced pickup is required to
+    # pick up config changes (existing placed pickups keep the height they were
+    # spawned with).
+    driver-seat-height: 1.0
+    # Height (blocks) of the gunner's seat mount, same idea as above.
+    gunner-seat-height: 1.8
+    # Shrinks the invisible seat armor stand (vanilla Scale attribute, 1.0 =
+    # normal size). A smaller mount gets a proportionally smaller passenger-mount
+    # offset, so this is a second lever (besides the two heights above) for
+    # pulling a seated rider down. 1.0 disables it (vanilla-size seat).
+    seat-scale: 0.5
+  
+  debug: false
+
+train:
+  # ============================================================
+  #  TrainCraft - "Desert Express"
+  #  Speeds are in blocks/second, distances are in blocks,
+  #  damage is in health points (2.0 = one heart).
+  #  /train reload applies changes live, including to already-running trains.
+  # ============================================================
+  
+  movement:
+    # Cruising speed in blocks/second. The train uses it immediately after placement,
+    # with no acceleration. 9.0 is noticeably faster than sprinting.
+    speed: 9.0
+    # Dead-end deceleration in blocks/sec^2: how smoothly the train brakes when rails end.
+    # Lower values mean a longer braking distance.
+    deceleration: 10.0
+    # Gap between wagons in blocks. The coupling is rigid: distance does not change
+    # on turns or slopes.
+    car-gap: 1.0
+  
+  animation:
+    # Visual wheel and rod spin multiplier. Does not change train speed.
+    wheel-spin-multiplier: 0.55
+  
+  collision:
+    enabled: true
+    # Damage to an entity on the rails in front of the train.
+    damage: 8.0
+    # Extra hit width from the train side, in blocks.
+    width-margin: 0.35
+    # Minimum train speed in blocks/second required to hit entities.
+    min-speed: 2.0
+    # Victim knockback: horizontal impulse along train travel and vertical impulse.
+    knockback: 1.7
+    knockback-up: 0.55
+    # Cooldown between hits on the same victim, in milliseconds.
+    hit-cooldown-ms: 800
+    # Whether mobs are affected; false means the train is dangerous only to players.
+    affect-mobs: true
+  
+  seats:
+    # Seat counts in the locomotive cab and each wagon.
+    # Maximum: cab 3, wagon 6; there are no more seat points in the model.
+    locomotive: 2
+    wagon: 4
+    # Seat height above rails, separately for cab and wagons.
+    # Wagon seats sit much lower, closer to the floor, than the driver's cab.
+    seat-height-locomotive: 0.85
+    seat-height-wagon: 0.3
+  
+  effects:
+    smoke: true      # chimney smoke
+    sounds: true     # chuffing, wheel clatter, brake screech
+    whistle: true    # departure whistle
+  
+  placement:
+    # Consume the item when placing a train; creative mode is not consumed.
+    consume-item: true
+    # Maximum trains at once across all worlds.
+    max-trains: 6
+  
+  misc:
+    # Model view range multiplier; about 2.2 makes it visible from far away.
+    view-range: 2.2
+    # Keep chunks under the train loaded so it keeps moving without nearby players.
+    # Disabling this is not recommended.
+    keep-chunks-loaded: true
+  
+  debug: false
+
+artillery:
+  # ============================================================
+  #  SvoArtillery - map-guided artillery emplacements
+  # ============================================================
+  # Do not edit config-version manually; it is used for automatic updates.
+  config-version: 5
+  
+  messages:
+    prefix: "&8[&6Belochka&8]&r "
+  
+  artillery:
+    # Ignored: the functional block is now always an invisible BARRIER.
+    block-material: BARRIER
+    # Number of salvos in the emplacement. Each salvo fires shells-per-shot rockets.
+    max-ammo: 3
+    # Cooldown between salvos in seconds.
+    cooldown-seconds: 120
+    # Visual 3D howitzer model (BlockDisplay): long 60-degree barrel, wheels, and trails.
+    model:
+      enabled: true
+      camo-material: SMOOTH_SANDSTONE     # sand camo: body, barrel, trails
+      barrel-material: SMOOTH_SANDSTONE   # barrel; WAXED_EXPOSED_COPPER gives darker sand
+      metal-material: POLISHED_DEEPSLATE  # steel: muzzle brake, axle, hubs
+      wheel-material: BLACK_CONCRETE      # rubber wheels
+  
+  # Emplacement durability: hits from hands/weapons before it breaks.
+  durability:
+    enabled: true
+    max-hits: 6
+  
+  targeting:
+    # Targeting mode:
+    #   CAMERA_ROOM - camera moves to a fixed map-room point.
+    #   MAP_IN_HAND - body stays at the gun, so the player can still be killed.
+    mode: CAMERA_ROOM
+  
+    # Map-room view point for CAMERA_ROOM.
+    # Set it in game by standing in position, looking at the map, then running /artillery setmaproom.
+    map-room:
+      world: ""
+      x: 0.0
+      y: 0.0
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+  
+    # Map id handed to the player for MAP_IN_HAND.
+    # Set in game by holding the marked map and running /artillery setmap.
+    map-id: -1
+  
+  ballistics:
+    # Range used to scale flight time and accuracy.
+    max-range: 1200
+    # Flight time: close target about 1 s (20 ticks), far target about 10 s (200 ticks).
+    min-flight-ticks: 20
+    max-flight-ticks: 200
+    # Salvo size: rockets fired by one /shoot.
+    shells-per-shot: 3
+    # 1/N chance that a rocket lands near a player standing in the target sector.
+    player-hit-one-in: 6
+    # How close to the player a rocket lands: close to gun / at max range, in blocks.
+    player-hit-min-radius: 6.0
+    player-hit-max-radius: 13.0
+  
+  # Battleship-style targeting grid: columns A.. along X, rows 1.. along Z.
+  # Row 1 = z-from (lower Z), final row = z-to (higher Z).
+  grid:
+    x-from: -1088
+    x-to: -65
+    z-from: -65
+    z-to: 960
+    columns: 8
+    rows: 8
+  
+  impact:
+    # Explosion power (TNT = 4.0). 12.0 makes a very large rocket crater.
+    explosion-power: 12.0
+    # Whether explosions break terrain blocks.
+    break-blocks: true
+    # Whether explosions set the area on fire.
+    set-fire: false
+  
+  effects:
+    particles: true
+    sounds: true
+    # Visible flying shell (glowing BlockDisplay) plus smoke trail.
+    shell:
+      enabled: true
+      material: MAGMA_BLOCK
+      glow: true
+  
+  # Player-facing texts. {sec}, {n}, and {cell} are placeholders.
+  texts:
+    cooling: "&cBarrel is still cooling! &e{sec}&c s left."
+    no-ammo: "&cThis emplacement is out of ammunition."
+    in-use: "&cThis emplacement is already used by another soldier."
+    not-aiming: "&cAim first: right-click the artillery emplacement."
+    no-maproom: "&cMap room is not configured. Admin: /artillery setmaproom"
+    exit-button: "&c&l[ X Exit Artillery ]"
+    exited: "&7You left aiming mode. No shell was spent."
+    ui-title: "&6&lARTILLERY \"BELOCHKA\""
+    salvo: "&aSalvo! &e{n}&a rockets at target &e{cell}&a."
+    bad-cell: "&cInvalid target. Format: &e/shoot <x> <z>&c, for example &e100 -200"
+    hit: "&eEmplacement damaged! Durability: &c{hp}&7/&c{max}"
+    destroyed: "&cArtillery emplacement destroyed!"
+
+# ---------------------------------------------------------------------------
+#  antiair - persistent fuel-powered anti-air turret.
+# ---------------------------------------------------------------------------
+antiair:
+  # ============================================================
+  #  AntiAirCraft configuration  (Anti-Air / Phalanx CIWS)
+  #  Distances in blocks, angles in degrees, time in ticks (20 = 1s).
+  #
+  #  The turret is placed like a block (invisible armor-stand core),
+  #  modelled after a naval CIWS: grey body, a white radar dome that
+  #  traverses (yaw), and a 6-barrel rotary cannon that elevates
+  #  (pitch). It works like a FURNACE: it only fires while it has
+  #  fuel (coal, wood, lava bucket, ...). Right-click it to open the
+  #  panel: choose a mode and load fuel.
+  #
+  #  It can ONLY be destroyed by explosion damage, calibrated so ONE
+  #  creeper blast at point blank = full HP.
+  # ============================================================
+  
+  targeting:
+    # How often (ticks) the turret re-scans for a target. Aiming + firing
+    # happen every tick; only the (more expensive) acquisition is throttled.
+    scan-interval-ticks: 5
+    # How fast the mount slews toward the target (degrees per tick) for yaw
+    # (traverse) and pitch (elevation). A CIWS is snappy.
+    slew-rate-deg: 22.0
+    # The turret only fires once it is aimed within this many degrees of the
+    # target (it must finish slewing onto the threat first).
+    aim-tolerance-deg: 7.0
+    # When idle (no target) the barrels relax to this elevation (degrees up).
+    rest-pitch-deg: 18.0
+    # Require line-of-sight (no solid blocks between muzzle and target) to fire.
+    require-line-of-sight: true
+  
+  weapons:
+    # Ticks between shots. 2 = 10 rounds/second: small bullets, very fast.
+    fire-interval-ticks: 2
+    # Bullets fired per shot event (a small burst). 1 = single rounds.
+    burst: 1
+    # Damage per bullet. Little bullets, but the rate does the work.
+    bullet-damage: 3.2
+    # Max travel distance of a bullet (>= the largest engagement range).
+    bullet-range: 45.0
+    # Ray thickness for hit detection (small = small bullets).
+    ray-size: 0.12
+    # Tracer particles drawn per bullet along its path (visual only).
+    tracer-density: 14
+    # Knockback applied to a hit player/mob along the bullet direction.
+    knockback: 0.18
+    # Vulcan spin-up: ticks the barrels must "wind up" after locking on before the
+    # first round leaves. Adds the classic CIWS spool-up beat (0 = instant fire).
+    spin-up-ticks: 8
+    heat:
+      # Heat added per round (0..1 scale). With fire-interval 2 (10 rounds/s) and
+      # 0.06/shot, the gun overheats after ~2.8 s of sustained fire, then locks.
+      per-shot: 0.06
+      # Heat shed every tick (always cooling). 0.012/tick ≈ full cool in ~4 s.
+      cool-per-tick: 0.012
+      # After an overheat lock, the gun stays locked until heat drops to this.
+      resume-threshold: 0.35
+  
+  svo:
+    # Battle Royale mode: targets PLAYERS. Engagement radius in blocks.
+    range: 30.0
+    # Accuracy falls off with distance. Bullet spread is a cone whose half-angle
+    # grows linearly from min (point blank) to max (at 'range'). Sampling is
+    # uniform-by-area, so the share of bullets that hit a player-sized target
+    # at the far edge ≈ (target angular area)/(cone area). max-spread 2.9° gives
+    # ~12 of 100 hits at 30 blocks; min-spread keeps point-blank near 100%.
+    min-spread-degrees: 0.3
+    max-spread-degrees: 2.9
+    # Don't shoot the player who placed the turret.
+    ignore-owner: true
+    # Don't shoot players in creative/spectator.
+    ignore-creative: true
+    # Bullet damage vs players is multiplied by this (other modes keep full damage).
+    # 1.0 = full 3.2/bullet, 0.5 = half (1.6). 0.75 = 2.4/bullet — between the old
+    # full damage and the halved value, so players are hit harder than the cut but
+    # not as brutally as before.
+    damage-multiplier: 0.75
+    # Anti-vehicle: if a target player is riding a TankCraft/JetCraft/AirshipCraft
+    # vehicle they're invulnerable inside it, so the turret fires ROCKETS at the
+    # vehicle instead of bullets. Each rocket is a creeper-power blast that the
+    # vehicle's own plugin counts as ≈1 creeper of HP damage. Once it breaks, the
+    # turret resumes fast bullets on the now-exposed player.
+    rocket-interval-ticks: 40   # one rocket per this many ticks (40 = one per 2 seconds)
+    rocket-power: 3.0           # blast power of each rocket (creeper = 3.0)
+    vehicle-tags:               # entity scoreboard tags that mark a ridable vehicle
+      - tankcraft_entity
+      - jetcraft_entity
+      - airshipcraft_entity
+  
+  normies:
+    # Survival mode: targets MOBS. Engagement radius in blocks. Larger vertically
+    # so it can reach phantoms circling overhead.
+    range: 40.0
+    # No distance-based spread for mobs (it's anti-mob, not anti-player); this is
+    # a tiny constant jitter so it doesn't look laser-perfect.
+    spread-degrees: 0.6
+  
+  fuel:
+    # Fuel is spent ONLY when the turret actually fires. A standby turret — no
+    # target, or tracking / spinning up / overheated / no line of sight — burns
+    # nothing. No shooting = no fuel used.
+    # Multiplier on vanilla burn times (how much burn ONE item yields).
+    # 1.0 = a piece of coal carries its full 80s worth of burn (≈ shots below).
+    burn-time-multiplier: 1.0
+    # How much burn each SHOT costs (burn-ticks per shot fired). With coal
+    # (1600 burn) and 3/shot that's ≈ 533 shots per coal. Raise = hungrier turret.
+    consume-per-shot: 3
+    # Drop leftover fuel when the turret is destroyed/removed.
+    drop-on-destroy: true
+  
+  durability:
+    # Damage one (non-charged) creeper blast deals at point blank.
+    # max-health is derived as creeper-damage * creepers-to-destroy.
+    creeper-damage: 50.0
+    # The turret is destroyed by this many point-blank creeper blasts.
+    creepers-to-destroy: 1.0
+    # Chip damage from a melee hit / an arrow (0 = only explosions can hurt it,
+    # as requested). Raise if you want it choppable by hand.
+    melee-damage: 0.0
+    arrow-damage: 0.0
+    # How far from the turret a blast still counts as a "contact" (full) hit.
+    contact-radius: 2.5
+  
+  limits:
+    # Anti-lag caps. A turret is ~50 display entities. 0 = unlimited. Admins
+    # bypass max-per-player. Counts only turrets in loaded chunks.
+    max-per-player: 6
+    max-loaded: 60
+  
+  placement:
+    # Consume one placer item when a turret is placed.
+    consume-item: true
+  
+  destruction:
+    # Drop a placer item when the turret is destroyed.
+    drop-item-on-destroy: true
+    # Fling a few model blocks as debris when destroyed.
+    debris: true
+  
+  performance:
+    # View-range MULTIPLIER for the model parts (1.0 = vanilla default).
+    view-range: 2.5
+    # Smooth a part's turn over this many ticks (client-side interpolation).
+    interpolation-ticks: 2
+    # Octagonal (rounder) radome/shroud using 45°-rotated duplicate cubes.
+    # false = lighter, more faceted turret on weak servers.
+    rounded: true
+  
+  # Blocks used for the model parts. Must be valid Bukkit block Material names.
+  # Defaults paint a grey CIWS with a white radar dome and dark gun barrels.
+  model:
+    base-block: GRAY_CONCRETE            # deck pedestal
+    housing-block: LIGHT_GRAY_CONCRETE   # traversing body
+    radome-block: WHITE_CONCRETE         # the iconic white radar dome
+    gunbody-block: GRAY_CONCRETE         # gun cradle / barrel shroud
+    barrel-block: POLISHED_BLACKSTONE    # the six barrels
+    muzzle-block: BLACKSTONE             # muzzle ring
+    detail-block: IRON_BLOCK             # trim / rivet bands
+  
+  debug: false
+
+tckbus:
+  placement:
+    consume-item: true
+    max-per-player: 0
+    max-loaded: 40
+    yaw-snap: false
+  model:
+    body: GREEN_TERRACOTTA
+    camo-light: WHITE_TERRACOTTA
+    camo-mid: MOSS_BLOCK
+    camo-black: BLACK_CONCRETE
+    glass: BLACK_STAINED_GLASS
+    wheel: BLACK_CONCRETE
+    trim: POLISHED_BLACKSTONE
+    chrome: IRON_BLOCK
+    light: GLOWSTONE
+    view-range: 3.0
+    rounded: true
+    camo: false
+    text:
+      enabled: true
+      content: "TCK"
+      color: "#FFFFFF"
+      scale: 1.6
+      yaw-offset: 0.0
+  durability:
+    creeper-damage: 50.0
+    creepers-to-destroy: 1.0
+    melee-damage: 10.0
+    arrow-damage: 0.0
+    contact-radius: 3.0
+    debris: true
+    drop-placer-on-destroy: false
+  workers:
+    type: PILLAGER
+    count: 2
+    name: "&2TCK Officer"
+    show-name: false
+    health: 30.0
+    hand-item: IRON_AXE
+    uniform:
+      helmet: IRON_HELMET
+      chestplate: LEATHER_CHESTPLATE
+      leggings: LEATHER_LEGGINGS
+      boots: LEATHER_BOOTS
+      color: "#3B3B23"
+    speed: 1.15
+    aggro-range: 14.0
+    leash-range: 22.0
+    wander-radius: 6.0
+    retarget-ticks: 8
+    activation-range: 40.0
+  snatch:
+    enabled: true
+    melee-range: 2.4
+    hit-cooldown-ticks: 30
+    hit-damage: 1.0
+    vehicle-hit-damage: 2.0
+    stun-ticks: 40
+    capture-radius: 4.0
+    required-workers: 2
+    ignore-creative: true
+    ignore-owner: false
+    escape-speed-ticks: 60
+    freeze-slowness-amplifier: 6
+    immunity-ticks: 40
+    warn-range: 16.0
+    warn-title: "&cDODGER, RUN!!!"
+    warn-cooldown-ticks: 100
+  capture:
+    pull-ticks: 30
+    death-message: "&7Player &f%player% &7was killed... or rather &4mobilized&7."
+    kill-player: true
+  skins:
+    default: tck
+    variants:
+      tck:
+        aliases: [default, standard, standart, tck]
+        display-name: "TCK"
+        bus-name: "TCK Bus"
+        item-name: "&a&lTCK Summons"
+        model:
+          body: GREEN_TERRACOTTA
+          camo-light: WHITE_TERRACOTTA
+          camo-mid: MOSS_BLOCK
+          camo-black: BLACK_CONCRETE
+          glass: BLACK_STAINED_GLASS
+          wheel: BLACK_CONCRETE
+          trim: POLISHED_BLACKSTONE
+          chrome: IRON_BLOCK
+          light: GLOWSTONE
+          text:
+            enabled: true
+            content: "TCK"
+            color: "#FFFFFF"
+        workers:
+          name: "&2TCK Officer"
+          singular: "TCK Officer"
+          plural: "TCK Officers"
+          uniform-color: "#3B3B23"
+      tzahal:
+        aliases: [tzahal, tsahal, zahal, idf]
+        display-name: "Tzahal"
+        bus-name: "Tzahal Bus"
+        item-name: "&7&lTzahal Summons"
+        model:
+          body: GRAY_TERRACOTTA
+          camo-light: LIGHT_GRAY_TERRACOTTA
+          camo-mid: GRAY_CONCRETE
+          camo-black: BLACK_CONCRETE
+          glass: BLACK_STAINED_GLASS
+          wheel: BLACK_CONCRETE
+          trim: POLISHED_BLACKSTONE
+          chrome: IRON_BLOCK
+          light: SEA_LANTERN
+          text:
+            enabled: true
+            content: "Tzahal"
+            color: "#E6E6E6"
+        workers:
+          name: "&7Mossadik"
+          singular: "Mossadik"
+          plural: "Mossadiks"
+          uniform-color: "#4A4F54"
+  debug: false
+
+# ---------------------------------------------------------------------------
+#  airstrike - coordinate or item-called TNT bombing run.
+# ---------------------------------------------------------------------------
+airstrike:
+  # ============================================================
+  #  AirstrikePlugin settings
+  #  A Su-57 fighter makes a bombing run over the target.
+  # ============================================================
+  
+  # How many TNT bombs are dropped in one airstrike.
+  tnt-count: 12
+  
+  # Horizontal bomb spread, in blocks.
+  tnt-spread: 8
+  
+  # Bomb carpet length along the flight path, in blocks. The carpet is centered on the target:
+  # the plane starts dropping length/2 blocks before the target and finishes length/2 blocks after it.
+  # 0 means all bombs land exactly on the target.
+  bomb-run-length: 50
+  
+  # TNT fuse ticks for dropped bombs. 20 ticks = 1 second.
+  tnt-fuse-ticks: 80
+  
+  # Plane altitude above the target, in blocks.
+  jet-altitude: 75
+  
+  # Flight speed in blocks/tick. 1 tick = 0.05 sec. Minimum 0.1.
+  jet-speed: 1.8
+  
+  # How far from the target the plane starts its run.
+  jet-start-distance: 220
+  
+  # How far beyond the target the plane flies before despawning.
+  jet-exit-distance: 100
+  
+  # Cooldown between strikes for one player, in seconds.
+  cooldown-seconds: 45
+  
+  # Maximum aiming distance in blocks, via ray trace.
+  max-target-distance: 150
+  
+  # Maximum active airstrikes across the whole server.
+  max-active-strikes: 5
+  
+  # Engine sound volume (0.0 - 10.0).
+  engine-sound-volume: 8.0
+  
+  # Particle trail density: 1 = every tick, 2 = every second tick, etc. Minimum 1.
+  trail-density: 1
+  
+  # Show a warning before impact in chat and title.
+  warning-enabled: true
+  
+  # Radius in which players receive the warning, in blocks.
+  warning-radius: 150
+  
+  # Warning text. Supports color codes with &.
+  warning-message: "&c&lAIRSTRIKE! &eTarget engaged! Take cover!"
+  
+  # Messages. Supports color codes with &.
+  messages:
+    no-permission: "&cYou do not have permission to use airstrikes!"
+    on-cooldown: "&eAirstrike recharging. Time left: &c{time}&e sec."
+    strike-called: "&aAirstrike called! Target: &e{x}, {y}, {z}"
+    item-given: "&aAirstrike beacon received. &eRight-click a surface to call a strike."
+    no-target: "&cNo target in sight! Look at a surface."
+    reloaded: "&aConfiguration reloaded."
+    already-active: "&cAn airstrike is already active at this location!"
+    too-many-active: "&cToo many active airstrikes. Wait a moment."
+    players-only: "&cOnly players can use this command."
+
+# ---------------------------------------------------------------------------
+#  nuke - original NukeStrike heavy bomber and nuclear blast.
+# ---------------------------------------------------------------------------
+nuke:
+  # ============================================================
+  #  NukeStrike settings
+  #  A bomber flies over the target and drops one nuclear bomb that slowly falls
+  #  onto the selected point, then creates a massive crater explosion.
+  # ============================================================
+  
+  # ----- Bomber carrier -----
+  # Altitude at which the plane passes over the target, in blocks above the point.
+  bomber-altitude: 90
+  # Plane speed in blocks/tick. 1 tick = 0.05 sec. Heavy means slow. Minimum 0.1.
+  bomber-speed: 1.0
+  # How far from the target the plane starts its run.
+  bomber-start-distance: 170
+  # How far beyond the target the plane flies before despawning.
+  bomber-exit-distance: 150
+  # Plane engine volume (0.0 - 12.0).
+  engine-sound-volume: 9.0
+  
+  # ----- Bomb fall -----
+  # Maximum bomb fall speed, in blocks/tick. Higher means faster fall.
+  bomb-fall-speed: 0.8
+  # Ticks until the bomb accelerates to max speed. 20 ticks = 1 second.
+  bomb-accel-ticks: 16
+  # At what descent fraction the bomb becomes fully vertical, nose down.
+  # 0.85 means the rotation is gradual and finishes closer to the ground. Lower = earlier.
+  bomb-vertical-at: 0.85
+  # Falling bomb whistle volume (0.0 - 12.0).
+  fall-sound-volume: 6.0
+  
+  # ----- Explosion: damage and blast zone -----
+  # Damage radius in blocks. 128 blocks = 8 chunks.
+  damage-radius: 128
+  # Maximum damage at the epicenter, in health points; 100 is guaranteed death. Ignores armor.
+  max-damage: 100.0
+  # Shockwave knockback at the epicenter.
+  max-knockback: 3.5
+  
+  # ----- Explosion: crater -----
+  # Crater radius in blocks. 64 = about a 128-block diameter.
+  # The shape is intentionally rough: torn edges, uneven bottom, thrown-up rim.
+  # Warning: larger values mean more terrain carving work.
+  crater-radius: 64
+  # Crater depth at the center, in blocks.
+  crater-depth: 24
+  # How many crater columns are processed per tick. Lower = smoother crater growth,
+  # higher = faster but heavier for the server.
+  crater-columns-per-tick: 700
+  
+  # ----- Player effects -----
+  # Radius in which players receive blindness, in blocks. Only very close players are blinded.
+  blindness-radius: 16
+  # Blindness duration, in seconds.
+  blindness-seconds: 10
+  # Radiation duration for survivors, in seconds.
+  radiation-seconds: 14
+  # Radiation damage per second, in health points; 1.0 = half a heart. Ignores armor.
+  radiation-damage: 1.0
+  
+  # ----- Falling warning -----
+  # Show a warning while the bomb is falling.
+  warning-enabled: true
+  # Radius in which players receive a falling-bomb warning, in blocks.
+  warning-radius: 200
+  # Center-screen text for players caught in the blast zone at detonation.
+  # A comma splits it into title and subtitle.
+  in-blast-title: "Do not rush, you are already there"
+  
+  # ----- General -----
+  # Cooldown between strikes for one player, in seconds.
+  cooldown-seconds: 120
+  # Maximum aiming distance in blocks, via ray trace.
+  max-target-distance: 160
+  # Maximum active nuclear strikes across the whole server.
+  max-active-strikes: 2
+  
+  # Messages. Supports color codes with &.
+  messages:
+    no-permission: "&cYou do not have permission to use nuclear strikes!"
+    on-cooldown: "&eNuclear strike recharging. Time left: &c{time}&e sec."
+    strike-called: "&2☢ &aNuclear strike called! Target: &e{x}, {y}, {z}"
+    item-given: "&aNuclear briefcase received. &eRight-click a surface to call a strike."
+    no-target: "&cNo target in sight! Look at a surface."
+    reloaded: "&aConfiguration reloaded."
+    already-active: "&cA nuclear strike is already active at this location!"
+    too-many-active: "&cToo many active nuclear strikes. Wait a moment."
+    players-only: "&cOnly players can use this command."
+    bad-coords: "&cInvalid coordinates. Usage: /nuke place <x> <y> <z> [world]"
+    unknown-world: "&cWorld not found: &e{world}"
+    place-called: "&2☢ &aNuclear strike assigned to coordinates: &e{x}, {y}, {z} &7({world})"
+
+warkit:
+  # ============================================================
+  #  WarKit - military gear for battle royale gameplay
+  #  Armor and attribute values apply to new items created after /warkit reload.
+  #  Already issued items keep their existing stats.
+  # ============================================================
+  
+  medkit:
+    # Bandaging time in seconds; interrupted by any non-periodic damage.
+    channel-seconds: 4.0
+    # Cooldown after use, in seconds.
+    cooldown-seconds: 20
+  
+  painkiller:
+    # Fraction of incoming damage removed. 0.25 = -25%.
+    damage-reduction: 0.25
+    # Effect duration, in seconds.
+    duration-seconds: 45
+    # Cooldown, in seconds. Longer than duration means it cannot be kept up permanently.
+    cooldown-seconds: 90
+  
+  vest:
+    armor: 8.0
+    toughness: 6.0
+    knockback-resistance: 0.2
+    # Walk speed penalty. 0.06 = -6%.
+    speed-penalty: 0.06
+    max-durability: 400
+  
+  kevlar:
+    armor: 3.0
+    toughness: 2.0
+    max-durability: 300
+  
+  exosuit:
+    armor: 4.0
+    toughness: 2.0
+    # Melee damage bonus in damage points. 4.0 = +2 hearts.
+    attack-bonus: 4.0
+    # Walk speed bonus. 0.15 = +15%.
+    speed-bonus: 0.15
+    # Jump strength bonus. 0.35 = +35%, enough to climb about 2 blocks.
+    jump-bonus: 0.35
+  
+  gas-mask:
+    armor: 1.0
+  
+  pads:
+    armor: 2.0
+    # Fraction of fall damage removed. 0.6 = -60%.
+    fall-damage-reduction: 0.6
+    # Additional safe fall distance, in blocks.
+    safe-fall-bonus: 2.0
+  
+  camo:
+    # Cooldown after camouflage is removed or broken, in seconds.
+    cooldown-seconds: 15
+  
+  visor:
+    # Player outline visibility between min and max blocks.
+    min-distance: 10
+    max-distance: 80
+  
+  marker:
+    # Marker duration, in seconds.
+    duration-seconds: 300
+  
+  ration:
+    cooldown-seconds: 2
+  
+  repair:
+    channel-seconds: 4.0
+    cooldown-seconds: 60
+    vehicle-health-fraction: 0.25
+    vehicle-min-health: 10.0
+  
+  # ============================================================
+  #  Combat weapons. Damage is in half-hearts (2 = one heart).
+  # ============================================================
+  weapons:
+    # Headshot damage multiplier for firearms.
+    headshot-multiplier: 1.5
+    # Multiplies rifle/pistol damage when a WarKit hitscan bullet strikes vehicle hitboxes.
+    vehicle-bullet-damage-multiplier: 0.35
+  
+    rifle:
+      damage: 4.0
+      range: 50.0
+      magazine: 30
+      reload-seconds: 2.5
+      fire-cooldown-ticks: 3
+      spread-degrees: 4.0
+  
+    pistol:
+      damage: 3.0
+      range: 30.0
+      magazine: 12
+      reload-seconds: 1.6
+      fire-cooldown-ticks: 5
+      spread-degrees: 3.2
+  
+    grenade-launcher:
+      explosion-power: 2.5
+      magazine: 4
+      reload-seconds: 3.0
+      fire-cooldown-ticks: 24      # longer cooldown between launches
+      speed: 0.9                   # lower speed means a higher arc
+      fuse-seconds: 1.5            # timed explosion, not impact-triggered
+      bounce-damping: 0.45         # velocity retained after ricochet
+  
+    patriot:
+      lock-range: 60.0
+      lock-cone-degrees: 12.0
+      explosion-power: 3.0
+      # Direct hull damage on a locked vehicle hit; the blast adds falloff damage around it.
+      vehicle-direct-damage: 35.0
+      speed: 0.75
+      turn-rate: 0.25
+      magazine: 8                  # only 8 rockets, reload impossible
+      cooldown-seconds: 10         # cooldown between launches
+  
+    frag-grenade:
+      fuse-seconds: 1.5
+      damage: 9.0
+      radius: 4.0
+      throw-speed: 1.3
+  
+    smoke-grenade:
+      duration-seconds: 12.0
+      radius: 6.0                  # denser and larger smoke screen
+      throw-speed: 1.2
+  
+    flash-grenade:
+      radius: 16.0
+      blind-seconds: 7            # blinds everyone looking toward the flash
+      throw-speed: 1.2
+  
+    impulse-grenade:
+      radius: 4.5
+      forward: 2.2
+      up: 1.0
+      no-fall-seconds: 8
+      throw-speed: 1.2
+      fuse-seconds: 0.7          # quick detonation; affects the owner too
+  
+    flamethrower:
+      range: 5.0
+      cone-degrees: 25.0
+      tick-damage: 1.0
+      fire-ticks: 60
+      fuel: 220                   # more charges
+      refuel-seconds: 0.0         # 0 = fuel does NOT regenerate
+      leave-fire: true            # leave real fire on ground and trees
+  
+    chemical:
+      range: 6.0
+      cone-degrees: 22.0
+      cloud-seconds: 8
+      radius: 3.0
+      fuel: 200                   # more charges
+      cost-per-spray: 10
+      refuel-seconds: 0.0         # 0 = reagent does NOT regenerate
+  
+    maxim:
+      damage: 5.0
+      range: 60.0
+      fire-cooldown-ticks: 2
+      spread-degrees: 3.5
+      overheat-shots: 80
+      overheat-cooldown-seconds: 6.0
+      aim-arc-degrees: 70          # +/-70 degree fire sector from mount direction; cannot fire backward
+      health: 20.0                 # mount durability; attacks damage it using attacker weapon damage
+  
+    barbed-wire:
+      radius: 1.6                  # radius around each segment
+      slow-amplifier: 4            # Slowness V: wire strongly holds enemies
+      tick-damage: 3.0             # damage once per second, in half-hearts
+      life-seconds: 120
+      max-per-player: 6           # wall limit per player
+      segments: 8                 # segments per wall
+      spacing: 1.0                # spacing between segments
+  
+    # --- Engineer/saboteur kit ---
+    trench-shovel:
+      dig-seconds: 3.0            # digging time
+      cooldown-seconds: 6
+  
+    molotov:
+      radius: 3.0                 # fire spread radius
+      fire-ticks: 100            # burn duration for ignited targets
+      throw-speed: 1.3
+  
+    suicide-vest:
+      radius: 6.0                 # living target damage radius
+      max-damage: 40.0           # epicenter damage
+      arm-range: 7.0             # a target must be inside this radius to detonate
+      explosion-power: 8.0       # explosion power for environmental damage
+      break-blocks: true         # whether the explosion breaks blocks
+  
+    firing-wall:
+      width: 3                   # wall width
+      height: 3                  # wall height, firing slit in the center
+  
+    tripwire:
+      max-width: 4               # max wire width across the passage
+      power: 1.0                 # trigger explosion power; damage is reduced by 3x
+      life-seconds: 300
+      max-per-player: 8
+  
+    c4:
+      power: 4.0                 # charge explosion power
+      break-blocks: true         # whether blocks are broken
+      max-per-player: 8
+      life-seconds: 300          # charge disappears if not detonated
+  
+    sleep-gas:
+      duration-seconds: 14       # cloud lifetime
+      radius: 4.5
+      immobilize-after-seconds: 4 # time in gas before immobilization
+      throw-speed: 1.2
+  
+    # --- Extra kit: mobility, recon, traps, automatic fire ---
+    grappling-hook:
+      range: 30.0                # hook range
+      pull-strength: 1.35        # pull strength toward the target point
+      up-boost: 0.45             # extra upward boost
+      cooldown-seconds: 2.5
+      no-fall-seconds: 6         # fall immunity after pull
+      charges: 12                # successful hooks before breaking
+  
+    jump-jet:
+      fuel: 30                   # fuel capacity
+      cost-per-burst: 3          # fuel cost per burst
+      refuel-seconds: 0.0        # 0 = fuel does NOT regenerate
+      up: 0.85                   # vertical thrust
+      forward: 0.35              # thrust along look direction
+      no-fall-seconds: 4
+  
+    combat-stim:
+      speed-amplifier: 1         # Speed II
+      jump-amplifier: 1          # Jump Boost II
+      regen-seconds: 5           # regeneration during buff
+      buff-seconds: 10           # buff duration
+      crash-seconds: 5           # crash after buff: weakness/slowness
+      cooldown-seconds: 25
+  
+    recon-scanner:
+      duration-seconds: 60       # active time; shows distance to the nearest player
+  
+    proximity-mine:
+      power: 4.0                 # explosion power, breaks surroundings
+      trigger-radius: 2.2        # trigger distance
+      arm-seconds: 1.5           # arming delay to protect placer
+      max-per-player: 6
+      break-blocks: true         # break nearby blocks
+      life-seconds: 300          # mine self-destructs if not triggered
+  
+    sentry-gun:
+      damage: 2.5                # damage per shot
+      range: 24.0
+      fire-cooldown-ticks: 10    # fire interval; 10 ticks = 0.5 sec
+      spread-degrees: 4.0
+      health: 18.0               # turret durability; attacks can break it
+      ammo: 40                   # ammo capacity
+      life-seconds: 90           # lifetime before self-destruction
+      max-per-player: 2
