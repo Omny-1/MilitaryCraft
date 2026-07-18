@@ -1,5 +1,6 @@
 package me.bibo.militarycraft.weapons.nuke;
 
+import me.bibo.militarycraft.core.airsupport.ChunkWindow;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Color;
@@ -80,7 +81,7 @@ public class NukeSequence extends BukkitRunnable {
     private final float headingCos;
     private final float headingSin;
 
-    private final Set<ChunkKey> forcedChunks = new HashSet<>();
+    private final ChunkWindow chunkWindow;
     private final DamageSource magic = DamageSource.builder(DamageType.MAGIC).build();
 
     private Phase phase = Phase.APPROACH;
@@ -107,6 +108,7 @@ public class NukeSequence extends BukkitRunnable {
 
     public NukeSequence(NukeManager manager, Location target, Location bomberStart, double dirX, double dirZ) {
         this.manager = manager;
+        this.chunkWindow = new ChunkWindow(manager.core().plugin());
         this.world = target.getWorld();
         this.target = target;
         this.bomberPos = bomberStart.clone();
@@ -667,41 +669,29 @@ public class NukeSequence extends BukkitRunnable {
     // ---------------------------------------------------------------- chunk management
 
     private void refreshForcedChunks() {
-        Set<ChunkKey> desired = new HashSet<>();
+        Set<Long> desired = new HashSet<>();
         if (bomberActive) {
             addChunkWindow(desired, bomberPos, BOMBER_CHUNK_RADIUS);
         }
         addChunkWindow(desired, target, TARGET_CHUNK_RADIUS);
-        for (ChunkKey key : desired) {
-            if (forcedChunks.add(key)) {
-                world.setChunkForceLoaded(key.cx(), key.cz(), true);
-            }
-        }
-        Iterator<ChunkKey> it = forcedChunks.iterator();
-        while (it.hasNext()) {
-            ChunkKey key = it.next();
-            if (!desired.contains(key)) {
-                world.setChunkForceLoaded(key.cx(), key.cz(), false);
-                it.remove();
-            }
-        }
+        // Refcounted plugin tickets (shared across all air-support sequences) instead of
+        // the global setChunkForceLoaded flag: concurrent strikes no longer unload each
+        // other's chunks, and admin/other-plugin force-load state is left untouched.
+        chunkWindow.updateChunks(world, desired);
     }
 
-    private void addChunkWindow(Set<ChunkKey> set, Location loc, int radius) {
+    private void addChunkWindow(Set<Long> set, Location loc, int radius) {
         int cx = loc.getBlockX() >> 4;
         int cz = loc.getBlockZ() >> 4;
         for (int dx = -radius; dx <= radius; dx++) {
             for (int dz = -radius; dz <= radius; dz++) {
-                set.add(new ChunkKey(cx + dx, cz + dz));
+                set.add(((long) (cx + dx) << 32) | ((cz + dz) & 0xffffffffL));
             }
         }
     }
 
     private void releaseChunks() {
-        for (ChunkKey key : forcedChunks) {
-            world.setChunkForceLoaded(key.cx(), key.cz(), false);
-        }
-        forcedChunks.clear();
+        chunkWindow.releaseAll();
     }
 
     // ---------------------------------------------------------------- teardown
@@ -749,7 +739,5 @@ public class NukeSequence extends BukkitRunnable {
         APPROACH, FALLING, AFTERMATH, DONE
     }
 
-    private record ChunkKey(int cx, int cz) {
-    }
 }
 

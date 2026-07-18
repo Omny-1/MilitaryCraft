@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+import me.bibo.militarycraft.core.airsupport.ChunkWindow;
 import me.bibo.militarycraft.weapons.airstrike.AirstrikeRuntime;
 import me.bibo.militarycraft.weapons.airstrike.model.Su57Model;
 
@@ -51,7 +52,7 @@ public class AirstrikeSequence extends BukkitRunnable {
     private final float headingCos;
     private final float headingSin;
 
-    private final Set<ChunkKey> forcedChunks = new HashSet<>();
+    private final ChunkWindow chunkWindow;
 
     private Su57Model model;
     private Phase phase = Phase.APPROACH;
@@ -61,6 +62,7 @@ public class AirstrikeSequence extends BukkitRunnable {
 
     public AirstrikeSequence(AirstrikeRuntime plugin, Location target, Location jetStart, double dirX, double dirZ) {
         this.plugin = plugin;
+        this.chunkWindow = new ChunkWindow(plugin.bukkitPlugin());
         this.world = target.getWorld();
         this.target = target;
         this.jetPos = jetStart.clone();
@@ -71,12 +73,13 @@ public class AirstrikeSequence extends BukkitRunnable {
         this.headingSin = (float) Math.sin(heading);
 
         var config = plugin.getConfig();
-        this.tntCount = Math.max(0, config.getInt("tnt-count", 12));
-        this.tntSpread = Math.max(0, config.getInt("tnt-spread", 8));
+        // hard upper caps so a bad/huge config cannot drop a server-killing TNT storm in one pass
+        this.tntCount = Math.min(200, Math.max(0, config.getInt("tnt-count", 12)));
+        this.tntSpread = Math.min(64, Math.max(0, config.getInt("tnt-spread", 8)));
         this.tntFuseTicks = Math.max(1, config.getInt("tnt-fuse-ticks", 80));
         this.jetSpeed = Math.max(0.1, config.getDouble("jet-speed", 1.8));
         this.engineVolume = (float) config.getDouble("engine-sound-volume", 8.0);
-        this.trailDensity = Math.max(1, config.getInt("trail-density", 1));
+        this.trailDensity = Math.min(10, Math.max(1, config.getInt("trail-density", 1)));
         this.exitDistance = Math.max(10, config.getInt("jet-exit-distance", 100));
         this.warningRadius = Math.max(0.0, config.getInt("warning-radius", 150));
         this.bombRunLength = Math.max(0.0, Math.min(150.0, config.getDouble("bomb-run-length", 50.0)));
@@ -230,41 +233,29 @@ public class AirstrikeSequence extends BukkitRunnable {
     // --- chunk management: keep only a small sliding window force-loaded ---
 
     private void refreshForcedChunks() {
-        Set<ChunkKey> desired = new HashSet<>();
+        Set<Long> desired = new HashSet<>();
         addChunkWindow(desired, jetPos, CHUNK_RADIUS);
         // Keep the target area loaded too, so falling bombs always tick down
         // and explode even when the jet has flown out of range.
         addChunkWindow(desired, target, TARGET_CHUNK_RADIUS);
-        for (ChunkKey key : desired) {
-            if (forcedChunks.add(key)) {
-                world.setChunkForceLoaded(key.cx(), key.cz(), true);
-            }
-        }
-        Iterator<ChunkKey> it = forcedChunks.iterator();
-        while (it.hasNext()) {
-            ChunkKey key = it.next();
-            if (!desired.contains(key)) {
-                world.setChunkForceLoaded(key.cx(), key.cz(), false);
-                it.remove();
-            }
-        }
+        // Refcounted plugin tickets (shared across all air-support sequences) instead of
+        // the global setChunkForceLoaded flag: two concurrent strikes no longer unload
+        // each other's chunks, and admin/other-plugin force-load state is left untouched.
+        chunkWindow.updateChunks(world, desired);
     }
 
-    private void addChunkWindow(Set<ChunkKey> set, Location loc, int radius) {
+    private void addChunkWindow(Set<Long> set, Location loc, int radius) {
         int cx = loc.getBlockX() >> 4;
         int cz = loc.getBlockZ() >> 4;
         for (int dx = -radius; dx <= radius; dx++) {
             for (int dz = -radius; dz <= radius; dz++) {
-                set.add(new ChunkKey(cx + dx, cz + dz));
+                set.add(((long) (cx + dx) << 32) | ((cz + dz) & 0xffffffffL));
             }
         }
     }
 
     private void releaseChunks() {
-        for (ChunkKey key : forcedChunks) {
-            world.setChunkForceLoaded(key.cx(), key.cz(), false);
-        }
-        forcedChunks.clear();
+        chunkWindow.releaseAll();
     }
 
     /** Normal end of the pass: dramatic finish, then tear down. */
@@ -306,6 +297,4 @@ public class AirstrikeSequence extends BukkitRunnable {
         APPROACH, BOMBING, EXIT, DONE
     }
 
-    private record ChunkKey(int cx, int cz) {
-    }
 }

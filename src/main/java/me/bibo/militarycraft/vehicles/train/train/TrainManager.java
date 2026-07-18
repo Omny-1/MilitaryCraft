@@ -32,6 +32,8 @@ public final class TrainManager {
     private final TrainRuntime plugin;
     private final Map<UUID, Train> trains = new LinkedHashMap<>();
     private final Map<UUID, Long> fallProtectedUntil = new HashMap<>();
+    /** Trains whose tick has thrown; used to log each fault once instead of 20x/sec. */
+    private final java.util.Set<UUID> loggedTickFailures = new java.util.HashSet<>();
     private BukkitTask task;
 
     public TrainManager(TrainRuntime plugin) {
@@ -56,7 +58,19 @@ public final class TrainManager {
         }
         for (Iterator<Train> it = new ArrayList<>(trains.values()).iterator(); it.hasNext(); ) {
             Train t = it.next();
-            t.tick();
+            try {
+                t.tick();
+            } catch (Exception ex) {
+                // Isolate a faulting train: without this, one bad object's exception
+                // cancels the single shared tick task and freezes EVERY train on the
+                // server. Log once per train instead of 20x/sec, keep the loop alive.
+                if (loggedTickFailures.add(t.id())) {
+                    plugin.bukkitPlugin().getLogger().log(java.util.logging.Level.WARNING,
+                            "Train " + t.id() + " tick failed; isolating it so other trains keep running", ex);
+                }
+                continue;
+            }
+            loggedTickFailures.remove(t.id());
             if (t.isRemoved()) {
                 trains.remove(t.id());
             }

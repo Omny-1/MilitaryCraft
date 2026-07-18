@@ -48,7 +48,27 @@ public final class ChunkWindow {
                 }
             }
         }
+        applyWanted(wanted);
+    }
 
+    /**
+     * Update the window to exactly the given chunks (each key packed as
+     * {@code (long) chunkX << 32 | (chunkZ & 0xffffffffL)}), reference-counted exactly
+     * like {@link #update}. Lets a caller with a non-square desired set — e.g. two
+     * different radii around a bomber and its target — still share the global,
+     * cross-instance ticket refcount instead of stomping global force-load state.
+     */
+    public void updateChunks(World world, Set<Long> chunkKeys) {
+        Set<Key> wanted = new LinkedHashSet<>();
+        if (world != null && chunkKeys != null) {
+            for (long packed : chunkKeys) {
+                wanted.add(new Key(world, plugin, (int) (packed >> 32), (int) packed));
+            }
+        }
+        applyWanted(wanted);
+    }
+
+    private void applyWanted(Set<Key> wanted) {
         loaded.removeIf(key -> {
             if (wanted.contains(key)) {
                 return false;
