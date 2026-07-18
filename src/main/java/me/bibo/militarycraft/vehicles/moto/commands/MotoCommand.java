@@ -156,7 +156,7 @@ public final class MotoCommand implements TabExecutor {
             }
             yaw = parsedYaw;
         }
-        Location at = new Location(world, x, y, z);
+        Location at = me.bibo.militarycraft.core.util.CommandCoords.safeLocation(world, x, y, z);
         if (createValidated(sender, player, at, yaw, withSidecar)) {
             msg(sender, "&7Coordinates: " + format(x, y, z) + " (" + world.getName() + ").");
         }

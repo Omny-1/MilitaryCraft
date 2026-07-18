@@ -132,7 +132,7 @@ public final class JetCommand implements CommandExecutor, TabCompleter {
         } else {
             world = Bukkit.getWorlds().get(0);
         }
-        Location at = new Location(world, x, y, z);
+        Location at = me.bibo.militarycraft.core.util.CommandCoords.safeLocation(world, x, y, z);
         at.getChunk().load();
         float yaw = p != null ? p.getLocation().getYaw() : 0f;
         plugin.jets().create(at, yaw);

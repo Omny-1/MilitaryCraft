@@ -199,7 +199,7 @@ public final class TckBusCommands implements CommandExecutor, TabCompleter {
                     + " §7(skins: " + String.join(", ", plugin.config().skinSuggestions()) + ")");
             return;
         }
-        Location at = new Location(world, x, y, z);
+        Location at = me.bibo.militarycraft.core.util.CommandCoords.safeLocation(world, x, y, z);
         at.getChunk().load();
         double baseYaw = p != null ? p.getLocation().getYaw() : 0.0;
         double yaw = plugin.config().yawSnap ? Math.round(baseYaw / 90.0) * 90.0 : baseYaw;
