@@ -34,6 +34,12 @@
 - ✅ **Убран мёртвый reader `PilotProtection`** (writer удалён со старым фреймворком, маркеры никто не пишет) — код не врёт про crash-recovery. [DELTA-TECH-004]
 - ✅ **Пересобран deployable JAR** из HEAD (содержит CommandCoords/ChunkTickets). [DELTA-REL-001]
 
+**Проход 4 — робастность под нагрузкой (автономно, всё проверено сборкой 50/50):**
+- ✅ **TCK: кламп PDC-счётчиков** worker/defeated при регидрации — битый/подделанный `STATE_WORKERS` не заспавнит entity-storm. [MC-CONFIG-001]
+- ✅ **Правдивый `/mc reload`** — `ModuleManager.reloadAll` возвращает список упавших модулей, команда пишет «reloaded with errors in X» вместо всегда-успеха. [MC-LIFE-001]
+- ✅ **`/give` роняет предмет** при полном инвентаре вместо тихой потери (5 команд).
+- ✅ **`core.util.Bounds`** (NaN-safe кламп) + капы на AntiAir bullet/svo/normies range и tracer-density — кривой конфиг не скормит огромный/NaN-радиус в `getNearbyEntities` (стоп main-thread) и не устроит particle-storm. [MC-CONFIG-001, точечно]
+
 **Из delta-ревью НЕ взято (осознанно, продуктовый слой / нужен тест-сервер / паритет):**
 - ⏭ Clock rollback semantics (DELTA-TECH-008) — реально, но диффузно (68 `currentTimeMillis`) и низкочастотно; точечно позже.
 - 🎨 Весь визуал/аудио/UX (DELTA-VIS/AUDIO/UX): resource-pack contract, namespaced-модели placer'ов + коллизии CMD, equipment-силуэты, fullbright корпусов, sound-манифест, `PlayerHudCoordinator` (арбитраж 209 actionbar), IFF-панели, stateful-модели оружия, туториал управления. Это отдельная **продуктовая фаза** (арт + решение required/optional-pack), а не слепые правки кода; часть меняет визуал = паритет.
