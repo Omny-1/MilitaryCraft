@@ -38,7 +38,7 @@
 - ✅ **TCK: кламп PDC-счётчиков** worker/defeated при регидрации — битый/подделанный `STATE_WORKERS` не заспавнит entity-storm. [MC-CONFIG-001]
 - ✅ **Правдивый `/mc reload`** — `ModuleManager.reloadAll` возвращает список упавших модулей, команда пишет «reloaded with errors in X» вместо всегда-успеха. [MC-LIFE-001]
 - ✅ **`/give` роняет предмет** при полном инвентаре вместо тихой потери (5 команд).
-- ✅ **`core.util.Bounds`** (NaN-safe кламп) + капы на AntiAir bullet/svo/normies range и tracer-density — кривой конфиг не скормит огромный/NaN-радиус в `getNearbyEntities` (стоп main-thread) и не устроит particle-storm. [MC-CONFIG-001, точечно]
+- ✅ **`core.util.Bounds`** (NaN-safe кламп) на всех amplification-опасных модулях: AntiAir (bullet/svo/normies range, tracer-density) + **все 19 range/radius WarKit-оружия** (гранаты/спреи/деплойблы/пушки). Кривой/NaN-конфиг не скормит огромный радиус в `getNearbyEntities` (стоп main-thread) и не устроит particle/entity-storm. [MC-CONFIG-001]
 
 **Из delta-ревью НЕ взято (осознанно, продуктовый слой / нужен тест-сервер / паритет):**
 - ⏭ Clock rollback semantics (DELTA-TECH-008) — реально, но диффузно (68 `currentTimeMillis`) и низкочастотно; точечно позже.
