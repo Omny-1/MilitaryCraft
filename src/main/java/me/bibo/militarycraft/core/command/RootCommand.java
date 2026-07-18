@@ -78,8 +78,13 @@ public final class RootCommand implements TabExecutor {
             deny(sender);
             return;
         }
-        plugin.reloadAll();
-        Text.msg(sender, "&aConfiguration and modules reloaded.");
+        java.util.List<String> failed = plugin.reloadAll();
+        if (failed.isEmpty()) {
+            Text.msg(sender, "&aConfiguration and modules reloaded.");
+        } else {
+            Text.msg(sender, "&eReloaded, but these modules reported errors: &f"
+                    + String.join(", ", failed) + " &7(see console for details).");
+        }
     }
 
     private void modules(CommandSender sender) {

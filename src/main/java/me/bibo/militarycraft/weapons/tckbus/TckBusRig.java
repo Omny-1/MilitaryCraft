@@ -162,8 +162,12 @@ public final class TckBusRig {
             }
         }
         // Older buses predate these TckBusKeys — fall back to the configured count / 0 defeated.
-        b.workerCount = pdc.getOrDefault(TckBusKeys.STATE_WORKERS, PersistentDataType.INTEGER, cfg.workerCount);
-        b.defeated = pdc.getOrDefault(TckBusKeys.STATE_DEFEATED, PersistentDataType.INTEGER, 0);
+        // Clamp PDC-restored counts: a corrupt/tampered STATE_WORKERS must not spawn an entity
+        // storm. Workers can't exceed the configured max; defeated can't exceed workers.
+        b.workerCount = Math.max(0, Math.min(cfg.workerCount,
+                pdc.getOrDefault(TckBusKeys.STATE_WORKERS, PersistentDataType.INTEGER, cfg.workerCount)));
+        b.defeated = Math.max(0, Math.min(b.workerCount,
+                pdc.getOrDefault(TckBusKeys.STATE_DEFEATED, PersistentDataType.INTEGER, 0)));
 
         // model displays: adopt if the set matches exactly, else rebuild from scratch
         boolean complete = allParts.size() == parts.size() && partByIndex.size() == parts.size();

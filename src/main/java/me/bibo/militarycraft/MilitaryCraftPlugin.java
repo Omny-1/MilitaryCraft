@@ -96,10 +96,10 @@ public final class MilitaryCraftPlugin extends JavaPlugin {
     }
 
     /** `/mc reload`: reload config.yml and push a fresh settings snapshot to every live module. */
-    public void reloadAll() {
+    public java.util.List<String> reloadAll() {
         reloadConfig();
         core.refreshConfig();
-        moduleManager.reloadAll(core);
+        return moduleManager.reloadAll(core);
     }
 
     public Core core() {

@@ -3,6 +3,7 @@ package me.bibo.militarycraft.core.module;
 import me.bibo.militarycraft.core.Core;
 import org.bukkit.plugin.Plugin;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -51,24 +52,33 @@ public final class ModuleManager {
         }
     }
 
-    public void reloadAll(Core core) {
+    /** @return module ids that failed to reach their desired state (so a caller can report a truthful result). */
+    public List<String> reloadAll(Core core) {
+        List<String> failures = new ArrayList<>();
         for (MilitaryModule module : modules) {
             boolean configured = isEnabled(module.id());
             boolean running = active.contains(module.id());
             if (configured && !running) {
                 enable(module, core);
+                if (!active.contains(module.id())) {
+                    failures.add(module.id());
+                }
             } else if (!configured && running) {
                 if (disable(module)) {
                     active.remove(module.id());
+                } else {
+                    failures.add(module.id());
                 }
             } else if (running) {
                 try {
                     module.reload(core);
                 } catch (RuntimeException ex) {
                     plugin.getLogger().log(Level.SEVERE, "Could not reload module: " + module.id(), ex);
+                    failures.add(module.id());
                 }
             }
         }
+        return failures;
     }
 
     private void enable(MilitaryModule module, Core core) {
