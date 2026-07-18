@@ -49,7 +49,8 @@ final class CommandMenu implements Listener {
     private final MilitaryCraftPlugin plugin;
     private final RootCommand root;
     private final Map<UUID, PendingPrompt> prompts = new ConcurrentHashMap<>();
-    private final Set<UUID> pendingRuns = ConcurrentHashMap.newKeySet();
+    /** Last menu-action time per player — a self-healing debounce (never sticks, unlike a Set guard). */
+    private final Map<UUID, Long> lastRun = new ConcurrentHashMap<>();
 
     CommandMenu(MilitaryCraftPlugin plugin, RootCommand root) {
         this.plugin = plugin;
@@ -200,6 +201,7 @@ final class CommandMenu implements Listener {
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         prompts.remove(event.getPlayer().getUniqueId());
+        lastRun.remove(event.getPlayer().getUniqueId());
     }
 
     private void reopenAction(Player player, String module, String subName, ActionSpec spec, String[] values) {
@@ -310,19 +312,31 @@ final class CommandMenu implements Listener {
     }
 
     private void runAfterClick(Player player, Runnable action) {
+        // Debounce rapid double-clicks with a time window instead of a Set guard: a Set entry
+        // that never gets cleared (e.g. if the deferred task failed to schedule) would silently
+        // swallow EVERY future action for that player. A timestamp always heals itself.
         UUID playerId = player.getUniqueId();
-        if (!pendingRuns.add(playerId)) {
+        long now = System.currentTimeMillis();
+        Long last = lastRun.get(playerId);
+        if (last != null && now - last < 250L) {
             return;
         }
+        lastRun.put(playerId, now);
+        // Defer past the current InventoryClickEvent (closing an inventory mid-click is unsafe),
+        // then run the action and SURFACE any failure to the player + console instead of letting
+        // it vanish into the scheduler log — a menu button that silently does nothing is the worst UX.
         Bukkit.getScheduler().runTask(plugin, () -> {
+            if (!player.isOnline()) {
+                return;
+            }
+            player.closeInventory();
             try {
-                if (!player.isOnline()) {
-                    return;
-                }
-                player.closeInventory();
                 action.run();
-            } finally {
-                pendingRuns.remove(playerId);
+            } catch (Exception ex) {
+                Text.msg(player, "&cThat menu action failed: &f" + ex.getClass().getSimpleName()
+                        + (ex.getMessage() == null ? "" : " (" + ex.getMessage() + ")"));
+                plugin.getLogger().log(java.util.logging.Level.WARNING,
+                        "MilitaryCraft menu action failed for " + player.getName(), ex);
             }
         });
     }
