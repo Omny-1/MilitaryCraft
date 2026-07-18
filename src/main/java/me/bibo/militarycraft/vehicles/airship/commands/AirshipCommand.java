@@ -79,7 +79,8 @@ public final class AirshipCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage(Component.text("Console usage: /airship give <player>", NamedTextColor.RED));
             return;
         }
-        target.getInventory().addItem(AirshipItem.create(plugin));
+        target.getInventory().addItem(AirshipItem.create(plugin)).values()
+                .forEach(it -> target.getWorld().dropItemNaturally(target.getLocation(), it));
         target.sendMessage(Component.text("Airship item given. Right-click ground to place it.",
                 NamedTextColor.GREEN));
     }

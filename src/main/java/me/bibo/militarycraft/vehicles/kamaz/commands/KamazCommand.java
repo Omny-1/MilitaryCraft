@@ -66,7 +66,8 @@ public final class KamazCommand implements TabExecutor {
             msg(sender, "&cSpecify a player: /kamaz give <player>");
             return;
         }
-        target.getInventory().addItem(TruckItem.create(plugin));
+        var leftovers = target.getInventory().addItem(TruckItem.create(plugin));
+        leftovers.values().forEach(it -> target.getWorld().dropItemNaturally(target.getLocation(), it));
         msg(sender, "&aGave the Kamaz Pushinka item to &f" + target.getName());
     }
 

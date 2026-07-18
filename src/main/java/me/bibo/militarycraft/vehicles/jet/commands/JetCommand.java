@@ -79,7 +79,8 @@ public final class JetCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage(Component.text("Console usage: /jet give <player>", NamedTextColor.RED));
             return;
         }
-        target.getInventory().addItem(JetItem.create(plugin));
+        target.getInventory().addItem(JetItem.create(plugin)).values()
+                .forEach(it -> target.getWorld().dropItemNaturally(target.getLocation(), it));
         target.sendMessage(Component.text("Su-30 Fighter item given. Right-click ground to place it.",
                 NamedTextColor.GREEN));
     }

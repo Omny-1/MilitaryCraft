@@ -79,7 +79,8 @@ public final class HelicopterCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage(Component.text("Console usage: /helicopter give <player>", NamedTextColor.RED));
             return;
         }
-        target.getInventory().addItem(HelicopterItem.create(plugin));
+        target.getInventory().addItem(HelicopterItem.create(plugin)).values()
+                .forEach(it -> target.getWorld().dropItemNaturally(target.getLocation(), it));
         target.sendMessage(Component.text("Helicopter item given. Right-click ground to place it.",
                 NamedTextColor.GREEN));
     }

@@ -100,7 +100,8 @@ public final class DroneCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage(Component.text("Console usage: /bpla give <player>", NamedTextColor.RED));
             return;
         }
-        target.getInventory().addItem(DroneItem.create(plugin));
+        target.getInventory().addItem(DroneItem.create(plugin)).values()
+                .forEach(it -> target.getWorld().dropItemNaturally(target.getLocation(), it));
         target.sendMessage(Component.text("UAV item given. Right-click ground to launch it.",
                 NamedTextColor.GREEN));
     }
