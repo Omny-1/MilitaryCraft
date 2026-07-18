@@ -127,7 +127,11 @@ public final class KamazCommand implements TabExecutor {
         } else {
             world = Bukkit.getWorlds().get(0);
         }
-        Location at = me.bibo.militarycraft.core.util.CommandCoords.safeLocation(world, x, y, z);
+        Location at = me.bibo.militarycraft.core.util.CommandCoords.resolve(world, x, y, z);
+        if (at == null) {
+            msg(sender, "&cCan't place there: invalid coordinates, outside the world border, or an ungenerated chunk. Move closer.");
+            return;
+        }
         at.getChunk().load();
         double yaw = p != null ? p.getLocation().getYaw() : 0.0;
         plugin.trucks().create(at, yaw, p != null ? p.getUniqueId() : null);

@@ -434,12 +434,12 @@ public final class Train implements VehicleHandle {
 
         for (Long key : needed) {
             if (tickets.add(key)) {
-                world.addPluginChunkTicket((int) (key >> 32), key.intValue(), plugin.bukkitPlugin());
+                me.bibo.militarycraft.core.util.ChunkTickets.acquire(world, plugin.bukkitPlugin(), (int) (key >> 32), key.intValue());
             }
         }
         tickets.removeIf(key -> {
             if (!needed.contains(key)) {
-                world.removePluginChunkTicket((int) (key >> 32), key.intValue(), plugin.bukkitPlugin());
+                me.bibo.militarycraft.core.util.ChunkTickets.release(world, plugin.bukkitPlugin(), (int) (key >> 32), key.intValue());
                 return true;
             }
             return false;
@@ -497,7 +497,7 @@ public final class Train implements VehicleHandle {
             car.remove();
         }
         for (Long key : tickets) {
-            world.removePluginChunkTicket((int) (key >> 32), key.intValue(), plugin.bukkitPlugin());
+            me.bibo.militarycraft.core.util.ChunkTickets.release(world, plugin.bukkitPlugin(), (int) (key >> 32), key.intValue());
         }
         tickets.clear();
     }

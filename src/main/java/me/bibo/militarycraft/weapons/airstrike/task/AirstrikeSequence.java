@@ -73,13 +73,17 @@ public class AirstrikeSequence extends BukkitRunnable {
         this.headingSin = (float) Math.sin(heading);
 
         var config = plugin.getConfig();
-        // hard upper caps so a bad/huge config cannot drop a server-killing TNT storm in one pass
+        // Hard caps so a bad/huge config cannot drop a server-killing TNT storm in one pass.
+        // jet-speed is bounded too: at unbounded speed the jet crosses the whole bomb run in a
+        // single tick and drops every bomb at once; capping it spreads the drops across ticks.
         this.tntCount = Math.min(200, Math.max(0, config.getInt("tnt-count", 12)));
         this.tntSpread = Math.min(64, Math.max(0, config.getInt("tnt-spread", 8)));
         this.tntFuseTicks = Math.max(1, config.getInt("tnt-fuse-ticks", 80));
-        this.jetSpeed = Math.max(0.1, config.getDouble("jet-speed", 1.8));
+        this.jetSpeed = Math.max(0.1, Math.min(10.0, config.getDouble("jet-speed", 1.8)));
         this.engineVolume = (float) config.getDouble("engine-sound-volume", 8.0);
-        this.trailDensity = Math.min(10, Math.max(1, config.getInt("trail-density", 1)));
+        // trail-density is an INTERVAL (emit every N ticks): only a lower bound. An upper cap
+        // would perversely RAISE the particle rate for a config that meant "emit rarely".
+        this.trailDensity = Math.max(1, config.getInt("trail-density", 1));
         this.exitDistance = Math.max(10, config.getInt("jet-exit-distance", 100));
         this.warningRadius = Math.max(0.0, config.getInt("warning-radius", 150));
         this.bombRunLength = Math.max(0.0, Math.min(150.0, config.getDouble("bomb-run-length", 50.0)));

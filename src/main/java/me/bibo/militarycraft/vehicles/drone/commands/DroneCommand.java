@@ -153,7 +153,13 @@ public final class DroneCommand implements CommandExecutor, TabCompleter {
         } else {
             world = Bukkit.getWorlds().get(0);
         }
-        Location at = me.bibo.militarycraft.core.util.CommandCoords.safeLocation(world, x, y, z);
+        Location at = me.bibo.militarycraft.core.util.CommandCoords.resolve(world, x, y, z);
+        if (at == null) {
+            sender.sendMessage(Component.text(
+                    "Can't place there: invalid coordinates, outside the world border, or an ungenerated chunk. Move closer.",
+                    NamedTextColor.RED));
+            return;
+        }
         at.getChunk().load();
         float yaw = p != null ? p.getLocation().getYaw() : 0f;
         plugin.drones().create(at, yaw);

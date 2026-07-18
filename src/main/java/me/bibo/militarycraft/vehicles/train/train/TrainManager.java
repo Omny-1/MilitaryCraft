@@ -32,8 +32,9 @@ public final class TrainManager {
     private final TrainRuntime plugin;
     private final Map<UUID, Train> trains = new LinkedHashMap<>();
     private final Map<UUID, Long> fallProtectedUntil = new HashMap<>();
-    /** Trains whose tick has thrown; used to log each fault once instead of 20x/sec. */
-    private final java.util.Set<UUID> loggedTickFailures = new java.util.HashSet<>();
+    /** Per-train consecutive tick-failure count; a persistently poison train is quarantined. */
+    private final java.util.Map<UUID, Integer> tickFailures = new java.util.HashMap<>();
+    private static final int MAX_TICK_FAILURES = 3;
     private BukkitTask task;
 
     public TrainManager(TrainRuntime plugin) {
@@ -61,16 +62,28 @@ public final class TrainManager {
             try {
                 t.tick();
             } catch (Exception ex) {
-                // Isolate a faulting train: without this, one bad object's exception
-                // cancels the single shared tick task and freezes EVERY train on the
-                // server. Log once per train instead of 20x/sec, keep the loop alive.
-                if (loggedTickFailures.add(t.id())) {
+                // Isolate a faulting train so one bad object cannot cancel the shared tick
+                // task and freeze EVERY train. Tolerate a couple of transient failures, but
+                // QUARANTINE a persistently poison train — otherwise it throws 20x/sec
+                // forever, silently, while holding tickets/displays and a maxTrains slot.
+                int fails = tickFailures.merge(t.id(), 1, Integer::sum);
+                if (fails == 1 || fails == MAX_TICK_FAILURES) {
                     plugin.bukkitPlugin().getLogger().log(java.util.logging.Level.WARNING,
-                            "Train " + t.id() + " tick failed; isolating it so other trains keep running", ex);
+                            "Train " + t.id() + " tick failed (" + fails + "/" + MAX_TICK_FAILURES + ")", ex);
+                }
+                if (fails >= MAX_TICK_FAILURES) {
+                    try {
+                        t.remove();
+                    } catch (Exception cleanup) {
+                        plugin.bukkitPlugin().getLogger().log(java.util.logging.Level.WARNING,
+                                "Cleanup of poison train " + t.id() + " also failed", cleanup);
+                    }
+                    trains.remove(t.id());
+                    tickFailures.remove(t.id());
                 }
                 continue;
             }
-            loggedTickFailures.remove(t.id());
+            tickFailures.remove(t.id());
             if (t.isRemoved()) {
                 trains.remove(t.id());
             }

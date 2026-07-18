@@ -199,7 +199,11 @@ public final class TckBusCommands implements CommandExecutor, TabCompleter {
                     + " §7(skins: " + String.join(", ", plugin.config().skinSuggestions()) + ")");
             return;
         }
-        Location at = me.bibo.militarycraft.core.util.CommandCoords.safeLocation(world, x, y, z);
+        Location at = me.bibo.militarycraft.core.util.CommandCoords.resolve(world, x, y, z);
+        if (at == null) {
+            msg(sender, "§cCan't place there: invalid coordinates, outside the world border, or an ungenerated chunk. Move closer.");
+            return;
+        }
         at.getChunk().load();
         double baseYaw = p != null ? p.getLocation().getYaw() : 0.0;
         double yaw = plugin.config().yawSnap ? Math.round(baseYaw / 90.0) * 90.0 : baseYaw;

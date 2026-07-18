@@ -5,23 +5,21 @@ import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.World;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import me.bibo.militarycraft.core.util.ChunkTickets;
+
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import java.util.logging.Level;
 
 /**
- * Owns the small moving set of plugin chunk tickets used by temporary air support
- * sequences. Tickets are reference-counted across all ChunkWindow instances so two
- * active strikes cannot accidentally unload each other's chunks.
+ * A moving set of plugin chunk tickets for a temporary air-support sequence (a strike's
+ * jet + target window). Ticket ownership is reference-counted through {@link ChunkTickets}
+ * — shared with the Drone and Train, which pin the same kind of ticket — so overlapping
+ * users never unload each other's chunks. This class adds the sequence-specific sliding
+ * window + a synchronous load so falling ordnance always ticks.
  */
 public final class ChunkWindow {
-
-    private static final Map<Key, Reference> REFERENCES = new HashMap<>();
 
     private final Plugin plugin;
     private final Set<Key> loaded = new LinkedHashSet<>();
@@ -91,42 +89,16 @@ public final class ChunkWindow {
     }
 
     private void acquire(Key key) {
-        synchronized (REFERENCES) {
-            Reference existing = REFERENCES.get(key);
-            if (existing != null) {
-                existing.count++;
-                return;
-            }
-            boolean ticketOwned = key.world().addPluginChunkTicket(key.x(), key.z(), plugin);
-            Chunk chunk = key.world().getChunkAt(key.x(), key.z());
-            if (!chunk.isLoaded()) {
-                chunk.load();
-            }
-            REFERENCES.put(key, new Reference(key.world(), plugin, ticketOwned));
+        // Shared refcount so Drone/Train/Airstrike/Nuke can all pin the same chunk safely.
+        ChunkTickets.acquire(key.world(), plugin, key.x(), key.z());
+        Chunk chunk = key.world().getChunkAt(key.x(), key.z());
+        if (!chunk.isLoaded()) {
+            chunk.load();
         }
     }
 
     private void release(Key key) {
-        synchronized (REFERENCES) {
-            Reference reference = REFERENCES.get(key);
-            if (reference == null) {
-                return;
-            }
-            reference.count--;
-            if (reference.count > 0) {
-                return;
-            }
-            REFERENCES.remove(key);
-            if (reference.ticketOwned) {
-                try {
-                    reference.world.removePluginChunkTicket(key.x(), key.z(), reference.plugin);
-                } catch (IllegalArgumentException exception) {
-                    reference.plugin.getLogger().log(Level.WARNING,
-                            "Could not release air support chunk ticket at "
-                                    + key.x() + "," + key.z() + " in " + reference.world.getName(), exception);
-                }
-            }
-        }
+        ChunkTickets.release(key.world(), plugin, key.x(), key.z());
     }
 
     private record Key(UUID worldId, String pluginName, World world, int x, int z) {
@@ -153,19 +125,6 @@ public final class ChunkWindow {
         @Override
         public int hashCode() {
             return Objects.hash(worldId, pluginName, x, z);
-        }
-    }
-
-    private static final class Reference {
-        private final World world;
-        private final Plugin plugin;
-        private final boolean ticketOwned;
-        private int count = 1;
-
-        private Reference(World world, Plugin plugin, boolean ticketOwned) {
-            this.world = world;
-            this.plugin = plugin;
-            this.ticketOwned = ticketOwned;
         }
     }
 }

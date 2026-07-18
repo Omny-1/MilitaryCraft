@@ -14,6 +14,8 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
@@ -39,6 +41,9 @@ public final class CameraServiceImpl implements CameraService {
     private final Attribute scaleAttribute = Registry.ATTRIBUTE.get(NamespacedKey.minecraft("scale"));
     private final Map<String, Double> tagScales = new ConcurrentHashMap<>();
     private final Map<String, Double> compatibilityScales = new ConcurrentHashMap<>();
+    /** Players we've applied our transient scale modifier to this process session — used to
+     *  force-migrate a legacy PERSISTENT modifier of the same amount on first apply. */
+    private final Set<UUID> transientApplied = ConcurrentHashMap.newKeySet();
 
     @Override
     public void registerScale(String vehicleType, double scale) {
@@ -119,16 +124,20 @@ public final class CameraServiceImpl implements CameraService {
         }
         double amount = scale - inst.getBaseValue();
         AttributeModifier existing = findOurModifier(inst);
+        boolean ourTransient = transientApplied.contains(player.getUniqueId());
         if (existing != null) {
-            if (Math.abs(existing.getAmount() - amount) < 1.0e-6) {
+            // Only fast-path out for a modifier WE added transiently this session. A legacy
+            // persistent modifier with the same amount must still be migrated (removed and
+            // re-added transiently), otherwise it keeps saving with player data after a crash.
+            if (ourTransient && Math.abs(existing.getAmount() - amount) < 1.0e-6) {
                 return;
             }
             inst.removeModifier(existing);
         }
-        // Transient: a camera zoom is ephemeral view state and must never persist with
-        // player data (a persistent modifier survives crash/plugin removal and strands
-        // the player zoomed). Any stale persistent modifier is removed above on next apply/clear.
+        // Transient: a camera zoom is ephemeral view state and must never persist with player
+        // data (a persistent modifier survives crash/plugin removal and strands the player zoomed).
         inst.addTransientModifier(new AttributeModifier(modifierKey, amount, AttributeModifier.Operation.ADD_NUMBER));
+        transientApplied.add(player.getUniqueId());
     }
 
     private void clear(Player player) {
@@ -140,6 +149,7 @@ public final class CameraServiceImpl implements CameraService {
         if (existing != null) {
             inst.removeModifier(existing);
         }
+        transientApplied.remove(player.getUniqueId());
     }
 
     private AttributeModifier findOurModifier(AttributeInstance inst) {

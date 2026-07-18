@@ -156,7 +156,11 @@ public final class MotoCommand implements TabExecutor {
             }
             yaw = parsedYaw;
         }
-        Location at = me.bibo.militarycraft.core.util.CommandCoords.safeLocation(world, x, y, z);
+        Location at = me.bibo.militarycraft.core.util.CommandCoords.resolve(world, x, y, z);
+        if (at == null) {
+            msg(sender, "&cCan't place there: invalid coordinates, outside the world border, or an ungenerated chunk. Move closer.");
+            return;
+        }
         if (createValidated(sender, player, at, yaw, withSidecar)) {
             msg(sender, "&7Coordinates: " + format(x, y, z) + " (" + world.getName() + ").");
         }

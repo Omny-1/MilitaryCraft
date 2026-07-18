@@ -1,7 +1,5 @@
 package me.bibo.militarycraft.core.event;
 
-import me.bibo.militarycraft.core.vehicle.PilotProtection;
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -10,7 +8,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.world.EntitiesLoadEvent;
 import org.bukkit.event.world.EntitiesUnloadEvent;
 import org.bukkit.plugin.Plugin;
@@ -35,7 +32,6 @@ public final class EventBus implements Listener {
     public EventBus(Plugin plugin) {
         this.logger = plugin.getLogger();
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
-        Bukkit.getOnlinePlayers().forEach(PilotProtection::recoverStaleVisibility);
     }
 
     /** Registers {@code sink} against every sink interface it implements. */
@@ -108,11 +104,6 @@ public final class EventBus implements Listener {
         for (DamageSink s : damageSinks) {
             invoke(s, () -> s.onEntityDamage(event));
         }
-    }
-
-    @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        PilotProtection.recoverStaleVisibility(event.getPlayer());
     }
 
     private void invoke(Object sink, Runnable callback) {

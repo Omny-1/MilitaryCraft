@@ -400,7 +400,7 @@ public final class Drone implements VehicleHandle {
         long key = (((long) cx) << 32) | (cz & 0xffffffffL);
         if (key != ticketChunkKey) {
             releaseChunkTicket();
-            world.addPluginChunkTicket(cx, cz, plugin.bukkitPlugin());
+            me.bibo.militarycraft.core.util.ChunkTickets.acquire(world, plugin.bukkitPlugin(), cx, cz);
             ticketChunkKey = key;
         }
     }
@@ -410,7 +410,7 @@ public final class Drone implements VehicleHandle {
         if (ticketChunkKey != Long.MIN_VALUE) {
             int ox = (int) (ticketChunkKey >> 32);
             int oz = (int) ticketChunkKey;
-            world.removePluginChunkTicket(ox, oz, plugin.bukkitPlugin());
+            me.bibo.militarycraft.core.util.ChunkTickets.release(world, plugin.bukkitPlugin(), ox, oz);
             ticketChunkKey = Long.MIN_VALUE;
         }
     }
