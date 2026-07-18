@@ -23,10 +23,9 @@ import java.util.UUID;
  * The single {@link ExplosionSink} registrant for vehicle blast-routing (§6/§11).
  * Deliberately the ONLY class that turns an {@code EntityExplodeEvent}/
  * {@code BlockExplodeEvent} into {@link VehicleHandle#applyExplosion} calls — if every
- * {@code VehicleManager} also implemented {@code ExplosionSink} the same blast would
- * be applied once per registered manager instead of once total, since
- * {@link #explosionDamage} already fans out across every vehicle type via
- * {@link VehicleService#all()}.
+ * vehicle provider also implemented {@code ExplosionSink} the same blast would be
+ * applied once per provider instead of once total, since {@link #explosionDamage}
+ * already fans out across every vehicle type via {@link VehicleService#all()}.
  */
 public final class VehicleCombatServiceImpl implements VehicleCombatService, ExplosionSink {
 

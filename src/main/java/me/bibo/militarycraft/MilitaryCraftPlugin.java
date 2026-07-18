@@ -9,7 +9,6 @@ import me.bibo.militarycraft.core.command.RootCommand;
 import me.bibo.militarycraft.core.event.EventBus;
 import me.bibo.militarycraft.core.item.ItemFactory;
 import me.bibo.militarycraft.core.key.Keys;
-import me.bibo.militarycraft.core.model.ModelBuilder;
 import me.bibo.militarycraft.core.module.MilitaryModule;
 import me.bibo.militarycraft.core.module.ModuleManager;
 import me.bibo.militarycraft.core.vehicle.VehicleServiceImpl;
@@ -50,13 +49,12 @@ public final class MilitaryCraftPlugin extends JavaPlugin {
         RootCommand rootCommand = new RootCommand(this, commandAccess);
         ItemFactory items = new ItemFactory();
 
-        ModelBuilder models = new ModelBuilder();
         VehicleServiceImpl vehicles = new VehicleServiceImpl();
         VehicleCombatServiceImpl combat = new VehicleCombatServiceImpl(vehicles);
         events.register(combat); // the one ExplosionSink that routes blasts to every vehicle (§11)
         CameraServiceImpl camera = new CameraServiceImpl();
 
-        this.core = new Core(this, events, rootCommand, items, models, vehicles, combat, camera);
+        this.core = new Core(this, events, rootCommand, items, vehicles, combat, camera);
 
         PluginCommand command = getCommand("mc");
         if (command == null) {

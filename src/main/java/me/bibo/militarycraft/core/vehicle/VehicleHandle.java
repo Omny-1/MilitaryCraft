@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * The unified read/act surface other modules use instead of scoreboard-tag scanning
- * (§4.3). {@link DisplayVehicle} implements this directly — every concrete vehicle
- * (CP3) is a {@code VehicleHandle} for free.
+ * The unified read/act surface other modules use instead of scoreboard-tag scanning.
+ * Every shipping vehicle implements this directly, so cross-module combat and camera
+ * treat any vehicle uniformly without shared inheritance.
  */
 public interface VehicleHandle {
 

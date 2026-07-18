@@ -7,7 +7,6 @@ import me.bibo.militarycraft.core.command.RootCommand;
 import me.bibo.militarycraft.core.config.ModuleConfig;
 import me.bibo.militarycraft.core.event.EventBus;
 import me.bibo.militarycraft.core.item.ItemFactory;
-import me.bibo.militarycraft.core.model.ModelBuilder;
 import me.bibo.militarycraft.core.vehicle.VehicleService;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -30,19 +29,17 @@ public final class Core {
     private final EventBus events;
     private final RootCommand commands;
     private final ItemFactory items;
-    private final ModelBuilder models;
     private final VehicleService vehicles;
     private final VehicleCombatService combat;
     private final CameraService camera;
     private ModuleConfig config;
 
     public Core(MilitaryCraftPlugin plugin, EventBus events, RootCommand commands, ItemFactory items,
-                ModelBuilder models, VehicleService vehicles, VehicleCombatService combat, CameraService camera) {
+                VehicleService vehicles, VehicleCombatService combat, CameraService camera) {
         this.plugin = plugin;
         this.events = events;
         this.commands = commands;
         this.items = items;
-        this.models = models;
         this.vehicles = vehicles;
         this.combat = combat;
         this.camera = camera;
@@ -72,10 +69,6 @@ public final class Core {
 
     public ItemFactory items() {
         return items;
-    }
-
-    public ModelBuilder models() {
-        return models;
     }
 
     public VehicleService vehicles() {

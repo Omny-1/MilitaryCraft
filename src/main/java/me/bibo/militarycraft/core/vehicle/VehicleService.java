@@ -21,12 +21,6 @@ public interface VehicleService {
 
     Collection<VehicleHandle> all();
 
-    /** A concrete {@code VehicleManager} registers itself here on {@code attach(Core)}. */
-    void registerManager(VehicleManager<?> manager);
-
-    /** Removes a manager during module shutdown so reload cannot leave stale registries behind. */
-    void unregisterManager(VehicleManager<?> manager);
-
     /** Registers a read/act view over an original restored vehicle manager. */
     void registerProvider(VehicleProvider provider);
 

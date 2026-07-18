@@ -1,7 +1,6 @@
 package me.bibo.militarycraft.gear.warkit.weapon;
 
 import me.bibo.militarycraft.core.combat.VehicleHit;
-import me.bibo.militarycraft.core.vehicle.DisplayVehicle;
 import me.bibo.militarycraft.core.vehicle.VehicleHandle;
 import me.bibo.militarycraft.gear.warkit.Txt;
 import me.bibo.militarycraft.gear.warkit.TeamRules;
@@ -74,10 +73,8 @@ public final class GrenadeService implements Listener {
             if (vehicle == null || !vehicle.isActive() || vehicle.location() == null) {
                 return null;
             }
-            double height = vehicle instanceof DisplayVehicle display
-                    ? Math.max(0.5, display.model().height() * 0.5)
-                    : 1.0;
-            return vehicle.location().clone().add(0, height, 0);
+            // live vehicles don't expose model height; flat 1.0 matches shipped behaviour
+            return vehicle.location().clone().add(0, 1.0, 0);
         }
     }
 

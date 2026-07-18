@@ -1,6 +1,5 @@
 package me.bibo.militarycraft.core.vehicle;
 
-import me.bibo.militarycraft.core.key.EntityTag;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
@@ -11,23 +10,18 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * Live vehicle query surface. Every shipping module is an autonomous manager exposed
+ * through a {@link VehicleProvider} (see {@link ManagedVehicleProvider}); this service
+ * fans queries across those providers so cross-module combat/camera can treat any
+ * vehicle uniformly without shared inheritance.
+ */
 public final class VehicleServiceImpl implements VehicleService {
 
     /** How deep to walk a stack of nested vehicles looking for one of ours (VehicleCameraPlugin's own constant). */
     private static final int MAX_VEHICLE_DEPTH = 4;
 
-    private final CopyOnWriteArrayList<VehicleManager<?>> managers = new CopyOnWriteArrayList<>();
     private final CopyOnWriteArrayList<VehicleProvider> providers = new CopyOnWriteArrayList<>();
-
-    @Override
-    public void registerManager(VehicleManager<?> manager) {
-        managers.addIfAbsent(manager);
-    }
-
-    @Override
-    public void unregisterManager(VehicleManager<?> manager) {
-        managers.remove(manager);
-    }
 
     @Override
     public void registerProvider(VehicleProvider provider) {
@@ -45,17 +39,6 @@ public final class VehicleServiceImpl implements VehicleService {
     public VehicleHandle vehicleOf(Entity anyPart) {
         if (anyPart == null) {
             return null;
-        }
-        String moduleId = EntityTag.moduleOf(anyPart);
-        if (moduleId != null) {
-            for (VehicleManager<?> manager : managers) {
-                if (manager.moduleId().equals(moduleId)) {
-                    DisplayVehicle v = manager.byEntity(anyPart);
-                    if (v != null) {
-                        return v;
-                    }
-                }
-            }
         }
         for (VehicleProvider provider : providers) {
             VehicleHandle vehicle = provider.vehicleOf(anyPart);
@@ -89,13 +72,6 @@ public final class VehicleServiceImpl implements VehicleService {
     @Override
     public Collection<VehicleHandle> all() {
         Map<UUID, VehicleHandle> unique = new LinkedHashMap<>();
-        for (VehicleManager<?> manager : managers) {
-            for (VehicleHandle handle : manager.all()) {
-                if (handle != null) {
-                    unique.putIfAbsent(handle.id(), handle);
-                }
-            }
-        }
         for (VehicleProvider provider : providers) {
             for (VehicleHandle handle : provider.all()) {
                 if (handle != null) {
@@ -110,11 +86,6 @@ public final class VehicleServiceImpl implements VehicleService {
     public PurgeResult purgeAll() {
         int tracked = 0;
         int strays = 0;
-        for (VehicleManager<?> manager : managers) {
-            int[] removed = manager.purgeAll();
-            tracked += removed[0];
-            strays += removed[1];
-        }
         for (VehicleProvider provider : providers) {
             PurgeResult removed = provider.purge();
             if (removed != null) {
