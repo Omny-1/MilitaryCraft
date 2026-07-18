@@ -25,6 +25,20 @@
 - ✅ **Кап на TNT-конфиг Airstrike** (tnt-count≤200, spread≤64, trail≤10) — битый конфиг не уронит сервер TNT-штормом. [MC-CONFIG-001, точечно]
 - ✅ **`CommandCoords.safeLocation`** — все 8 place/координатных команд клампят X/Y/Z к границе мира + build-height + finite перед `getChunk().load()`: кривая координата не запустит генерацию далёкого мира на main thread (фриз для всех). [MC-CHUNK-002]
 
+**Проход 3 — фиксы регрессий из delta-ревью Codex (он проверил именно мои коммиты):**
+- ✅ **CommandCoords: ОТКАЗ вместо тихого клампа** — `NaN`→null→NPE в 8 командах убран; огромное конечное число больше не грузит далёкий чанк. `resolve` отклоняет non-finite / вне границы мира / негенерированный чанк, все 8 команд проверяют null и отказывают с сообщением. [DELTA-TECH-001/002]
+- ✅ **Общий `ChunkTickets` refcount** — ChunkWindow, Drone и Train ходят через него; удары Airstrike/Nuke больше не конфликтуют по плагин-тикету с летящим дроном/едущим поездом на одном чанке. [DELTA-TECH-003]
+- ✅ **Train: карантин poison-поезда** после N сбоев вместо вечного ре-тика 20×/сек. [DELTA-TECH-005]
+- ✅ **Airstrike: кап jet-speed** (не пересечёт весь bomb-run за один тик) + убран вредный upper-cap `trail-density` (это интервал — капить его = повышать частоту). [DELTA-TECH-007]
+- ✅ **Camera: миграция legacy persistent-модификатора** даже при совпавшем amount (per-session transient-set). [DELTA-TECH-006]
+- ✅ **Убран мёртвый reader `PilotProtection`** (writer удалён со старым фреймворком, маркеры никто не пишет) — код не врёт про crash-recovery. [DELTA-TECH-004]
+- ✅ **Пересобран deployable JAR** из HEAD (содержит CommandCoords/ChunkTickets). [DELTA-REL-001]
+
+**Из delta-ревью НЕ взято (осознанно, продуктовый слой / нужен тест-сервер / паритет):**
+- ⏭ Clock rollback semantics (DELTA-TECH-008) — реально, но диффузно (68 `currentTimeMillis`) и низкочастотно; точечно позже.
+- 🎨 Весь визуал/аудио/UX (DELTA-VIS/AUDIO/UX): resource-pack contract, namespaced-модели placer'ов + коллизии CMD, equipment-силуэты, fullbright корпусов, sound-манифест, `PlayerHudCoordinator` (арбитраж 209 actionbar), IFF-панели, stateful-модели оружия, туториал управления. Это отдельная **продуктовая фаза** (арт + решение required/optional-pack), а не слепые правки кода; часть меняет визуал = паритет.
+- ⚖️ API-версия (DELTA-API-001): плагин внутренний, add-on'ов нет — не бампаю версию/имя JAR, чтобы не ломать деплой; при желании — отдельно.
+
 **Осталось из scale-триажа (см. переписку) — по приоритету:**
 - 🧪 **LOD/активационный радиус дисплеев** — самый большой рычаг TPS; трогает 9 модулей, нужен визуальный прогон на их Paper-сервере (или под default-off флагом).
 - 🧪 **Async single-writer персистенс** (Moto/Artillery) — снять fsync с main thread; data-loss-риск, обязательна валидация.
