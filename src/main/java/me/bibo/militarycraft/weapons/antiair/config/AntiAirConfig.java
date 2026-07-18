@@ -97,16 +97,16 @@ public final class AntiAirConfig {
         fireIntervalTicks = Math.max(1, c.getInt("weapons.fire-interval-ticks", 2));
         burst = Math.max(1, c.getInt("weapons.burst", 1));
         bulletDamage = Math.max(0.0, c.getDouble("weapons.bullet-damage", 3.2));
-        bulletRange = Math.max(4.0, c.getDouble("weapons.bullet-range", 45.0));
+        bulletRange = me.bibo.militarycraft.core.util.Bounds.ranged(c.getDouble("weapons.bullet-range", 45.0), 4.0, 256.0, 45.0);
         raySize = Math.max(0.01, c.getDouble("weapons.ray-size", 0.12));
-        tracerDensity = Math.max(0, c.getInt("weapons.tracer-density", 14));
+        tracerDensity = me.bibo.militarycraft.core.util.Bounds.ranged(c.getInt("weapons.tracer-density", 14), 0, 100);
         knockback = c.getDouble("weapons.knockback", 0.18);
         spinUpTicks = Math.max(0, c.getInt("weapons.spin-up-ticks", 8));
         heatPerShot = Math.max(0.0, c.getDouble("weapons.heat.per-shot", 0.06));
         heatCoolPerTick = Math.max(0.0, c.getDouble("weapons.heat.cool-per-tick", 0.012));
         heatResume = Math.max(0.0, Math.min(1.0, c.getDouble("weapons.heat.resume-threshold", 0.35)));
 
-        svoRange = Math.max(1.0, c.getDouble("svo.range", 30.0));
+        svoRange = me.bibo.militarycraft.core.util.Bounds.ranged(c.getDouble("svo.range", 30.0), 1.0, 256.0, 30.0);
         svoMinSpread = Math.max(0.0, c.getDouble("svo.min-spread-degrees", 0.3));
         svoMaxSpread = Math.max(svoMinSpread, c.getDouble("svo.max-spread-degrees", 2.9));
         svoIgnoreOwner = c.getBoolean("svo.ignore-owner", true);
@@ -119,7 +119,7 @@ public final class AntiAirConfig {
                 ? List.of("tankcraft_entity", "jetcraft_entity", "airshipcraft_entity")
                 : tags;
 
-        normiesRange = Math.max(1.0, c.getDouble("normies.range", 40.0));
+        normiesRange = me.bibo.militarycraft.core.util.Bounds.ranged(c.getDouble("normies.range", 40.0), 1.0, 128.0, 40.0);
         normiesSpread = Math.max(0.0, c.getDouble("normies.spread-degrees", 0.6));
 
         fuelBurnMultiplier = Math.max(0.05, c.getDouble("fuel.burn-time-multiplier", 1.0));
