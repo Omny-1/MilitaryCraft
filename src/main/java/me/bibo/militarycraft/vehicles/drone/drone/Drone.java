@@ -439,7 +439,7 @@ public final class Drone implements VehicleHandle {
         }
         double before = health;
         health = Math.min(maxHealth(), health + amount);
-        double restored = health - before;
+        double restored = Math.max(0.0, health - before);
         if (restored > 0.0) {
             persistState();
         }

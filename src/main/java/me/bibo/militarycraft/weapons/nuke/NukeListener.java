@@ -36,6 +36,16 @@ public final class NukeListener implements Listener {
 
         event.setCancelled(true);
 
+        // Enforce the declared nuke.use permission (default op). The briefcase is an
+        // admin-distributed tool, so a non-op who picks one up must not be able to fire it
+        // — the /nuke command is already gated by this same node in plugin.yml.
+        if (!event.getPlayer().hasPermission("nuke.use")) {
+            event.getPlayer().sendMessage(net.kyori.adventure.text.Component.text(
+                    "You don't have permission to call a nuclear strike.",
+                    net.kyori.adventure.text.format.NamedTextColor.RED));
+            return;
+        }
+
         int maxDist = manager.settings().getInt("max-target-distance", 160);
         Location target = NukeTargeting.resolveTarget(event.getPlayer(), maxDist);
         boolean started = manager.callNuke(event.getPlayer(), target);

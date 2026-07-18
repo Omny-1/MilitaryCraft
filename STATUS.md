@@ -1,10 +1,17 @@
 # MilitaryCraft — STATUS (what is done / where to resume)
 
-**Last updated:** 2026-07-15 · **Build:** ✅ GREEN (`mvn -o test` → 75 tests, EXIT=0; `mvn -o -DskipTests package` → `target/MilitaryCraft-1.0.0.jar`) · **Java files:** 227
-**Docs:** ⭐ **`DEVELOPMENT_GUIDE.md` — START HERE** (master handoff: full architecture, real API signatures,
-the Kamaz reference module, per-module spec, gotchas) · **`CODEX_RULES.md`** (hard do/don't rules + verified
-API cheat-sheet + definition-of-done) · `PLAN.md` (roadmap + per-module table) · `BUILD_SPEC.md` (original
-design contract) · this file (live status).
+**Last updated:** 2026-07-18 · **Build:** ✅ GREEN (`mvn -o test` → 50 tests, EXIT=0; `mvn -o -DskipTests package` → `target/MilitaryCraft-1.0.0.jar`) · **Java files:** 338
+
+> ⚠️ **ARCHITECTURE NOTE (2026-07-18):** the generic `DisplayVehicle`/`VehicleManager`/`core.model`/
+> `core.placeable`/`vehicles.aircraft` framework described in the older sections below **was removed** — it
+> had no live consumer. Every shipping vehicle implements `VehicleHandle` directly and bridges to combat via
+> `ManagedVehicleProvider`; that adapter is the real architecture. Sections that describe the old framework as
+> live are historical. See **`CLAUDE_CODE_REVIEW.md`** and **`MILITARYCRAFT_CODE_REVIEW.md`** for the current
+> audit + what changed, and **`ORIGINAL_PARITY_RESTORE_PLAN.md`** for the parity mandate (source of truth).
+
+**Docs:** ⭐ **`CLAUDE_CODE_REVIEW.md` / `MILITARYCRAFT_CODE_REVIEW.md` — current audits + change log** ·
+`ORIGINAL_PARITY_RESTORE_PLAN.md` (parity mandate) · `DEVELOPMENT_GUIDE.md`, `CODEX_RULES.md`, `PLAN.md`,
+`BUILD_SPEC.md` (historical design docs — predate the 2026-07-18 framework removal).
 
 ---
 

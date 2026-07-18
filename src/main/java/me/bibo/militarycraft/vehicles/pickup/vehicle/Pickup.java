@@ -579,7 +579,7 @@ public final class Pickup implements VehicleHandle {
         }
         double before = this.health;
         this.health = Math.min(this.maxHealth(), this.health + amount);
-        double restored = this.health - before;
+        double restored = Math.max(0.0, this.health - before);
         if (restored > 0.0) {
             this.markStateDirty();
         }

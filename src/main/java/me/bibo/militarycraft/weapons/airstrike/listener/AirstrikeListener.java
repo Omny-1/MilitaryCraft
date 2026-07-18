@@ -43,7 +43,15 @@ public class AirstrikeListener implements Listener {
         event.setCancelled(true);
 
         Player player = event.getPlayer();
-        // Beacon item is usable by everyone here; /airstrike command permission is still checked separately.
+        // Enforce the declared airstrike.use permission (default op). The beacon is an
+        // admin-distributed tool, so a non-op who picks one up must not be able to fire it
+        // — the /airstrike command is already gated by this same node in plugin.yml.
+        if (!player.hasPermission("airstrike.use")) {
+            player.sendMessage(net.kyori.adventure.text.Component.text(
+                    "You don't have permission to call an airstrike.",
+                    net.kyori.adventure.text.format.NamedTextColor.RED));
+            return;
+        }
 
         int maxDist = plugin.getConfig().getInt("max-target-distance", 150);
         Location target = AirstrikeCommand.resolveTarget(player, maxDist);

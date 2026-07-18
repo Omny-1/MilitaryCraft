@@ -125,7 +125,10 @@ public final class CameraServiceImpl implements CameraService {
             }
             inst.removeModifier(existing);
         }
-        inst.addModifier(new AttributeModifier(modifierKey, amount, AttributeModifier.Operation.ADD_NUMBER));
+        // Transient: a camera zoom is ephemeral view state and must never persist with
+        // player data (a persistent modifier survives crash/plugin removal and strands
+        // the player zoomed). Any stale persistent modifier is removed above on next apply/clear.
+        inst.addTransientModifier(new AttributeModifier(modifierKey, amount, AttributeModifier.Operation.ADD_NUMBER));
     }
 
     private void clear(Player player) {
