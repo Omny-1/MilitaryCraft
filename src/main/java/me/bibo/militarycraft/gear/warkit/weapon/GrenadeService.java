@@ -185,7 +185,7 @@ public final class GrenadeService implements Listener {
             case Weapons.FRAG_GRENADE -> explode(at, thrower, w().fragRadius, w().fragDamage, false);
             case Weapons.SMOKE_GRENADE -> spawnSmoke(at, w().smokeRadius, w().smokeDurationSeconds);
             case Weapons.FLASH_GRENADE -> detonateFlash(at);
-            case Weapons.IMPULSE_GRENADE -> detonateImpulse(at, thrower);
+            case Weapons.IMPULSE_GRENADE -> detonateImpulse(at);
             case Weapons.SLEEP_GAS -> spawnGas(at, w().gasRadius, w().gasDurationSeconds, w().gasImmobilizeAfterSeconds);
             default -> { }
         }
@@ -552,61 +552,31 @@ public final class GrenadeService implements Listener {
         }
     }
 
-    private void detonateImpulse(Location center, Player thrower) {
+    private void detonateImpulse(Location center) {
         World world = center.getWorld();
         world.spawnParticle(Particle.SONIC_BOOM, center, 1);
         world.spawnParticle(Particle.GUST, center, 1);
         world.playSound(center, Sound.ENTITY_WARDEN_SONIC_BOOM, 1f, 1.5f);
 
         double radius = w().impulseRadius;
-        for (Entity e : world.getNearbyEntities(center, radius, radius, radius)) {
-            if (!affectable(e)) continue;
-            LivingEntity le = (LivingEntity) e;
-            // The thrower is pushed separately below, independent of radius and without double-applying.
-            if (thrower != null && e.getUniqueId().equals(thrower.getUniqueId())) continue;
-            if (le.getLocation().distance(center) > radius) continue;
-            pushEntity(le, center);
-        }
-        // The thrower is always pushed, whether thrown at their feet or forward.
-        if (thrower != null && thrower.isOnline() && !thrower.isDead()
-                && thrower.getWorld().equals(world)
-                && thrower.getGameMode() != GameMode.SPECTATOR && thrower.getGameMode() != GameMode.CREATIVE) {
-            pushThrower(thrower, center);
+        double radiusSquared = radius * radius;
+        for (Player player : world.getPlayers()) {
+            if (!affectable(player)) continue;
+            if (player.getLocation().distanceSquared(center) > radiusSquared) continue;
+            pushPlayer(player);
         }
     }
 
-    private void pushThrower(Player thrower, Location center) {
-        Vector push = thrower.getEyeLocation().getDirection();
+    private void pushPlayer(Player player) {
+        Vector push = player.getEyeLocation().getDirection();
         push.setY(0);
-        if (push.lengthSquared() < 1e-4) {
-            push = thrower.getLocation().toVector().subtract(center.toVector()).setY(0);
-        }
         if (push.lengthSquared() < 1e-4) push = new Vector(0, 0, 1);
-        push.normalize().multiply(Math.max(w().impulseForward, 2.2));
-        push.setY(Math.max(w().impulseUp, 1.35));
-        plugin.fallImmunity().grant(thrower.getUniqueId(), w().impulseNoFallSeconds);
-        thrower.sendActionBar(Txt.t("Impulse push!", NamedTextColor.AQUA));
-        applyVelocityBurst(thrower, push);
-    }
-
-    private void pushEntity(LivingEntity le, Location center) {
-        if (le instanceof Player pl) {
-            Vector look = pl.getEyeLocation().getDirection();
-            look.setY(0);
-            if (look.lengthSquared() < 1e-4) look = new Vector(0, 0, 1);
-            else look.normalize();
-            Vector push = look.multiply(w().impulseForward);
-            push.setY(w().impulseUp);
-            plugin.fallImmunity().grant(pl.getUniqueId(), w().impulseNoFallSeconds);
-            pl.sendActionBar(Txt.t("Impulse push!", NamedTextColor.AQUA));
-            applyVelocityBurst(pl, push);
-            return;
-        }
-        Vector push = le.getLocation().toVector().subtract(center.toVector());
-        if (push.lengthSquared() < 1e-4) push = new Vector(0, 0, 1);
-        push.normalize().multiply(w().impulseForward);
+        else push.normalize();
+        push.multiply(w().impulseForward);
         push.setY(w().impulseUp);
-        le.setVelocity(push);
+        plugin.fallImmunity().grant(player.getUniqueId(), w().impulseNoFallSeconds);
+        player.sendActionBar(Txt.t("Impulse push!", NamedTextColor.AQUA));
+        applyVelocityBurst(player, push);
     }
 
     private void applyVelocityBurst(Player player, Vector velocity) {

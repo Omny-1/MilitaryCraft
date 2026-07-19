@@ -2233,12 +2233,12 @@ warkit:
       throw-speed: 1.2
   
     impulse-grenade:
-      radius: 4.5
+      radius: 3.0
       forward: 2.2
       up: 1.0
       no-fall-seconds: 8
       throw-speed: 1.2
-      fuse-seconds: 0.7          # quick detonation; affects the owner too
+      fuse-seconds: 0.7          # quick detonation; affects any player within the radius
   
     flamethrower:
       range: 5.0

@@ -238,7 +238,7 @@ public final class WeaponConfig {
         flashBlindSeconds = c.getInt("weapons.flash-grenade.blind-seconds", 7);
         flashThrowSpeed = c.getDouble("weapons.flash-grenade.throw-speed", 1.2);
 
-        impulseRadius = me.bibo.militarycraft.core.util.Bounds.ranged(c.getDouble("weapons.impulse-grenade.radius", 4.5), 0.0, 64.0, 4.5);
+        impulseRadius = me.bibo.militarycraft.core.util.Bounds.ranged(c.getDouble("weapons.impulse-grenade.radius", 3.0), 0.0, 64.0, 3.0);
         impulseForward = c.getDouble("weapons.impulse-grenade.forward", 2.2);
         impulseUp = c.getDouble("weapons.impulse-grenade.up", 1.0);
         impulseNoFallSeconds = c.getInt("weapons.impulse-grenade.no-fall-seconds", 8);
