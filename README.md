@@ -39,8 +39,8 @@ so the server needs no client mod and no additional plugins.
 | Item | Value |
 | --- | --- |
 | Server software | Paper 1.21.4 or later |
-| Verified range | 1.21.4 through 1.21.11 |
-| Java | 21 or newer |
+| Verified range | 1.21.4 through 1.21.8 |
+| Java | 21, or 25 on Paper 1.21.9 and later |
 | Dependencies | None |
 | Folia | Not supported |
 
@@ -75,10 +75,15 @@ and no reflection into server internals. That is what makes one jar viable acros
 instead of a separate build per release, and it is why no per-version downloads are offered.
 They would be identical files.
 
-Every push compiles the sources against 1.21.4 through 1.21.11, so the supported range is
-measured. A green result means every API the code calls still exists in that version. That
-is a strong signal, but it is not a play test: it confirms the plugin resolves, not that a
-tank drives correctly there. Reports from newer versions are welcome as issues.
+Every push compiles the sources against each published Paper API from 1.21.4 upward, so the
+supported range is measured. A green result means every API the code calls still exists in
+that version. That is a strong signal, but it is not a play test: it confirms the plugin
+resolves, not that a tank drives correctly there. Reports from real servers are welcome as
+issues.
+
+One note on Java. The jar targets Java 21 and runs anywhere in the range. Paper itself
+raised its own requirement to Java 25 from 1.21.9 onward, so a server on those versions
+needs the newer Java for the server, not for this plugin.
 
 ## Installation
 
