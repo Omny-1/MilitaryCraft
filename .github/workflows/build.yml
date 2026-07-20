@@ -13,10 +13,10 @@ jobs:
 
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: '21'
           distribution: temurin
@@ -26,7 +26,7 @@ jobs:
         run: mvn --batch-mode --no-transfer-progress verify
 
       - name: Upload the plugin jar
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: MilitaryCraft
           path: target/MilitaryCraft-*.jar
@@ -65,12 +65,12 @@ jobs:
 
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # Matches the JDK the shipped jar is built with. Extending the matrix past 1.21.8 would
       # need JDK 25 here, because Paper is compiled for Java 25 from 1.21.9 onward.
       - name: Set up JDK 21
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: '21'
           distribution: temurin
