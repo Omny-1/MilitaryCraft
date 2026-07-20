@@ -2,6 +2,8 @@
 
 [English](README.md) · Уззкий · [Українська](README.ua.md)
 
+[![Build](https://github.com/Omny-1/MilitaryCraft/actions/workflows/build.yml/badge.svg)](https://github.com/Omny-1/MilitaryCraft/actions/workflows/build.yml)
+
 MilitaryCraft — это один плагин для Paper, который добавляет в Minecraft 1.21.4 управляемую
 технику, авиацию, стационарные огневые точки, авиационную поддержку и набор пехотного
 снаряжения. Всё построено на ванильных display-сущностях и обычных вызовах серверного API,
@@ -445,7 +447,7 @@ require-resource-pack=false
 PaperMC, плюс JUnit для тестов.
 
 ```bash
-git clone <адрес-репозитория>
+git clone https://github.com/Omny-1/MilitaryCraft.git
 cd MilitaryCraft
 mvn package
 ```
@@ -516,6 +518,15 @@ classpath. Каждый модуль реализует небольшой ин�
   вождение и бой можно проверить только на работающем сервере.
 - Плагин пишет собственное состояние для сессий артиллерии, счётчиков мотоциклов и предметов
   из автобуса. Удаление папки данных плагина сбрасывает это состояние.
+
+## Участие в разработке
+
+Сообщения об ошибках и пул-реквесты приветствуются. В [CONTRIBUTING.md](CONTRIBUTING.md)
+описано, как собрать проект, что покрывают и чего не покрывают тесты и что ожидается от
+изменения. Заметные изменения фиксируются в [CHANGELOG.md](CHANGELOG.md).
+
+О проблемах безопасности сообщайте приватно, а не в публичной задаче — см.
+[SECURITY.md](SECURITY.md).
 
 ## Лицензия
 

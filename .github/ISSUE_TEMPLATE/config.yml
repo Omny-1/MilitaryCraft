@@ -1,0 +1,10 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question about setup or configuration
+    url: https://github.com/Omny-1/MilitaryCraft/discussions
+    about: >-
+      For help installing the plugin, choosing settings or understanding a module, please
+      start a discussion rather than opening an issue.
+  - name: Security vulnerability
+    url: https://github.com/Omny-1/MilitaryCraft/security/advisories/new
+    about: Report privately instead of opening a public issue.

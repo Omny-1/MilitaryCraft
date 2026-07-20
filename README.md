@@ -2,6 +2,8 @@
 
 English · [Уззкий](README.ru.md) · [Українська](README.ua.md)
 
+[![Build](https://github.com/Omny-1/MilitaryCraft/actions/workflows/build.yml/badge.svg)](https://github.com/Omny-1/MilitaryCraft/actions/workflows/build.yml)
+
 MilitaryCraft is a single Paper plugin that adds drivable vehicles, aircraft, placeable
 weapon emplacements, air support strikes and a set of infantry equipment to Minecraft
 1.21.4. Everything is built from vanilla display entities and standard server API calls,
@@ -441,7 +443,7 @@ You need JDK 21 and Maven. The only dependency is the Paper API, which is resolv
 PaperMC repository, plus JUnit for the tests.
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Omny-1/MilitaryCraft.git
 cd MilitaryCraft
 mvn package
 ```
@@ -512,6 +514,15 @@ These are known and intentional, listed so they are not discovered as surprises.
   driving and combat behaviour can only be verified on a running server.
 - The plugin writes its own persistent state for artillery sessions, motorcycle counts and
   trap bus drops. Deleting the plugin's data directory resets those.
+
+## Contributing
+
+Bug reports and pull requests are welcome. [CONTRIBUTING.md](CONTRIBUTING.md) covers
+building the project, what the tests do and do not cover, and what is expected of a change.
+Notable changes are recorded in [CHANGELOG.md](CHANGELOG.md).
+
+Security problems should be reported privately rather than in a public issue. See
+[SECURITY.md](SECURITY.md).
 
 ## License
 

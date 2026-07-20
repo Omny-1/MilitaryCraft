@@ -1,0 +1,19 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: "ci"
+
+  - package-ecosystem: maven
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: "build"
+    ignore:
+      # The Paper API is pinned to the Minecraft version the plugin targets,
+      # so it must be updated deliberately rather than automatically.
+      - dependency-name: io.papermc.paper:paper-api

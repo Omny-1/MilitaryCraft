@@ -1,0 +1,57 @@
+name: Feature request
+description: Suggest a new capability or a change to an existing one
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Each module is a port of a plugin that previously existed on its own, so its
+        behaviour and balance are deliberate. Changes to existing gameplay are considered,
+        but please explain the reasoning rather than only the preference.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve
+      description: Describe the situation you run into, not only the solution you have in mind.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you would like to happen
+    validations:
+      required: true
+
+  - type: dropdown
+    id: module
+    attributes:
+      label: Module
+      options:
+        - Tank
+        - Kamaz
+        - Pickup
+        - Motorcycle
+        - Train
+        - Jet
+        - Helicopter
+        - Airship
+        - Drone
+        - Anti-air turret
+        - Artillery
+        - Trap bus
+        - Airstrike
+        - Nuclear strike
+        - Infantry equipment
+        - Camera
+        - Commands or configuration
+        - A new module
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you considered
+      description: For example, whether an existing configuration setting already covers this.

@@ -6,21 +6,12 @@ target/
 .idea/
 .vscode/
 .settings/
+.classpath
+.project
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Local tooling and working notes (not part of the published plugin)
+# Local tooling output
 graphify-out/
-.writetest
-BUILD_SPEC.md
-CLAUDE_CODE_REVIEW.md
-CODEX_RULES.md
-CODEX_SESSION_MEMORY.md
-DEVELOPMENT_GUIDE.md
-MILITARYCRAFT_CODE_REVIEW.md
-MILITARYCRAFT_NEW_DELTA_REVIEW.md
-ORIGINAL_PARITY_RESTORE_PLAN.md
-PLAN.md
-STATUS.md

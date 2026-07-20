@@ -1,0 +1,104 @@
+name: Bug report
+description: Something in the plugin does not work as described
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please check that the problem still happens on the latest release before reporting it.
+
+  - type: input
+    id: plugin-version
+    attributes:
+      label: Plugin version
+      description: Shown in the console when the server starts, or with /version MilitaryCraft
+      placeholder: 1.0.0
+    validations:
+      required: true
+
+  - type: input
+    id: server-version
+    attributes:
+      label: Server version
+      description: The full output of the /version command
+      placeholder: Paper 1.21.4 build 123
+    validations:
+      required: true
+
+  - type: dropdown
+    id: module
+    attributes:
+      label: Module
+      description: Which part of the plugin is affected
+      options:
+        - Tank
+        - Kamaz
+        - Pickup
+        - Motorcycle
+        - Train
+        - Jet
+        - Helicopter
+        - Airship
+        - Drone
+        - Anti-air turret
+        - Artillery
+        - Trap bus
+        - Airstrike
+        - Nuclear strike
+        - Infantry equipment
+        - Camera
+        - Commands or configuration
+        - Not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected to happen
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: What actually happened
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Run /tank spawn
+        2. Right-click the tank to board it
+        3. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: console
+    attributes:
+      label: Console output
+      description: >-
+        Any errors or stack traces from the server console. Paste the full trace rather than
+        describing it. This is automatically formatted as code, so no backticks are needed.
+      render: text
+
+  - type: textarea
+    id: config
+    attributes:
+      label: Relevant configuration
+      description: The section of config.yml for the affected module, if you changed it.
+      render: yaml
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Confirmation
+      options:
+        - label: I am running Paper, not Spigot or CraftBukkit
+          required: true
+        - label: I checked that no existing issue already reports this
+          required: true

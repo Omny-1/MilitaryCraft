@@ -1,0 +1,19 @@
+# Normalise line endings: LF in the repository, native in the working copy.
+* text=auto
+
+# Explicit text types
+*.java   text
+*.yml    text
+*.yaml   text
+*.xml    text
+*.md     text
+*.json   text
+*.txt    text
+*.properties text
+
+# Binary assets must never be line-ending converted
+*.zip    binary
+*.jar    binary
+*.png    binary
+*.ogg    binary
+*.mcmeta binary
