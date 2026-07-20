@@ -16,6 +16,12 @@
         <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <!--
+          The Paper API the jar is compiled against. Overridable so CI can compile the same
+          sources against several Minecraft versions and show which ones still provide every
+          API this plugin uses:  mvn -Dpaper.version=1.21.8-R0.1-SNAPSHOT compile
+        -->
+        <paper.version>1.21.4-R0.1-SNAPSHOT</paper.version>
     </properties>
 
     <repositories>
@@ -29,7 +35,7 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.21.4-R0.1-SNAPSHOT</version>
+            <version>${paper.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

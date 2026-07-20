@@ -38,8 +38,8 @@ so the server needs no client mod and no additional plugins.
 
 | Item | Value |
 | --- | --- |
-| Server software | Paper 1.21.4 |
-| API version | 1.21 |
+| Server software | Paper 1.21.4 or later |
+| Minimum Minecraft version | 1.21.3 |
 | Java | 21 or newer |
 | Dependencies | None |
 | Folia | Not supported |
@@ -47,6 +47,35 @@ so the server needs no client mod and no additional plugins.
 The plugin is compiled against the Paper API. Spigot and CraftBukkit are not supported,
 because several modules rely on Paper-only calls. Folia is explicitly marked unsupported
 in `plugin.yml`, since the module schedulers assume a single main thread.
+
+### Why 1.21.3 is the floor
+
+The minimum is not a preference, it is where the APIs the plugin is built on first appear.
+Two of them decide it.
+
+Every vehicle reads the driver's controls through `Player.getCurrentInput()`, which arrived
+in 1.21.3. There is no earlier API that reports which movement keys a player is holding, so
+on older versions there is no way to steer anything without intercepting packets, which
+would mean rewriting all eight controllers around a third-party library.
+
+The camera distance, vehicle health and armour values use attribute constants that were
+renamed in 1.21.3, and the `SCALE` attribute the camera depends on only exists from 1.20.5.
+Custom item models and item cooldown components need 1.21.2 or later.
+
+Display entities, which every vehicle model is made of, go back to 1.19.4, so they are not
+what sets the limit.
+
+### How far forward it goes
+
+There is no version-specific code anywhere in the project: no NMS, no CraftBukkit imports
+and no reflection into server internals. That is what makes a single jar viable across
+versions rather than one build per release.
+
+A workflow compiles the sources against each Paper API from 1.21.4 upward on every push, so
+the range in the build badge is measured rather than assumed. A version passing there means
+every API the code calls still exists in it, which is a strong signal but not the same as a
+play test. If you run the plugin on a newer version than 1.21.4, an issue report saying how
+it went is welcome.
 
 ## Installation
 
