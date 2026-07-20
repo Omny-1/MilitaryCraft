@@ -39,7 +39,7 @@ so the server needs no client mod and no additional plugins.
 | Item | Value |
 | --- | --- |
 | Server software | Paper 1.21.4 or later |
-| Minimum Minecraft version | 1.21.3 |
+| Verified range | 1.21.4 through 1.21.11 |
 | Java | 21 or newer |
 | Dependencies | None |
 | Folia | Not supported |
@@ -48,34 +48,37 @@ The plugin is compiled against the Paper API. Spigot and CraftBukkit are not sup
 because several modules rely on Paper-only calls. Folia is explicitly marked unsupported
 in `plugin.yml`, since the module schedulers assume a single main thread.
 
-### Why 1.21.3 is the floor
+### Why the range starts at 1.21.4
 
-The minimum is not a preference, it is where the APIs the plugin is built on first appear.
-Two of them decide it.
+The minimum is not a preference. It is where the APIs the plugin is built on first appear,
+and it is measured rather than estimated: a workflow compiles the sources against each Paper
+API in turn, and 1.21.3 does not build.
 
-Every vehicle reads the driver's controls through `Player.getCurrentInput()`, which arrived
-in 1.21.3. There is no earlier API that reports which movement keys a player is holding, so
-on older versions there is no way to steer anything without intercepting packets, which
-would mean rewriting all eight controllers around a third-party library.
+The reasons older versions are out of reach at all are structural. Every vehicle reads its
+driver through `Player.getCurrentInput()`, which arrived in 1.21.3, and no earlier API
+reports which movement keys a player holds, so on older versions there is nothing to steer
+with short of intercepting packets and rewriting all eight controllers around a third-party
+library. The camera distance, vehicle health and armour values use attribute constants that
+were renamed around the same time, and the `SCALE` attribute behind the camera needs 1.20.5.
+Custom item models and item cooldown components need 1.21.2.
 
-The camera distance, vehicle health and armour values use attribute constants that were
-renamed in 1.21.3, and the `SCALE` attribute the camera depends on only exists from 1.20.5.
-Custom item models and item cooldown components need 1.21.2 or later.
+Display entities, which every vehicle model is built from, go back to 1.19.4, so the models
+are not what sets the limit.
 
-Display entities, which every vehicle model is made of, go back to 1.19.4, so they are not
-what sets the limit.
+The jar is compiled against 1.21.4, the same version as the floor. That is deliberate: it
+makes it impossible to start using a newer API by accident without the matrix turning red.
 
 ### How far forward it goes
 
 There is no version-specific code anywhere in the project: no NMS, no CraftBukkit imports
-and no reflection into server internals. That is what makes a single jar viable across
-versions rather than one build per release.
+and no reflection into server internals. That is what makes one jar viable across versions
+instead of a separate build per release, and it is why no per-version downloads are offered.
+They would be identical files.
 
-A workflow compiles the sources against each Paper API from 1.21.4 upward on every push, so
-the range in the build badge is measured rather than assumed. A version passing there means
-every API the code calls still exists in it, which is a strong signal but not the same as a
-play test. If you run the plugin on a newer version than 1.21.4, an issue report saying how
-it went is welcome.
+Every push compiles the sources against 1.21.4 through 1.21.11, so the supported range is
+measured. A green result means every API the code calls still exists in that version. That
+is a strong signal, but it is not a play test: it confirms the plugin resolves, not that a
+tank drives correctly there. Reports from newer versions are welcome as issues.
 
 ## Installation
 

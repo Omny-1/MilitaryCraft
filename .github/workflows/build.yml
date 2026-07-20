@@ -32,20 +32,17 @@ jobs:
           path: target/MilitaryCraft-*.jar
           if-no-files-found: error
 
-  # Compiles the same sources against a span of Paper APIs to measure the supported range
-  # instead of asserting it. A green cell means every API the code calls exists in that
-  # version. That is a strong signal, but it is not the same as running the plugin there.
+  # Compiles the same sources against every supported Paper API to measure the range instead
+  # of asserting it. A green cell means every API the code calls exists in that version,
+  # which is a strong signal but not the same as running the plugin there.
   #
-  # The list deliberately reaches below the version the jar is built against:
+  # The floor was measured rather than assumed. 1.21.3 is published and does compile as a
+  # dependency, but building against it fails: something the code uses only appears in
+  # 1.21.4. That is why the list starts there and why 1.21.4 is both the build target and
+  # the documented minimum. Compiling against the floor is deliberate, since it makes it
+  # impossible to reach for a newer API without a cell going red.
   #
-  #   1.21.2  expected to fail. Player.getCurrentInput does not exist yet and the attribute
-  #           constants still carry their old names, so this cell is the evidence behind the
-  #           documented floor rather than a problem to fix.
-  #   1.21.3  the claimed minimum. If this one goes red, the documentation is wrong: some
-  #           change started using an API that only appears in 1.21.4 or later.
-  #
-  # Informational, never fails the build. Add newer Minecraft versions as they are released;
-  # a version that does not exist yet simply fails to resolve, which is harmless here.
+  # Informational, never fails the build. Add newer Minecraft versions as they are released.
   compatibility:
     name: Paper ${{ matrix.paper }}
     runs-on: ubuntu-latest
@@ -54,13 +51,14 @@ jobs:
       fail-fast: false
       matrix:
         paper:
-          - '1.21.2'
-          - '1.21.3'
           - '1.21.4'
           - '1.21.5'
           - '1.21.6'
           - '1.21.7'
           - '1.21.8'
+          - '1.21.9'
+          - '1.21.10'
+          - '1.21.11'
 
     steps:
       - name: Check out the repository
