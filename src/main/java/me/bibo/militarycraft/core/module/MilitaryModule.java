@@ -2,7 +2,7 @@ package me.bibo.militarycraft.core.module;
 
 import me.bibo.militarycraft.core.Core;
 
-/** Contract every game module (tank, antiair, warkit, ...) implements (§4.2). */
+/** Contract every game module (tank, antiair, warkit, ...) implements. */
 public interface MilitaryModule {
 
     /** Stable id, e.g. "tank", "antiair", "airstrike", "warkit". Used for config/perm/key namespacing. */

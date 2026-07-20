@@ -7,7 +7,7 @@ import org.bukkit.Sound;
 import org.bukkit.util.Vector;
 
 /**
- * Small shared FX helpers — dedupes the tracer/particle/sound copies scattered across
+ * Small shared FX helpers - dedupes the tracer/particle/sound copies scattered across
  * Tank/Jet/Heli/AntiAir. Kept minimal for CP1; combat-specific FX (muzzle flash, hit
  * sparks, smoke trails) grow here as CP2+ modules need them.
  */

@@ -13,7 +13,7 @@ import java.util.List;
  *
  * <p>Straights and slopes contribute a single segment per block. Curved rails
  * become quarter-circle arcs of radius 0.5 around the block corner between
- * their two connected edges — this is what makes the train FLOW through a
+ * their two connected edges - this is what makes the train FLOW through a
  * 90° corner instead of snapping into the new direction.</p>
  *
  * <p>Junction behaviour matches vanilla: the path simply follows whatever
@@ -80,7 +80,7 @@ public final class RailTracer {
      * Walk one rail block from the given entry side and return the polyline
      * through it. If the shape does not actually connect to {@code entryEdge}
      * (side of a switched junction), the path enters through the shape's end
-     * closest to that side and rides the shape out — same spirit as vanilla.
+     * closest to that side and rides the shape out - same spirit as vanilla.
      */
     public static Traverse traverse(Block block, RailEdge entryEdge) {
         Rail rail = (Rail) block.getBlockData();
@@ -136,7 +136,7 @@ public final class RailTracer {
      * The rail block the track continues into after leaving {@code current}
      * through {@code exit}, or null at a dead end. Checks the same level first
      * (which is one block up when leaving the high end of a slope), then one
-     * below — but only onto a slope that climbs back toward us, like vanilla.
+     * below - but only onto a slope that climbs back toward us, like vanilla.
      */
     public static Block nextBlock(Block current, Connection exit) {
         World w = current.getWorld();

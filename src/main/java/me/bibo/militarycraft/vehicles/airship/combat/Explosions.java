@@ -48,7 +48,7 @@ public final class Explosions {
 
         me.bibo.militarycraft.core.combat.Explosions.impactFx(loc);
 
-        // Direct area damage to any airships caught in the blast — but never the
+        // Direct area damage to any airships caught in the blast - but never the
         // airship that dropped this bomb (no self-damage from your own weapons).
         for (Airship ship : new java.util.ArrayList<>(plugin.airships().all())) {
             if (ownerShipToSkip != null && ship.id().equals(ownerShipToSkip)) {

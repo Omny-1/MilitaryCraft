@@ -20,9 +20,9 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * The single {@link ExplosionSink} registrant for vehicle blast-routing (§6/§11).
+ * The single {@link ExplosionSink} registrant for vehicle blast-routing.
  * Deliberately the ONLY class that turns an {@code EntityExplodeEvent}/
- * {@code BlockExplodeEvent} into {@link VehicleHandle#applyExplosion} calls — if every
+ * {@code BlockExplodeEvent} into {@link VehicleHandle#applyExplosion} calls - if every
  * vehicle provider also implemented {@code ExplosionSink} the same blast would be
  * applied once per provider instead of once total, since {@link #explosionDamage}
  * already fans out across every vehicle type via {@link VehicleService#all()}.
@@ -176,7 +176,7 @@ public final class VehicleCombatServiceImpl implements VehicleCombatService, Exp
     @Override
     public void onEntityExplode(EntityExplodeEvent event) {
         if (Explosions.isInternal()) {
-            return; // our own shell/self-destruct — already handled directly
+            return; // our own shell/self-destruct - already handled directly
         }
         routeBukkitExplosion(event.getLocation(), Explosions.powerFor(event.getEntity()));
     }

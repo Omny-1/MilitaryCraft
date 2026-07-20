@@ -144,7 +144,7 @@ public final class TruckModel {
             p.add(TruckPart.block(CAB, v(x, 4.65f, 5.9f), v(0.2f, 1.48f, 0.18f), -18f, 0f, 0f));
             p.add(TruckPart.block(DETAIL, v(x, 2.35f, 4.55f), v(0.22f, 0.25f, 2.1f)));
         }
-        // wing mirrors — short arm hugging the cab, mirror just outside the body
+        // wing mirrors - short arm hugging the cab, mirror just outside the body
         p.add(TruckPart.block(DETAIL, v(-2.65f, 5.08f, 6.05f), v(0.55f, 0.14f, 0.14f)));
         p.add(TruckPart.block(DETAIL, v(2.65f, 5.08f, 6.05f), v(0.55f, 0.14f, 0.14f)));
         p.add(TruckPart.block(GLASS, v(-2.98f, 4.9f, 6.2f), v(0.2f, 0.9f, 0.45f)));

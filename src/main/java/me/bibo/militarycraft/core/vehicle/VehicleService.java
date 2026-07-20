@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 import java.util.Collection;
 
 /**
- * The unified query surface other modules use instead of scoreboard-tag strings (§4.3).
+ * The unified query surface other modules use instead of scoreboard-tag strings.
  */
 public interface VehicleService {
 

@@ -339,7 +339,7 @@ public final class Tank implements VehicleHandle {
      * <p>A part's transform depends only on certain angles: HULL parts on the hull
      * yaw; TURRET parts on the hull and turret yaw; BARREL parts on those plus the
      * barrel pitch. While the driver merely aims (hull still), the hull, tracks and
-     * wheels — the bulk of the model — skip {@code setTransformation} entirely, which
+     * wheels - the bulk of the model - skip {@code setTransformation} entirely, which
      * spares a transform packet per part every tick. A teleport keeps each part's
      * existing transform, so when only the anchor moves we re-push nothing.</p>
      */

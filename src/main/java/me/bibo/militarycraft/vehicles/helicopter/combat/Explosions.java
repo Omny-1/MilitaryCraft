@@ -48,7 +48,7 @@ public final class Explosions {
 
         me.bibo.militarycraft.core.combat.Explosions.impactFx(loc);
 
-        // Direct area damage to any helicopters caught in the blast — but never
+        // Direct area damage to any helicopters caught in the blast - but never
         // the helicopter that fired this munition (no self-damage from your own weapons).
         for (Helicopter heli : new java.util.ArrayList<>(plugin.helicopters().all())) {
             if (ownerShipToSkip != null && heli.id().equals(ownerShipToSkip)) {

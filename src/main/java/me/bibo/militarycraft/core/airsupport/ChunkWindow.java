@@ -15,7 +15,7 @@ import java.util.UUID;
 /**
  * A moving set of plugin chunk tickets for a temporary air-support sequence (a strike's
  * jet + target window). Ticket ownership is reference-counted through {@link ChunkTickets}
- * — shared with the Drone and Train, which pin the same kind of ticket — so overlapping
+ * - shared with the Drone and Train, which pin the same kind of ticket - so overlapping
  * users never unload each other's chunks. This class adds the sequence-specific sliding
  * window + a synchronous load so falling ordnance always ticks.
  */
@@ -52,8 +52,8 @@ public final class ChunkWindow {
     /**
      * Update the window to exactly the given chunks (each key packed as
      * {@code (long) chunkX << 32 | (chunkZ & 0xffffffffL)}), reference-counted exactly
-     * like {@link #update}. Lets a caller with a non-square desired set — e.g. two
-     * different radii around a bomber and its target — still share the global,
+     * like {@link #update}. Lets a caller with a non-square desired set - e.g. two
+     * different radii around a bomber and its target - still share the global,
      * cross-instance ticket refcount instead of stomping global force-load state.
      */
     public void updateChunks(World world, Set<Long> chunkKeys) {

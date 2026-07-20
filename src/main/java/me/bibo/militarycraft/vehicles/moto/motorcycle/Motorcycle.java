@@ -430,7 +430,7 @@ public final class Motorcycle implements VehicleHandle {
                 // moving) is snapped, not interpolated. A BlockDisplay rotates about a
                 // corner, so its centre is held by a half-extent shift that depends on
                 // the spin angle; interpolating a big per-tick spin makes that centre
-                // orbit — the tyre "flies out". Snapping pins the spin axis exactly.
+                // orbit - the tyre "flies out". Snapping pins the spin axis exactly.
                 // When the hull/steer DO move, every part interpolates together so the
                 // wheel never desyncs from the fork/body.
                 boolean spinOnlyUpdate = part.rollsWithWheel && !hullChanged

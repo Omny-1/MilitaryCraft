@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Boarding (right-click a passing car — a small test of reflexes, the train
+ * Boarding (right-click a passing car - a small test of reflexes, the train
  * won't wait), removal (sneak + right-click with the train item), and getting
  * off (sneak while riding).
  */

@@ -11,7 +11,7 @@ import org.joml.Vector3f;
  * <p>Every model display entity is teleported to the truck's anchor location and
  * carries no yaw of its own; the part's world offset and rotation are baked into
  * the transformation. The Kamaz is a single rigid body, so the only articulation
- * is the hull yaw — there is no turret or barrel chain.
+ * is the hull yaw - there is no turret or barrel chain.
  */
 public final class Transforms {
 

@@ -44,7 +44,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * worker mobs that patrol around it. Position, heading and HP are mirrored onto
  * the core's persistent data so a TckBusRig survives chunk reloads and restarts.
  *
- * <p>The van itself never moves and never animates — the model transforms are set
+ * <p>The van itself never moves and never animates - the model transforms are set
  * once. The only per-tick work is the worker AI, and that is skipped entirely
  * unless a player is nearby.
  */
@@ -142,7 +142,7 @@ public final class TckBusRig {
             }
         }
         if (core == null) {
-            return null; // anchor gone — caller drops the orphan group
+            return null; // anchor gone - caller drops the orphan group
         }
 
         PersistentDataContainer pdc = core.getPersistentDataContainer();
@@ -161,7 +161,7 @@ public final class TckBusRig {
             } catch (IllegalArgumentException ignored) {
             }
         }
-        // Older buses predate these TckBusKeys — fall back to the configured count / 0 defeated.
+        // Older buses predate these TckBusKeys - fall back to the configured count / 0 defeated.
         // Clamp PDC-restored counts: a corrupt/tampered STATE_WORKERS must not spawn an entity
         // storm. Workers can't exceed the configured max; defeated can't exceed workers.
         b.workerCount = Math.max(0, Math.min(cfg.workerCount,
@@ -331,7 +331,7 @@ public final class TckBusRig {
     }
 
     /**
-     * Re-spawn workers that vanished for any reason OTHER than a player kill —
+     * Re-spawn workers that vanished for any reason OTHER than a player kill -
      * natural death, chunk/entity quirks, a partial world copy, an entity-clearing
      * task, etc. Players who kill a worker bump {@link #defeated}, and those stay
      * dead (that is the "kill both → break the TckBusRig" gate). Runs on the TckBusRig tick, so
@@ -608,7 +608,7 @@ public final class TckBusRig {
 
     private void returnToBus(Mob w, TckBusSettings cfg) {
         if (w.getWorld() != world || w.getLocation().distanceSquared(anchor) > 64 * 64) {
-            // Hopelessly far / wrong world — yank it back to a flank slot.
+            // Hopelessly far / wrong world - yank it back to a flank slot.
             Vector3f off = TckBusModel.pointToWorld(new Vector3f(2.0f, 0f, 0f), yaw);
             w.teleport(anchor.clone().add(off.x, off.y, off.z));
             return;
@@ -836,7 +836,7 @@ public final class TckBusRig {
         return false;
     }
 
-    /** The right-hand door mouth, in world space — where captives are dragged. */
+    /** The right-hand door mouth, in world space - where captives are dragged. */
     public Location doorWorld() {
         Vector3f w = TckBusModel.pointToWorld(TckBusModel.DOOR, yaw);
         Location d = anchor.clone().add(w.x, w.y, w.z);

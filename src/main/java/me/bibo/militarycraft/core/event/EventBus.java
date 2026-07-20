@@ -18,8 +18,8 @@ import java.util.logging.Logger;
 
 /**
  * Registers ONE Bukkit listener (this class) for every hot, shared event group and fans
- * each event out to whatever sinks modules have registered (§3.5). With zero sinks
- * registered every handler is just a no-op loop over an empty list — safe by construction.
+ * each event out to whatever sinks modules have registered. With zero sinks
+ * registered every handler is just a no-op loop over an empty list - safe by construction.
  */
 public final class EventBus implements Listener {
 

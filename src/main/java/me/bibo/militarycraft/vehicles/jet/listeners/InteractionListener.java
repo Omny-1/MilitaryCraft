@@ -45,7 +45,7 @@ public final class InteractionListener implements Listener {
         event.setCancelled(true);
         Player player = event.getPlayer();
         // The pilot sits inside this jet's hitbox, so their own right-click lands
-        // here too. That isn't a re-entry attempt — it's a bomb release.
+        // here too. That isn't a re-entry attempt - it's a bomb release.
         if (plugin.jets().byDriver(player.getUniqueId()) == jet) {
             plugin.jets().weapons().dropBomb(jet);
             return;

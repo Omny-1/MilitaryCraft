@@ -32,7 +32,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
 
-/** The only {@link JavaPlugin} in the merged project (§1). */
+/** The plugin entry point. Every module is registered from here. */
 public final class MilitaryCraftPlugin extends JavaPlugin {
 
     private Core core;

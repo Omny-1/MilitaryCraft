@@ -10,7 +10,7 @@ import java.util.UUID;
 /**
  * Process-wide reference count for Bukkit plugin chunk tickets.
  *
- * <p>A Bukkit plugin chunk ticket is keyed only by {@code (plugin, chunk)} — there is
+ * <p>A Bukkit plugin chunk ticket is keyed only by {@code (plugin, chunk)} - there is
  * exactly one per pair, no matter how many independent subsystems want it. So Airstrike,
  * Nuke, a flying Drone and a moving Train (all owned by the same plugin) cannot each hold
  * their own ticket on the same chunk: whoever calls {@code removePluginChunkTicket} first

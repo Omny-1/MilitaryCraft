@@ -1,6 +1,6 @@
 package me.bibo.militarycraft.core.util;
 
-/** Shared angle/interpolation math (copied from TankCraft's util.MathUtil — used by every vehicle module). */
+/** Shared angle/interpolation math (copied from TankCraft's util.MathUtil - used by every vehicle module). */
 public final class MathUtil {
 
     private MathUtil() {

@@ -110,7 +110,7 @@ public final class TckBusDamageListener implements Listener {
         boolean byPlayer = ent.getKiller() != null;
         int remaining = TckBusRig.onWorkerDeath(ent.getUniqueId(), byPlayer);
         if (!byPlayer) {
-            return; // will quietly re-spawn on the next TckBusRig tick — no announcement
+            return; // will quietly re-spawn on the next TckBusRig tick - no announcement
         }
         if (remaining <= 0) {
             TckBusRig.messageNearby(Component.text("All " + TckBusRig.skin().workerPlural + " are dead! Now break the bus.", NamedTextColor.GREEN), 30);

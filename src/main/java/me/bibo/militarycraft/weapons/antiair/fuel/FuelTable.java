@@ -41,7 +41,7 @@ public final class FuelTable {
                 break;
         }
         // Broad wooden families via tags (matches vanilla 300t for logs/planks/
-        // wood, 300t for fences/gates, 150t for slabs, etc. — kept simple at 300).
+        // wood, 300t for fences/gates, 150t for slabs, etc. - kept simple at 300).
         if (Tag.LOGS.isTagged(m)
                 || Tag.PLANKS.isTagged(m)
                 || Tag.WOODEN_STAIRS.isTagged(m)

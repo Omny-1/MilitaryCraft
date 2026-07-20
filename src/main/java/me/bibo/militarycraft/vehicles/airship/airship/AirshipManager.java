@@ -236,7 +236,7 @@ public final class AirshipManager {
             }
             String idStr = e.getPersistentDataContainer().get(Keys.SHIP_ID, PersistentDataType.STRING);
             if (idStr == null) {
-                continue; // e.g. a bomb display (tagged but no ship id) — ignore
+                continue; // e.g. a bomb display (tagged but no ship id) - ignore
             }
             UUID id;
             try {

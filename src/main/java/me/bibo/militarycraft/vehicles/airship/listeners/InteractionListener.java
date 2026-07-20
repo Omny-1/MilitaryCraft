@@ -42,12 +42,12 @@ public final class InteractionListener implements Listener {
         event.setCancelled(true);
         Player player = event.getPlayer();
         // The pilot sits inside this airship's hitbox, so their own right-click
-        // lands here too. That isn't re-entry — it's a bomb release.
+        // lands here too. That isn't re-entry - it's a bomb release.
         if (plugin.airships().byDriver(player.getUniqueId()) == ship) {
             plugin.airships().weapons().dropBomb(ship);
             return;
         }
-        // A passenger (non-pilot) right-clicking: ignore — they don't re-board
+        // A passenger (non-pilot) right-clicking: ignore - they don't re-board
         // and they don't control the weapons.
         if (ship.hasRider(player.getUniqueId())) {
             return;

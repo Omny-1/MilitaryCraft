@@ -33,7 +33,7 @@ import java.util.UUID;
  * core the operator rides, an Interaction hitbox, and a set of block-display
  * model parts) plus its attitude, health, battery and rocket load.
  *
- * <p>The operator rides the core and the UAV flies forward on its own — they only
+ * <p>The operator rides the core and the UAV flies forward on its own - they only
  * steer with the camera. It carries four one-shot rockets and rams its warhead
  * into targets/terrain. State is mirrored onto the core so it survives reloads.
  */
@@ -309,7 +309,7 @@ public final class Drone implements VehicleHandle {
         Location base = anchor;
         // The camera (the ridden core) sits at the true anchor. The visual model is
         // teleported to where the drone WILL be in `interp` ticks, so its interp lerp
-        // "arrives" exactly on the real position each frame — smooth, and no lag
+        // "arrives" exactly on the real position each frame - smooth, and no lag
         // behind the camera (for constant velocity, which steering keeps near-constant).
         Location predicted = moved
                 ? new Location(world, anchor.getX() + velX * interp,
@@ -391,7 +391,7 @@ public final class Drone implements VehicleHandle {
     /**
      * Keep the UAV's current chunk force-loaded while it flies (one chunk only, the
      * ticket travels with it). This is async/cheap; we deliberately do NOT call a
-     * synchronous getChunkAt here — that risked main-thread stalls / watchdog and
+     * synchronous getChunkAt here - that risked main-thread stalls / watchdog and
      * was not the cause of the far-flight bug anyway.
      */
     public void ensureChunkLoaded() {

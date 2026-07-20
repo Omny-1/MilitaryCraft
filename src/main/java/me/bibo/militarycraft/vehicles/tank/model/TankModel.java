@@ -14,7 +14,7 @@ import java.util.List;
  *
  * <p>Every number below is written in <em>base</em> units and multiplied by
  * {@link #SCALE} on the way out, so the whole tank (geometry, pivots, muzzle and
- * hitbox) grows uniformly about the ground-centre origin from a single knob —
+ * hitbox) grows uniformly about the ground-centre origin from a single knob -
  * which keeps it sitting flat on the ground at any scale.
  */
 public final class TankModel {
@@ -77,7 +77,7 @@ public final class TankModel {
         // Front idler + rear sprocket: a touch larger than the road wheels and
         // sitting at the very ends. All wheels are narrow and pushed just proud of
         // the track skin (x=1.35 vs track outer 1.40) so no wheel face is coplanar
-        // with the track or another wheel — that is what stops the z-fighting.
+        // with the track or another wheel - that is what stops the z-fighting.
         p.add(TankPart.block(H, WHEEL, v(-1.35f, 0.44f, 2.15f), v(0.34f, 0.72f, 0.72f)));
         p.add(TankPart.block(H, WHEEL, v(1.35f, 0.44f, 2.15f), v(0.34f, 0.72f, 0.72f)));
         p.add(TankPart.block(H, WHEEL, v(-1.35f, 0.44f, -2.15f), v(0.34f, 0.72f, 0.72f)));

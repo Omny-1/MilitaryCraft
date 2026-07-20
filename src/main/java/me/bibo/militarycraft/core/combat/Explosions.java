@@ -16,8 +16,8 @@ import org.bukkit.scheduler.BukkitTask;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Shared explosion plumbing (§6): the internal-explosion guard flag (dedupes every
- * source plugin's own {@code internalExplosion} boolean — TankCraft/KamazCraft/
+ * Shared explosion plumbing: the internal-explosion guard flag (dedupes every
+ * source plugin's own {@code internalExplosion} boolean - TankCraft/KamazCraft/
  * JetCraft each had one) plus the standard impact fx.
  */
 public final class Explosions {

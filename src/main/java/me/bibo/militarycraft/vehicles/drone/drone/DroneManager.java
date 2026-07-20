@@ -320,7 +320,7 @@ public final class DroneManager {
             // Only the CORE unloading tears a drone down. The launch stand (parked at
             // the faraway launch point, same DRONE_ID, non-persistent) and the display
             // parts must NOT kill a drone that is still flying with its operator
-            // elsewhere — that was the ~373-block "freeze + drop" bug: the launch chunk
+            // elsewhere - that was the ~373-block "freeze + drop" bug: the launch chunk
             // unloaded a few seconds after take-off, the stand unloaded with it, and this
             // handler used to forget the whole (still-flying) drone.
             String role = e.getPersistentDataContainer().get(Keys.DRONE_PART, PersistentDataType.STRING);
@@ -420,14 +420,14 @@ public final class DroneManager {
         return true;
     }
 
-    /** Spawn the breakable launch stand at the launch point — named after the
+    /** Spawn the breakable launch stand at the launch point - named after the
      *  operator and wearing their head, so it reads as "their" control post. */
     private ArmorStand spawnStand(Drone drone, Location loc, Player owner) {
         ArmorStand stand = loc.getWorld().spawn(loc, ArmorStand.class, a -> {
             a.setGravity(false);
             a.setBasePlate(true);
             a.setArms(true);
-            a.setPersistent(false); // despawns on unload — the return Location is kept anyway
+            a.setPersistent(false); // despawns on unload - the return Location is kept anyway
             a.setCustomNameVisible(true);
             a.customName(Component.text(owner.getName(), NamedTextColor.AQUA));
             a.getPersistentDataContainer().set(Keys.DRONE_ID, PersistentDataType.STRING, drone.id().toString());

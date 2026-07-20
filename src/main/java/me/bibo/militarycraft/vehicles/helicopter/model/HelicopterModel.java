@@ -19,7 +19,7 @@ import java.util.Objects;
  * <p>All coordinates are in helicopter space: origin at the pilot seat, +X right,
  * +Y up, +Z forward = nose. Anti-flicker rules baked in here: structural boxes
  * OVERLAP (never share an exact coplanar face) and every decal (glass, star,
- * stripe, door frame) sits PROUD of the surface it decorates — two coplanar
+ * stripe, door frame) sits PROUD of the surface it decorates - two coplanar
  * faces are what z-fight. Roundness uses a smaller 45deg-rolled twin at the same
  * centre (its diagonal faces never line up with the main box's axis-aligned
  * ones). The orientation/spin math lives entirely in {@link Transforms}.
@@ -76,7 +76,7 @@ public final class HelicopterModel {
             new HitboxSpec(new Vector3f(0f, 0.6f, -1.0f), 4.4f, 4.0f),   // cabin (boarding)
             new HitboxSpec(new Vector3f(0f, 0.0f, 3.2f), 3.2f, 3.0f),    // cockpit / nose
             new HitboxSpec(new Vector3f(0f, 1.4f, -8.0f), 2.0f, 2.4f),   // tail boom
-            // Main-rotor disc: deliberately BIG and RAISED to the rotor level —
+            // Main-rotor disc: deliberately BIG and RAISED to the rotor level -
             // out past the blade tips (~2x the old footprint, so another player can
             // actually hit the rotor) and sitting up at the disc, not dipped down to
             // cabin level. It stays tall enough that a pilot enlarged by the
@@ -147,7 +147,7 @@ public final class HelicopterModel {
         // drooping rounded nose (overlaps the forward fuselage front)
         p.add(Part.block(BODY, new Vector3f(0f, -0.55f, 3.7f), new Vector3f(1.9f, 1.25f, 1.6f), -10f, 0f, 0f));
         p.add(Part.block(BODY, new Vector3f(0f, -0.95f, 4.5f), new Vector3f(1.4f, 0.85f, 1.1f), -18f, 0f, 0f));
-        // wrap-around greenhouse — all PROUD of the surface so it never z-fights
+        // wrap-around greenhouse - all PROUD of the surface so it never z-fights
         // windscreen at its ORIGINAL -30 pitch and height, lowered slightly so
         // the bottom edge sits deeper into the nose. Angle unchanged.
         p.add(Part.block(GLASS, new Vector3f(0f, 0.25f, 3.35f), new Vector3f(1.95f, 1.25f, 1.5f), -30f, 0f, 0f));
@@ -164,7 +164,7 @@ public final class HelicopterModel {
             p.add(Part.block(GLASS, new Vector3f(1.40f, 0.55f, z), new Vector3f(0.14f, 0.7f, 0.7f)));
             p.add(Part.block(GLASS, new Vector3f(-1.40f, 0.55f, z), new Vector3f(0.14f, 0.7f, 0.7f)));
         }
-        // sliding-door frame outline on the left flank (proud, thin) — dark-green
+        // sliding-door frame outline on the left flank (proud, thin) - dark-green
         // camo, not red
         p.add(Part.block(CAMO, new Vector3f(-1.41f, 0.15f, -0.9f), new Vector3f(0.06f, 1.7f, 0.14f)));
         p.add(Part.block(CAMO, new Vector3f(-1.41f, 0.15f, 0.9f), new Vector3f(0.06f, 1.7f, 0.14f)));
@@ -201,7 +201,7 @@ public final class HelicopterModel {
         p.add(Part.block(BODY, new Vector3f(0f, 0.95f, -5.8f), new Vector3f(1.35f, 1.35f, 2.4f)));
         p.add(Part.block(BODY, new Vector3f(0f, 1.25f, -7.6f), new Vector3f(1.05f, 1.05f, 2.2f)));
         p.add(Part.block(BODY, new Vector3f(0f, 1.55f, -9.2f), new Vector3f(0.82f, 0.82f, 2.0f)));
-        // 45deg rounding twin (no flat camo stripe here — on the rising round boom
+        // 45deg rounding twin (no flat camo stripe here - on the rising round boom
         // it kept ending up coplanar with the skin and z-fighting)
         p.add(Part.block(BODY, new Vector3f(0f, 1.2f, -7.0f), new Vector3f(1.0f, 1.0f, 3.2f), 0f, 0f, 45f));
     }
@@ -212,7 +212,7 @@ public final class HelicopterModel {
         Part.Role HUB = Part.Role.HUB;
         // swept vertical fin: a lower block that sinks INTO the boom (volume
         // overlap, no coplanar face) + an upper block offset back. The pitched
-        // fillet is gone — that sloped face was the tail's z-fighting surface.
+        // fillet is gone - that sloped face was the tail's z-fighting surface.
         p.add(Part.block(CAMO, new Vector3f(0f, 2.5f, -9.9f), new Vector3f(0.5f, 2.6f, 1.6f)));
         p.add(Part.block(CAMO, new Vector3f(0f, 3.5f, -10.5f), new Vector3f(0.5f, 1.2f, 1.05f)));
         // tail-rotor gearbox fairing
@@ -241,7 +241,7 @@ public final class HelicopterModel {
 
     private static void buildGear(List<Part> p) {
         Part.Role GEAR = Part.Role.GEAR;
-        // nose wheel — the wheel disc is THIN in X (axle sideways) so it rolls
+        // nose wheel - the wheel disc is THIN in X (axle sideways) so it rolls
         // forward/back, not sideways
         p.add(Part.block(GEAR, new Vector3f(0f, -1.2f, 3.0f), new Vector3f(0.2f, 0.95f, 0.2f)));
         p.add(Part.block(GEAR, new Vector3f(0f, -1.68f, 3.0f), new Vector3f(0.26f, 0.62f, 0.62f)));

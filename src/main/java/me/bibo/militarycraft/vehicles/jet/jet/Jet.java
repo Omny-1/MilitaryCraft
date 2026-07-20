@@ -327,7 +327,7 @@ public final class Jet implements VehicleHandle {
         }
 
         // The anchor already carries our exact position (yaw/pitch are 0 on it,
-        // which is what every part wants — rotation lives in the transformation).
+        // which is what every part wants - rotation lives in the transformation).
         // Reusing it avoids allocating a Location every tick.
         Location base = anchor;
         if (moved) {
@@ -465,7 +465,7 @@ public final class Jet implements VehicleHandle {
     /**
      * Kamikaze: the jet slams into terrain. The impact point itself explodes
      * (crater + fire, terrain-breaking), then the jet is destroyed with its own
-     * fireball and debris — leaving the consequences of the crash on the world.
+     * fireball and debris - leaving the consequences of the crash on the world.
      */
     public void destroyByCrash(Location impact) {
         JetConfig cfg = plugin.config();

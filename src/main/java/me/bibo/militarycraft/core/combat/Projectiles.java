@@ -5,7 +5,7 @@ import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Projectile;
 
-/** Weapon-projectile classification (§6), generalised from TankManager's {@code isWeaponProjectile}. */
+/** Weapon-projectile classification, generalised from TankManager's {@code isWeaponProjectile}. */
 public final class Projectiles {
 
     private Projectiles() {

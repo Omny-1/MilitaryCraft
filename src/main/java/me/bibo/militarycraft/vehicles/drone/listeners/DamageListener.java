@@ -69,7 +69,7 @@ public final class DamageListener implements Listener {
             if (seated == null) {
                 return;
             }
-            // The seated operator is invulnerable — the hit is routed onto the UAV, so
+            // The seated operator is invulnerable - the hit is routed onto the UAV, so
             // any weapon that can hurt a player brings down the UAV it controls.
             double dmg = event.getDamage();
             event.setCancelled(true);

@@ -16,7 +16,7 @@ import java.util.Collection;
 import java.util.UUID;
 
 /**
- * A custom munition — a rocket (fast, flat, fiery trail) or a bomb (arcing,
+ * A custom munition - a rocket (fast, flat, fiery trail) or a bomb (arcing,
  * heavy, smoke trail). It is not a real entity: we move a point each tick (in
  * sub-steps for accurate hit detection), apply gravity, leave a trail, and
  * detonate on the first block or entity it meets.

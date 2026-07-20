@@ -136,7 +136,7 @@ public final class Turret {
             }
         }
         if (core == null) {
-            return null; // anchor gone — drop the group
+            return null; // anchor gone - drop the group
         }
 
         PersistentDataContainer pdc = core.getPersistentDataContainer();
@@ -292,7 +292,7 @@ public final class Turret {
     /**
      * Cheap periodic persistence so we don't write PDC every tick. Mode/fuel/
      * health/damage already persist immediately on change; this only refreshes the
-     * (non-critical) aim + burn snapshot, so a slow cadence is fine — on reload the
+     * (non-critical) aim + burn snapshot, so a slow cadence is fine - on reload the
      * turret re-aims within a tick anyway.
      */
     public void persistThrottled() {
@@ -312,7 +312,7 @@ public final class Turret {
     /**
      * Push model-part transforms when the aim angles changed (anchor never moves).
      * Group-aware: BASE parts are pushed only once, TURRET parts only when yaw
-     * changes, GUN parts when yaw OR pitch changes — so a pure elevation tweak only
+     * changes, GUN parts when yaw OR pitch changes - so a pure elevation tweak only
      * re-sends ~12 barrel transforms instead of the whole turret.
      */
     public void refreshModel() {

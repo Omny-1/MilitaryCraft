@@ -45,7 +45,7 @@ public class AirstrikeSequence extends BukkitRunnable {
     private final double bombRunLength;
     private final double bombRunHalf;
 
-    // heading (constant for the whole pass) — precomputed once
+    // heading (constant for the whole pass) - precomputed once
     private final double dirX;
     private final double dirZ;
     private final float heading;
@@ -140,7 +140,7 @@ public class AirstrikeSequence extends BukkitRunnable {
         }
         String raw = plugin.getConfig().getString("warning-message", "&c&l⚠ AIRSTRIKE! Take cover!");
         Component warning = AirstrikeRuntime.text(raw);
-        // Action bar instead of a full-screen title — compact but still prominent.
+        // Action bar instead of a full-screen title - compact but still prominent.
         for (Player p : world.getNearbyPlayers(target, warningRadius)) {
             p.sendActionBar(warning);
             p.playSound(p.getLocation(), Sound.BLOCK_BELL_USE, 2.0f, 0.5f);

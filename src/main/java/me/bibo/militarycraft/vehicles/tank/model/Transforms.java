@@ -16,9 +16,9 @@ import org.joml.Vector3f;
  * <p><b>Articulation chain.</b> A part is positioned by a small kinematic chain so
  * each sub-assembly turns about the right axis:
  * <ul>
- *   <li>HULL — fixed in hull space.</li>
- *   <li>TURRET — yaws about the turret ring ({@link TankModel#TURRET_PIVOT}).</li>
- *   <li>BARREL — first elevates about the gun trunnion
+ *   <li>HULL - fixed in hull space.</li>
+ *   <li>TURRET - yaws about the turret ring ({@link TankModel#TURRET_PIVOT}).</li>
+ *   <li>BARREL - first elevates about the gun trunnion
  *       ({@link TankModel#BARREL_PIVOT}), then rides the turret yaw about the
  *       turret ring. Doing the yaw about the turret axis (not the gun's own point)
  *       is what keeps the gun's base attached to the turret as it traverses.</li>

@@ -15,13 +15,13 @@ import org.bukkit.scheduler.BukkitTask;
 import java.util.logging.Logger;
 
 /**
- * The facade handed to every module on enable/reload (§4.1).
+ * The facade handed to every module on enable/reload.
  *
- * <p>Deviation from the literal §4.1 accessor list: no {@code keys()}/{@code text()} getters.
+ * <p>There are deliberately no {@code keys()} or {@code text()} getters here.
  * {@link me.bibo.militarycraft.core.key.Keys} and {@link me.bibo.militarycraft.core.text.Text}
- * are pure static utilities (per their own spec, e.g. {@code Keys.of(...)}, {@code Text.of(...)}
- * are always called directly, never through {@code core}) — an accessor returning an object
- * for them would be dead indirection with no caller.
+ * are pure static utilities, always called directly as {@code Keys.of(...)} and
+ * {@code Text.of(...)} rather than through {@code core}, so an accessor returning an
+ * object for them would be indirection with no caller.
  */
 public final class Core {
 

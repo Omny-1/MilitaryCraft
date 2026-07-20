@@ -4,7 +4,7 @@ import org.bukkit.entity.Entity;
 
 /**
  * Global scoreboard tag + module-stamp PDC put on every entity MilitaryCraft spawns
- * (§3.1). Lets a world sweep (`/mc cleanup`) find and group all of our entities
+ *. Lets a world sweep (`/mc cleanup`) find and group all of our entities
  * without per-module scoreboard tags.
  */
 public final class EntityTag {

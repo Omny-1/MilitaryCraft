@@ -30,7 +30,7 @@ public final class Explosions {
 
         me.bibo.militarycraft.core.combat.Explosions.impactFx(loc);
 
-        // Direct damage to any tanks caught in the blast — but never the tank
+        // Direct damage to any tanks caught in the blast - but never the tank
         // that fired this shell (no self-damage from your own gun).
         for (Tank tank : new java.util.ArrayList<>(plugin.tanks().all())) {
             if (ownerTankToSkip != null && tank.id().equals(ownerTankToSkip)) {

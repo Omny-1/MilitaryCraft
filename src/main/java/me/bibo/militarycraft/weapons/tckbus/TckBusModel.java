@@ -17,7 +17,7 @@ import java.util.List;
  * the ground, +X right, +Y up, +Z forward (the nose / grille). The whole van is
  * rotated by the placement yaw at render time ({@link #forPart}); the model itself
  * is a fixed list of cubes, built once and cached. Reshape the van by editing the
- * numbers here — nothing else needs to change.
+ * numbers here - nothing else needs to change.
  */
 public final class TckBusModel {
 

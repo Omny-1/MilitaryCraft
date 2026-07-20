@@ -12,7 +12,7 @@ import java.util.List;
  * with dark nozzles, intakes, and a few underwing missiles.
  *
  * <p>All coordinates are in jet space (origin at the jet centre, +X right,
- * +Y up, +Z forward = nose). Edit the numbers here to reshape the jet — the
+ * +Y up, +Z forward = nose). Edit the numbers here to reshape the jet - the
  * orientation math lives entirely in {@link Transforms}.
  */
 public final class JetModel {

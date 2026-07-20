@@ -41,7 +41,7 @@ import java.util.UUID;
  * hitboxes spread over the gondola and the envelope so the whole craft is
  * clickable/hittable, and a set of block-display model parts. Up to
  * {@code seats.capacity} players ride; only the FIRST to board (the driver)
- * flies it — the rest are passengers. Full state is mirrored onto the core's
+ * flies it - the rest are passengers. Full state is mirrored onto the core's
  * persistent data so the airship survives chunk reloads and restarts.
  */
 public final class Airship implements VehicleHandle {
@@ -161,7 +161,7 @@ public final class Airship implements VehicleHandle {
             }
         }
         if (core == null) {
-            return null; // the anchor is gone — drop whatever is left of the group
+            return null; // the anchor is gone - drop whatever is left of the group
         }
 
         PersistentDataContainer pdc = core.getPersistentDataContainer();
@@ -1071,13 +1071,13 @@ public final class Airship implements VehicleHandle {
     /**
      * Replenish one bomb when its regen timer elapses (called each tick). The
      * regen timer only advances while the fire-rate cooldown has fully recovered
-     * (bombCooldown == 0), so it does NOT run in parallel with the cooldown —
+     * (bombCooldown == 0), so it does NOT run in parallel with the cooldown -
      * continuous bombing therefore can't be sustained: you only refill once you
      * stop dropping bombs.
      */
     public void regenAmmo(AirshipConfig cfg) {
         if (bombCooldown > 0) {
-            return; // still on attack cooldown — no replenishment in parallel
+            return; // still on attack cooldown - no replenishment in parallel
         }
         if (bombAmmo < cfg.bombLoad && ++bombRegen >= cfg.bombRegenTicks) {
             bombAmmo++;

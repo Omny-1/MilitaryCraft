@@ -24,7 +24,7 @@ import java.util.UUID;
 
 /**
  * A dropped bomb: a visible falling block-display with a smoke trail. It is not a
- * real entity-physics body — we move a point each tick (in sub-steps for accurate
+ * real entity-physics body - we move a point each tick (in sub-steps for accurate
  * hit detection), apply gravity into an arc, leave smoke, and detonate the first
  * block or entity it meets into an area blast with a short impact afterglow.
  *

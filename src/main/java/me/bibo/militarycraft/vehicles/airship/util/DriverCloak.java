@@ -9,7 +9,7 @@ import org.bukkit.inventory.ItemStack;
 
 /**
  * Hides a seated rider's armour and held items from other players. The real
- * inventory is never touched — we only send "this entity is wearing nothing"
+ * inventory is never touched - we only send "this entity is wearing nothing"
  * equipment packets to every other client (pure Paper API, no ProtocolLib). This
  * complements {@code setInvisible} so the floating armour a cloaked rider would
  * otherwise leave behind disappears too.

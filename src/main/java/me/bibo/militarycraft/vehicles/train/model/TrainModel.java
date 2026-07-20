@@ -16,7 +16,7 @@ import static me.bibo.militarycraft.vehicles.train.model.TrainPart.rot;
  *
  * <p>Car space: origin at the centre of the car on the rail surface, +Z is
  * the direction of travel. Octagonal "cylinders" are built from a pair of
- * overlapping boxes, one rolled 45° — see {@link #octX} / {@link #octZ}.</p>
+ * overlapping boxes, one rolled 45° - see {@link #octX} / {@link #octZ}.</p>
  */
 public final class TrainModel {
 
@@ -24,7 +24,7 @@ public final class TrainModel {
     public static final float WAGON_LENGTH = 7.5f;
     public static final float WIDTH = 2.8f;
 
-    /** Wheel radii (blocks) — must match the octagon face sizes below, since
+    /** Wheel radii (blocks) - must match the octagon face sizes below, since
      *  a wheel's spin rate is distance/radius (rolling without slipping). */
     public static final float DRIVER_WHEEL_RADIUS = 0.75f;
     public static final float LEADING_WHEEL_RADIUS = 0.5f;
@@ -66,11 +66,11 @@ public final class TrainModel {
     }
 
     /**
-     * Same idea, but the round face lies in the X-Y plane (thin along Z —
+     * Same idea, but the round face lies in the X-Y plane (thin along Z -
      * a disc seen face-on down the length axis, like the boiler). Rolled
      * about Z ("roll"), with an anti-z-fighting inset: the second (diamond)
      * copy is nudged a hair thinner than the first so their flat faces never
-     * sit on the exact same plane — perfectly coplanar same-material quads
+     * sit on the exact same plane - perfectly coplanar same-material quads
      * z-fight and shimmer, which is exactly the "gray squares" bug this avoids.
      */
     private static void octZ(List<TrainPart> m, Material mat, double x, double y, double z,
@@ -82,7 +82,7 @@ public final class TrainModel {
 
     /**
      * An octagon-ish rolling wheel whose round face lies in the Y-Z plane
-     * (thin along X — a disc seen edge-on from the side, like a driver wheel
+     * (thin along X - a disc seen edge-on from the side, like a driver wheel
      * or a bogie wheel). Both facets are tagged to spin about local X (the
      * axle) as the train moves, at {@code radius}; using any other axis here
      * would just skew the box instead of faceting AND spinning it correctly.
@@ -188,7 +188,7 @@ public final class TrainModel {
         for (int side = -1; side <= 1; side += 2) {
             double x = side * 1.22;
             // Pillars/glass now run all the way up to the roof's underside
-            // (was 0.8 tall, stopping 0.32 short — the roof used to visibly
+            // (was 0.8 tall, stopping 0.32 short - the roof used to visibly
             // float above the cab walls).
             m.add(p(BOILER, x, 2.86, -2.05, 0.14, 1.12, 0.30));            // window pillars
             m.add(p(BOILER, x, 2.86, -3.15, 0.14, 1.12, 0.24));
@@ -213,7 +213,7 @@ public final class TrainModel {
 
     // ------------------------------------------------------------ wagons
 
-    /** Passenger car, {@code variant} 0..2 — each dressed a little differently. */
+    /** Passenger car, {@code variant} 0..2 - each dressed a little differently. */
     public static List<TrainPart> wagon(int variant) {
         Material body;
         Material trim;

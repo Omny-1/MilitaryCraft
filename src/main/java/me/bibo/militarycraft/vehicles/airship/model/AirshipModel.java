@@ -35,7 +35,7 @@ public final class AirshipModel {
      * A clickable / hittable Interaction proxy. Interaction entities are
      * axis-aligned boxes positioned (not rotated) at a local centre that follows
      * the airship's orientation, so we spread several along the envelope to make
-     * the whole balloon — not just the gondola — boardable and damageable.
+     * the whole balloon - not just the gondola - boardable and damageable.
      */
     public record HitboxSpec(Vector3f center, float width, float height) {
     }
@@ -81,7 +81,7 @@ public final class AirshipModel {
 
     /**
      * Key points across the whole hull (airship space) used to measure how close
-     * an explosion is to the (huge) airship — the closest of these is the
+     * an explosion is to the (huge) airship - the closest of these is the
      * effective contact distance, so a creeper next to the envelope counts even
      * though the anchor is way down at the gondola.
      */

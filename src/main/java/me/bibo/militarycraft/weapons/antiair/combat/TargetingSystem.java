@@ -50,7 +50,7 @@ public final class TargetingSystem {
     /**
      * Find the best valid target for this turret. Targeting priority: a target it
      * can actually SHOOT (clear line of sight) is preferred over a closer one
-     * hiding behind a wall — so the turret picks the nearest target it can hit,
+     * hiding behind a wall - so the turret picks the nearest target it can hit,
      * not just the nearest target. If nothing has line of sight it falls back to
      * the nearest (it tracks it, and will open up the moment the wall is gone).
      */
@@ -59,7 +59,7 @@ public final class TargetingSystem {
         Location center = turret.sightWorld();
 
         // SVO only ever shoots players, so iterate the (tiny) player list instead
-        // of scanning every entity in a 60-block cube — far cheaper.
+        // of scanning every entity in a 60-block cube - far cheaper.
         Collection<? extends Entity> candidates;
         if (turret.mode() == Mode.SVO) {
             candidates = turret.world().getPlayers();
@@ -99,7 +99,7 @@ public final class TargetingSystem {
                 return le;
             }
         }
-        return inRange.get(0); // none of the nearest are reachable — track the closest
+        return inRange.get(0); // none of the nearest are reachable - track the closest
     }
 
     /** Clear shot from the gun to a target's centre (no solid blocks between)? */

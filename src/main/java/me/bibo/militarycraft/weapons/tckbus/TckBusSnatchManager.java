@@ -96,7 +96,7 @@ public final class TckBusSnatchManager {
             if (System.currentTimeMillis() < until) {
                 return false; // still in the post-stun grace window
             }
-            immuneUntil.remove(p.getUniqueId()); // expired — prune lazily
+            immuneUntil.remove(p.getUniqueId()); // expired - prune lazily
         }
         if (TckBusRig != null && p.getWorld() != TckBusRig.world()) {
             return false;
@@ -160,7 +160,7 @@ public final class TckBusSnatchManager {
 
     // ----------------------------------------------------------------- entry point
 
-    /** A worker reached the victim and grabbed them — start the stun. */
+    /** A worker reached the victim and grabbed them - start the stun. */
     public void onGrab(Player p, TckBusRig TckBusRig, double hitDamage) {
         TckBusSettings cfg = plugin.config();
         if (!cfg.snatchEnabled || isHeld(p) || !isEligible(p, TckBusRig)) {

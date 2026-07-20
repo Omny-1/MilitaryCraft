@@ -294,7 +294,7 @@ public final class Truck implements VehicleHandle {
 
     /**
      * Where the driver's seat (and thus the camera) sits: raised above the hull and
-     * pushed a little toward the rear so the view clears the tall cab — even in F5.
+     * pushed a little toward the rear so the view clears the tall cab - even in F5.
      * The back offset rotates with the hull, so it stays "behind" as the truck turns.
      */
     private Location seatLocation() {

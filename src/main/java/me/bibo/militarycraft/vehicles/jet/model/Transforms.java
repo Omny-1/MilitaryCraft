@@ -12,7 +12,7 @@ import org.joml.Vector3f;
  * every part. Each model display sits at the jet's anchor location with no
  * rotation of its own; the part's local offset and base rotation are baked into
  * the transformation. If the model ever looks mirrored or rotated 180°, flip the
- * signs in {@link #orientation} here — it's the single source of truth.
+ * signs in {@link #orientation} here - it's the single source of truth.
  */
 public final class Transforms {
 

@@ -553,7 +553,7 @@ public final class JetManager {
         return internalExplosion;
     }
 
-    /** The pilot who fired the munition currently detonating — immune to its blast. */
+    /** The pilot who fired the munition currently detonating - immune to its blast. */
     public void setMunitionImmunePilot(UUID pilot) {
         this.munitionImmunePilot = pilot;
     }

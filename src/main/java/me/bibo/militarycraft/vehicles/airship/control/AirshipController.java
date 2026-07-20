@@ -18,7 +18,7 @@ import org.bukkit.entity.Player;
  * given (neutral buoyancy). The mouse steers heading (look left/right) and trims
  * altitude (look up to rise, down to sink); W/S throttle forward/reverse; Space
  * is the gas-burner lift boost, limited by a heat gauge so you cannot climb
- * forever. It is huge and ponderous — everything eases in slowly.
+ * forever. It is huge and ponderous - everything eases in slowly.
  *
  * <p>Bumping terrain just stops the airship (it is far too big and slow to
  * "crash"); it can only be destroyed by accumulated blast damage.
@@ -84,7 +84,7 @@ public final class AirshipController {
 
         applyMotion(ship, cfg, speed, vSpeed);
         if (!ship.isActive()) {
-            return; // crashed into terrain this tick — nothing left to render
+            return; // crashed into terrain this tick - nothing left to render
         }
 
         // --- effects ---
@@ -105,7 +105,7 @@ public final class AirshipController {
     /**
      * Drift after a mid-air bail-out: roll levels, the burner is untended so the
      * airship slowly loses lift and sinks while momentum bleeds away, until it
-     * settles on the ground and parks. No explosion — it is too gentle to crash.
+     * settles on the ground and parks. No explosion - it is too gentle to crash.
      */
     public static void glide(Airship ship, AirshipConfig cfg) {
         ship.setRoll(MathUtil.approachAngle(ship.roll(), 0.0, cfg.rollReturnSpeed));

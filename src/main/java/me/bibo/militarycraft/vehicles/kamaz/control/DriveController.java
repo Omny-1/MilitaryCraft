@@ -23,7 +23,7 @@ import java.util.UUID;
 
 /**
  * Arcade driving for the Kamaz: the hull turns toward where the driver looks while
- * moving forward; W/S are throttle. There is no turret — it is one rigid body.
+ * moving forward; W/S are throttle. There is no turret - it is one rigid body.
  *
  * <p>The vertical model samples the ground under the whole (long) footprint and
  * rides on the highest support found, so the truck doesn't jitter on block edges,

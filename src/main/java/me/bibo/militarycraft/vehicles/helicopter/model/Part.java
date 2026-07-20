@@ -38,7 +38,7 @@ public final class Part {
     public final Spin spin;
     /**
      * When true the part pivots at its offset (its min-X corner) instead of its
-     * centre — used for rotor blades so the client's position interpolation
+     * centre - used for rotor blades so the client's position interpolation
      * can't bow the blade off the hub as it spins (it sweeps a clean disc).
      */
     public final boolean radial;

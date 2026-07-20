@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Formalises the AntiAir→vehicle contract as a direct call (§4.4), replacing the old
- * tagged-throwaway-ArmorStand hack. Behaviour MUST match the old semantics exactly
- * (flat 1-creeper within ~8 blocks, no knockback, no block break) — see §11.
+ * The AntiAir-to-vehicle contract as a direct call, replacing the older
+ * tagged-throwaway-ArmorStand approach. Behaviour must match the old semantics exactly:
+ * a flat 1-creeper hit within roughly 8 blocks, no knockback, no block break.
  */
 public interface VehicleCombatService {
 

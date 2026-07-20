@@ -41,7 +41,7 @@ public final class CameraServiceImpl implements CameraService {
     private final Attribute scaleAttribute = Registry.ATTRIBUTE.get(NamespacedKey.minecraft("scale"));
     private final Map<String, Double> tagScales = new ConcurrentHashMap<>();
     private final Map<String, Double> compatibilityScales = new ConcurrentHashMap<>();
-    /** Players we've applied our transient scale modifier to this process session — used to
+    /** Players we've applied our transient scale modifier to this process session - used to
      *  force-migrate a legacy PERSISTENT modifier of the same amount on first apply. */
     private final Set<UUID> transientApplied = ConcurrentHashMap.newKeySet();
 

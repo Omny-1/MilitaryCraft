@@ -85,7 +85,7 @@ public final class ShellManager {
     /**
      * Overheat only triggers on genuine spam. One click sends a few swing events,
      * so we count fire-presses made while reloading and only hurt the tank once the
-     * count crosses the threshold — a single shot (or a couple of stray swings)
+     * count crosses the threshold - a single shot (or a couple of stray swings)
      * never costs HP. The counter is cleared on a clean shot and when the gun is
      * ready again (see {@code TankManager.tick}).
      */

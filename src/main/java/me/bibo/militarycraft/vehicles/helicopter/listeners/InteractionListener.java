@@ -42,12 +42,12 @@ public final class InteractionListener implements Listener {
         event.setCancelled(true);
         Player player = event.getPlayer();
         // The pilot sits inside this helicopter's hitbox, so their own right-click
-        // lands here too. That isn't re-entry — it's a bomb release.
+        // lands here too. That isn't re-entry - it's a bomb release.
         if (plugin.helicopters().byDriver(player.getUniqueId()) == heli) {
             plugin.helicopters().weapons().dropBomb(heli);
             return;
         }
-        // A passenger (non-pilot) right-clicking: ignore — they don't re-board
+        // A passenger (non-pilot) right-clicking: ignore - they don't re-board
         // and they don't control the weapons.
         if (heli.hasRider(player.getUniqueId())) {
             return;

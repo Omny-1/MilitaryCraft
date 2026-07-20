@@ -48,7 +48,7 @@ public final class Explosions {
 
         me.bibo.militarycraft.core.combat.Explosions.impactFx(loc);
 
-        // Direct area damage to any jets caught in the blast — but never the jet
+        // Direct area damage to any jets caught in the blast - but never the jet
         // that fired this munition (no self-damage from your own weapons).
         for (Jet jet : new java.util.ArrayList<>(plugin.jets().all())) {
             if (ownerJetToSkip != null && jet.id().equals(ownerJetToSkip)) {

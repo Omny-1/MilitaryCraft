@@ -24,7 +24,7 @@ public final class TurretModel {
     /** Trunnion: the gun barrels elevate (pitch) about this point. Must have x=0. */
     public static final Vector3f GUN_PIVOT = new Vector3f(0f, 2.05f, 0.15f);
 
-    /** Muzzle point in turret space (barrel tips) — bullets are born here. */
+    /** Muzzle point in turret space (barrel tips) - bullets are born here. */
     public static final Vector3f MUZZLE = new Vector3f(0f, 2.05f, 2.7f);
 
     /** A point roughly at the gun's optical centre, used to aim FROM when tracking. */
@@ -69,7 +69,7 @@ public final class TurretModel {
     // ------------------------------------------------------------------- base
 
     private static void buildBase(List<Part> p) {
-        // Deck pedestal (fixed) — a wide grey mounting box with a trim ring.
+        // Deck pedestal (fixed) - a wide grey mounting box with a trim ring.
         p.add(Part.of(Part.Role.BASE, Part.Pivot.BASE,
                 new Vector3f(0f, 0.45f, 0f), new Vector3f(2.3f, 0.9f, 2.3f)));
         p.add(Part.of(Part.Role.DETAIL, Part.Pivot.BASE,
@@ -144,7 +144,7 @@ public final class TurretModel {
     // -------------------------------------------------------------------- gun
 
     private static void buildGun(List<Part> p, boolean rounded) {
-        // Gun cradle (the housing the barrels are mounted in) — elevates.
+        // Gun cradle (the housing the barrels are mounted in) - elevates.
         p.add(Part.of(Part.Role.GUNBODY, Part.Pivot.GUN,
                 new Vector3f(0f, 2.05f, 0.55f), new Vector3f(1.1f, 0.85f, 1.0f)));
         // Cylindrical barrel shroud near the body.

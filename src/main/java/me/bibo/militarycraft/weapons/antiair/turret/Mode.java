@@ -6,11 +6,11 @@ package me.bibo.militarycraft.weapons.antiair.turret;
  * player-facing text.
  */
 public enum Mode {
-    /** Survival — shoots only phantoms circling overhead (the no-sleep menace). */
+    /** Survival - shoots only phantoms circling overhead (the no-sleep menace). */
     NORMIES_PHANTOMS("Normies: Phantoms", "Shoots down phantoms overhead"),
-    /** Survival — shoots every hostile mob in range. */
+    /** Survival - shoots every hostile mob in range. */
     NORMIES_HOSTILES("Normies: Hostile Mobs", "Engages hostile mobs"),
-    /** Battle-royale — shoots players in range (accuracy drops with distance). */
+    /** Battle-royale - shoots players in range (accuracy drops with distance). */
     SVO("SVO: Players", "Targets players; closer targets are hit more accurately");
 
     private final String title;

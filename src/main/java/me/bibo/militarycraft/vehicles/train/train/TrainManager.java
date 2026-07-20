@@ -64,7 +64,7 @@ public final class TrainManager {
             } catch (Exception ex) {
                 // Isolate a faulting train so one bad object cannot cancel the shared tick
                 // task and freeze EVERY train. Tolerate a couple of transient failures, but
-                // QUARANTINE a persistently poison train — otherwise it throws 20x/sec
+                // QUARANTINE a persistently poison train - otherwise it throws 20x/sec
                 // forever, silently, while holding tickets/displays and a maxTrains slot.
                 int fails = tickFailures.merge(t.id(), 1, Integer::sum);
                 if (fails == 1 || fails == MAX_TICK_FAILURES) {
@@ -228,7 +228,7 @@ public final class TrainManager {
      * After a rider leaves a seat: shield them from the landing and, a tick
      * later, set them down on safe ground beside the track (so they don't pop
      * out inside the moving model) and sweep the now-empty seat. Everything
-     * mutating is deferred — this runs inside the dismount event, possibly
+     * mutating is deferred - this runs inside the dismount event, possibly
      * while the car is iterating its own seats during removal.
      */
     public void handleSeatDismount(Player player, Entity seat) {

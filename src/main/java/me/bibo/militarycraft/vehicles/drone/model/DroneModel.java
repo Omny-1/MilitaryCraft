@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * Static description of the UAV model: a twin-boom pusher recon/strike drone
- * shaped after a UkrSpecSystems PD-1 — a bulbous fuselage pod with a nose sensor
+ * shaped after a UkrSpecSystems PD-1 - a bulbous fuselage pod with a nose sensor
  * gimbal, a high straight wing with slight dihedral and wingtips, two slim tail
  * booms running back to a twin-fin H-tail, a rear pusher propeller, fixed
  * tricycle gear and an antenna.
@@ -30,7 +30,7 @@ public final class DroneModel {
 
     /**
      * Ram point used for the kamikaze terrain check. Kept near the airframe's own
-     * height (not far below) so skimming low over the ground doesn't detonate it —
+     * height (not far below) so skimming low over the ground doesn't detonate it -
      * only flying the nose into a wall / the ground does.
      */
     public static final Vector3f NOSE = new Vector3f(0f, -0.18f, 1.65f);
@@ -43,12 +43,12 @@ public final class DroneModel {
             new Vector3f(1.55f, -0.30f, 0.20f)
     );
 
-    /** Exhaust point (drone space) — engine smoke trails from behind the prop. */
+    /** Exhaust point (drone space) - engine smoke trails from behind the prop. */
     public static final List<Vector3f> EXHAUST = List.of(
             new Vector3f(0f, -0.40f, -1.55f)
     );
 
-    /** Wingtip points (drone space) — faint vapour at speed. */
+    /** Wingtip points (drone space) - faint vapour at speed. */
     public static final List<Vector3f> WINGTIPS = List.of(
             new Vector3f(-2.45f, 0.00f, 0.20f),
             new Vector3f(2.45f, 0.00f, 0.20f)
@@ -95,7 +95,7 @@ public final class DroneModel {
         p.add(DronePart.block(FRAME, new Vector3f(0.86f, 0.20f, -2.45f), new Vector3f(0.12f, 0.80f, 0.55f)));
         p.add(DronePart.block(FRAME, new Vector3f(0f, 0.56f, -2.50f), new Vector3f(1.96f, 0.10f, 0.50f)));
 
-        // ---- Rear engine hub (no spinning blade — it only jittered as a flat
+        // ---- Rear engine hub (no spinning blade - it only jittered as a flat
         //      block-display rotates about its corner, not its axis) ----
         p.add(DronePart.block(MOTOR, new Vector3f(0f, -0.45f, -1.22f), new Vector3f(0.22f, 0.22f, 0.30f)));
 

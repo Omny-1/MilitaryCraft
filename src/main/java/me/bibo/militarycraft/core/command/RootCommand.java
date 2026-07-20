@@ -17,7 +17,7 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * The single {@code /mc} command (§3.4). Handles {@code reload|modules|cleanup} itself and
+ * The single {@code /mc} command. Handles {@code reload|modules|cleanup} itself and
  * dispatches {@code /mc <module> <sub> ...} to whatever {@link SubCommand} group that module
  * registered via {@code core.commands().register(...)}.
  */

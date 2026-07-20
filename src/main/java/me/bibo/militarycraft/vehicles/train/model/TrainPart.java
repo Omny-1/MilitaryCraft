@@ -12,12 +12,12 @@ import org.joml.Vector3f;
  * <p>Most parts are static ({@link Anim#NONE}); a few animate every tick,
  * driven by how far the train has rolled (see {@link CarTransforms.WheelPhases}):
  * <ul>
- *   <li>{@link Anim#WHEEL} — spins about its own local X axis (the axle),
+ *   <li>{@link Anim#WHEEL} - spins about its own local X axis (the axle),
  *       angle = distance/radius, exactly like a rolling wheel.</li>
- *   <li>{@link Anim#ROD} — a coupling/side rod: translates (without rotating)
+ *   <li>{@link Anim#ROD} - a coupling/side rod: translates (without rotating)
  *       in a small circle in the local Y-Z plane, matching where the crank
  *       pin it's pinned to would be on the driving wheel.</li>
- *   <li>{@link Anim#PISTON} — a piston/valve rod: slides back and forth along
+ *   <li>{@link Anim#PISTON} - a piston/valve rod: slides back and forth along
  *       local Z only (Scotch-yoke approximation of the crank).</li>
  * </ul>
  */
@@ -41,7 +41,7 @@ public final class TrainPart {
     public final PhaseChannel channel;
     /** Wheel radius (WHEEL) or crank throw (ROD/PISTON), in blocks. */
     public final float animRadius;
-    /** Extra phase offset in degrees — used to "quarter" left/right cranks. */
+    /** Extra phase offset in degrees - used to "quarter" left/right cranks. */
     public final float animPhaseOffsetDeg;
 
     public TrainPart(Material material, Vector3f offset, Vector3f scale,

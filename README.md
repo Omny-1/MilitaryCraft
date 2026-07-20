@@ -9,10 +9,6 @@ weapon emplacements, air support strikes and a set of infantry equipment to Mine
 1.21.4. Everything is built from vanilla display entities and standard server API calls,
 so the server needs no client mod and no additional plugins.
 
-The project began as fifteen separate plugins. They were merged into one jar with a shared
-core, one configuration file and one command tree, while each module kept the behaviour it
-had as a standalone plugin.
-
 ---
 
 ## Contents
@@ -66,7 +62,7 @@ items keep their normal vanilla appearance and every function still works.
 
 By default, only server operators can use MilitaryCraft commands. As an operator:
 
-```
+```text
 /mc menu           open the graphical command menu
 /mc modules        list every module and whether it is enabled
 /tank give         receive a tank placer item
@@ -81,7 +77,7 @@ works from the server console.
 
 To remove things again:
 
-```
+```text
 /tank remove       remove the tank you are looking at
 /tank cleanup      remove leftover tank entities
 /mc cleanup        remove every tracked vehicle and stray entity from all modules
@@ -102,33 +98,33 @@ point-blank creeper explosions and is destroyed by the third.
 
 ### Ground vehicles
 
-**Tank** — a tracked vehicle with an articulated hull, rotating turret and elevating
+**Tank.** A tracked vehicle with an articulated hull, rotating turret and elevating
 barrel. The hull turns toward where the driver looks, and the turret aims independently.
 It fires ballistic shells that damage terrain and other vehicles, and it has a reload
 timer, a weapon lock after boarding and a barrel overheat gauge. Driving into water drowns
 the crew. Top speed is about 18 km/h, and it withstands four creeper blasts.
 Command: `/tank`.
 
-**Kamaz "Pushinka"** — a heavy armoured truck. It carries a driver and six passengers, and
+**Kamaz "Pushinka".** A heavy armoured truck. It carries a driver and six passengers, and
 its defining trait is mass: it takes roughly six seconds to reach its top speed of about
 47 km/h, and it turns slowly. At full speed it throws entities aside; below that it pushes
 them without killing them. It carries no weapon and withstands three creeper blasts.
 Command: `/kamaz`.
 
-**Pickup** — a light truck with three crew positions: a driver, a passenger, and a gunner
+**Pickup.** A light truck with three crew positions: a driver, a passenger, and a gunner
 who operates a roof-mounted machine gun with an independently aimed camera. Either seat can
 be left empty, so a lone gunner can fire from a parked truck and a lone driver can drive
 without a gunner. Acceleration ramps up the longer the throttle is held. It withstands one
 and a half creeper blasts.
 Command: `/pickup`.
 
-**Motorcycle** — a two-wheeler with a right-hand sidecar, seating a driver, a pillion
+**Motorcycle.** A two-wheeler with a right-hand sidecar, seating a driver, a pillion
 passenger and a sidecar passenger. It steers by camera like the truck, reaches about
 66 km/h, takes fall damage, and can climb a one-block step. Spawn limits, cooldowns and a
 durable index of placed motorcycles are kept on disk so counts survive a restart.
 Command: `/moto`.
 
-**Train "Desert Express"** — a steam locomotive with three carriages that runs on ordinary
+**Train "Desert Express".** A steam locomotive with three carriages that runs on ordinary
 vanilla rails as one rigid formation. The coupling is rigid, so the gap between carriages
 does not stretch on curves or slopes. It travels at a constant nine blocks per second with
 no acceleration, brakes smoothly when the rails end, and injures anything standing on the
@@ -140,28 +136,28 @@ Command: `/train`.
 All four aircraft are destroyed only by accumulated damage. Striking terrain hurts them but
 never deletes them instantly.
 
-**Jet** — a fixed-wing fighter steered by the camera. `W` and `S` control throttle and
+**Jet.** A fixed-wing fighter steered by the camera. `W` and `S` control throttle and
 braking, `A` and `D` roll the airframe, and `Space` engages an afterburner limited by an
 engine heat gauge. Left-click fires rockets, right-click drops bombs. It handles stalls and
 crashes, cruises at about 115 km/h and boosts well past that, and withstands two creeper
 blasts.
 Command: `/jet`.
 
-**Helicopter** — hovers in place with no vertical input, as a real helicopter does at flat
+**Helicopter.** Hovers in place with no vertical input, as a real helicopter does at flat
 pitch. The mouse sets heading and altitude trim, `W` and `S` move forward and back, and
 `Space` is a collective boost limited by engine heat. The main and tail rotors turn
 whenever it is hovering. Left-click fires rockets, right-click drops bombs. It seats a
 pilot and three passengers and withstands two creeper blasts.
 Command: `/helicopter`.
 
-**Airship** — a large lighter-than-air craft that holds its altitude with no input at all.
+**Airship.** A large lighter-than-air craft that holds its altitude with no input at all.
 It is deliberately ponderous: a top speed near 25 km/h, very low acceleration and slow,
 wide turns. `Space` fires a gas burner for lift, limited by a burner heat gauge. It drops
 bombs that leave lingering smoke and a wide blast. It seats a pilot and two passengers and
 is destroyed by a single creeper blast.
 Command: `/airship`.
 
-**Drone** — an unmanned aerial vehicle flown in first person. It moves forward on its own,
+**Drone.** An unmanned aerial vehicle flown in first person. It moves forward on its own,
 as though the throttle were always held, and is steered only with the camera: look up to
 climb, look down to dive. Right-click fires one of four single-use rockets, and left-click
 detonates the warhead. Flying the nose into terrain or a target also detonates it. Pressing
@@ -171,7 +167,7 @@ Command: `/drone`, aliases `/bpla` and `/uav`.
 
 ### Emplacements
 
-**Anti-air turret** — a close-in weapon system placed like a block, with a grey body, a
+**Anti-air turret.** A close-in weapon system placed like a block, with a grey body, a
 white radar dome that traverses and a six-barrel rotary cannon that elevates. It runs on
 furnace fuel: right-click to open a panel where fuel is loaded and a targeting mode is
 chosen. One mode engages hostile mobs and the other engages players. Fire is hitscan with
@@ -181,7 +177,7 @@ degrees of the target. It is destroyed only by explosion damage, calibrated to o
 blast.
 Command: `/pvo`, aliases `/antiair`, `/aa`, `/ciws`, `/flak`.
 
-**Artillery "Belochka"** — an indirect-fire emplacement with a visible three-dimensional
+**Artillery "Belochka".** An indirect-fire emplacement with a visible three-dimensional
 howitzer model. The operator enters a top-down camera positioned above the emplacement and
 calls fire onto real world coordinates with `/shoot x z`. Each salvo fires exactly three
 shells, with dispersion that grows with range, so distant targets are hit less precisely.
@@ -190,7 +186,7 @@ emplacement state are stored on disk, and block protection stops shells from des
 protected terrain.
 Commands: `/shoot`, `/artillery`.
 
-**Trap bus** — a placeable static bus with a detailed van model and two hostile worker
+**Trap bus.** A placeable static bus with a detailed van model and two hostile worker
 NPCs. The workers approach a nearby player and strike them, which stuns the player briefly.
 If two workers are within four blocks of a stunned player, the player is pulled into the
 bus and killed; otherwise the player escapes. Killing both workers lets you break the bus
@@ -201,14 +197,14 @@ Command: `/tck`, aliases `/tckbus`, `/bus`.
 
 ### Air support
 
-**Airstrike** — a beacon item, or a command, calls a fighter that makes a bombing run over
+**Airstrike.** A beacon item, or a command, calls a fighter that makes a bombing run over
 the chosen point. It drops twelve explosive charges spread over a fifty-block carpet
 centred on the target, flying at an altitude of 75 blocks. A warning radius alerts nearby
 players, and cooldowns and a cap on simultaneous strikes prevent abuse. Chunks along the
 flight path are kept loaded for the duration and released afterwards.
 Command: `/airstrike`, aliases `/strike`, `/aviaudar`.
 
-**Nuclear strike** — a briefcase item, or a command, sends a bomber over the target that
+**Nuclear strike.** A briefcase item, or a command, sends a bomber over the target that
 releases a single large bomb. The bomb is visible during its slow fall and rotates
 nose-down as it descends. On impact it produces a crater, a rising cloud, damage across a
 wide radius, a blinding flash for onlookers and lingering radiation zones for survivors.
@@ -295,7 +291,7 @@ so most administration can be done without typing commands.
 | `/pvo` | antiair, aa, ciws, flak | give, place, remove, list, reload, cleanup |
 | `/tck` | tckbus, bus | give, place, setdrop, cleardrop, showdrop, remove, list, reload, cleanup |
 | `/artillery` | artillert | give, create, remove, list, reload |
-| `/shoot` | arta | `<x> <z>` — fire a salvo at map coordinates |
+| `/shoot` | arta | `<x> <z>`, fires a salvo at map coordinates |
 | `/airstrike` | strike, aviaudar | item, reload |
 | `/nuke` | nukestrike, yaderka, yadernyudar | item, reload, place |
 | `/warkit` | wk | list, give, giveall, reload |
@@ -416,9 +412,9 @@ sounds. Every item works without it and simply uses its vanilla appearance.
 
 Two things are included in this repository:
 
-- `resourcepack/warkit/` — the source layout, with the item and model definitions and a
+- `resourcepack/warkit/` holds the source layout, with the item and model definitions and a
   `HOW_TO_ENABLE.txt` that documents the process in detail.
-- `WarKit-ResourcePack.zip` — a prepared archive containing models, textures and sounds.
+- `WarKit-ResourcePack.zip` is a prepared archive containing models, textures and sounds.
 
 To use it, host the zip at a direct download address and point the server at it in
 `server.properties`:
@@ -467,7 +463,7 @@ classes reference is actually declared.
 
 ## Project layout
 
-```
+```text
 src/main/java/me/bibo/militarycraft/
     MilitaryCraftPlugin.java   entry point and module registration
     core/                      shared foundation used by every module

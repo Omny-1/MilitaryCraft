@@ -49,7 +49,7 @@ public final class DamageListener implements Listener {
     /**
      * An anti-vehicle rocket is a real explosion only so the vehicle's own plugin
      * registers it as HP damage (via EntityExplodeEvent). The raw blast must NOT
-     * touch living entities — otherwise it kills the (otherwise invulnerable) pilot
+     * touch living entities - otherwise it kills the (otherwise invulnerable) pilot
      * instead of the vehicle. So while our rocket is detonating, cancel ALL
      * explosion damage to every entity; the vehicle still loses HP through the
      * area event, the player is left untouched.

@@ -7,7 +7,7 @@ import org.bukkit.configuration.ConfigurationSection;
 /**
  * Typed, clamped view over a {@link ConfigurationSection}. {@code core.config()} returns
  * the root wrapper over the whole config.yml; call {@link #section(String)} to get a
- * module's own section (§3.3), e.g. {@code core.config().section("tank")}.
+ * module's own section, e.g. {@code core.config().section("tank")}.
  */
 public final class ModuleConfig {
 

@@ -4,10 +4,11 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 
 /**
- * Static config-parsing helpers shared by every module's settings snapshot (generalised
- * from TankConfig's private material parser). No logging on invalid input here — deviates
- * from TankConfig's own warning log to keep this a plain 3-arg helper per spec; callers
- * that want a warning can check the result against their own fallback and log it themselves.
+ * Static config-parsing helpers shared by every module's settings snapshot.
+ *
+ * <p>Invalid input is not logged here, which keeps these plain three-argument helpers.
+ * A caller that wants a warning can compare the result against its own fallback and log
+ * that itself.
  */
 public final class ConfigSupport {
 

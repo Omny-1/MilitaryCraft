@@ -11,7 +11,7 @@ import org.joml.Vector3f;
  * <p>Conventions (matching Minecraft yaw):
  * <ul>
  *   <li>yaw rotates about +Y via {@code rotateY(-yaw)}, so yaw=0 aims +Z (south),
- *       yaw=90 aims -X (west) — i.e. {@code forward = (-cosφ·sinY, -sinφ, cosφ·cosY)}.
+ *       yaw=90 aims -X (west) - i.e. {@code forward = (-cosφ·sinY, -sinφ, cosφ·cosY)}.
  *   <li>pitch rotates about local X via {@code rotateX(pitch)}; a NEGATIVE pitch
  *       raises the muzzle (barrels up). Aim code therefore uses
  *       {@code pitch = toDegrees(asin(-dirY))}.

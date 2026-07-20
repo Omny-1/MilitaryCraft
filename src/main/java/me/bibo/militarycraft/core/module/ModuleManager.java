@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.logging.Level;
 
 /**
- * Holds the hardcoded module list (no reflection/classpath scan — §2), enables/disables/
+ * Holds the hardcoded module list (no reflection or classpath scan), enables/disables/
  * reloads them, and gates each by its {@code modules.<id>.enabled} config toggle (default true).
  */
 public final class ModuleManager {

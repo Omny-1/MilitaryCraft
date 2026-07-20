@@ -49,7 +49,7 @@ final class CommandMenu implements Listener {
     private final MilitaryCraftPlugin plugin;
     private final RootCommand root;
     private final Map<UUID, PendingPrompt> prompts = new ConcurrentHashMap<>();
-    /** Last menu-action time per player — a self-healing debounce (never sticks, unlike a Set guard). */
+    /** Last menu-action time per player - a self-healing debounce (never sticks, unlike a Set guard). */
     private final Map<UUID, Long> lastRun = new ConcurrentHashMap<>();
 
     CommandMenu(MilitaryCraftPlugin plugin, RootCommand root) {
@@ -324,7 +324,7 @@ final class CommandMenu implements Listener {
         lastRun.put(playerId, now);
         // Defer past the current InventoryClickEvent (closing an inventory mid-click is unsafe),
         // then run the action and SURFACE any failure to the player + console instead of letting
-        // it vanish into the scheduler log — a menu button that silently does nothing is the worst UX.
+        // it vanish into the scheduler log - a menu button that silently does nothing is the worst UX.
         Bukkit.getScheduler().runTask(plugin, () -> {
             if (!player.isOnline()) {
                 return;

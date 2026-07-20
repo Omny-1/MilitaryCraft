@@ -36,7 +36,7 @@ public interface VehicleHandle {
     /** @return health actually restored. */
     double repair(double amount);
 
-    /** Flat 1-creeper hit, no knockback, no block break (§6) — the AntiAir contract. */
+    /** Flat 1-creeper hit, no knockback, no block break - the AntiAir contract. */
     void applyAntiAirHit();
 
     /** Distance-falloff blast damage from a real explosion nearby. */

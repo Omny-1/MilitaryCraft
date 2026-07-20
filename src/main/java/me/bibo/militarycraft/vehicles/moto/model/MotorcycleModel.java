@@ -118,8 +118,8 @@ public final class MotorcycleModel {
 
     private static void buildParts(List<MotorcyclePart> p, java.util.Set<Integer> sidecar,
                                    java.util.Map<Integer, MotorcyclePart> soloOverride) {
-        // One steering axis (the steering head) shared by the WHOLE front assembly —
-        // wheel, fender, fork, handlebar, lamp and mirrors — so it turns as a single
+        // One steering axis (the steering head) shared by the WHOLE front assembly -
+        // wheel, fender, fork, handlebar, lamp and mirrors - so it turns as a single
         // rigid unit instead of the wheel and bars swinging about separate pivots.
         Vector3f steerPivot = scaledCopy(STEERING_HEAD_BASE);
 
@@ -251,7 +251,7 @@ public final class MotorcycleModel {
         p.add(MotorcyclePart.painted(o(0f, 1.90f, -3.17f), v(0.42f, 0.42f, 0.42f),
                 180f, "MC 21-04", 0xFF111111));
 
-        // 60..66: reworked front controls, all on the shared steering axis — a top yoke
+        // 60..66: reworked front controls, all on the shared steering axis - a top yoke
         // and two risers tie the handlebar to the fork, a proper TWIN mirror set and
         // brake/clutch levers sit at the grips. Turning moves all of it with the wheel.
         p.add(steerOnly(MotorcyclePart.Role.FRAME, 0f, 3.28f, 1.20f,

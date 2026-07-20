@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.UUID;
 
 /**
- * A custom munition — a ROCKET (fast, flat, fiery, particle-only) or a BOMB
+ * A custom munition - a ROCKET (fast, flat, fiery, particle-only) or a BOMB
  * (arcing, heavy, with a visible tumbling block-display body). It is not a
  * real entity: we move a point each tick (in sub-steps for accurate hit
  * detection), apply gravity, leave a trail, and detonate on the first block

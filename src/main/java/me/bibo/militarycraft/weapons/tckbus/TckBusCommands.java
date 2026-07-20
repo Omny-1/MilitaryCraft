@@ -14,7 +14,7 @@ import org.bukkit.util.RayTraceResult;
 import java.util.ArrayList;
 import java.util.List;
 
-/** /tck — give, place, setdrop, cleardrop, showdrop, remove, list, reload, cleanup. */
+/** /tck - give, place, setdrop, cleardrop, showdrop, remove, list, reload, cleanup. */
 public final class TckBusCommands implements CommandExecutor, TabCompleter {
 
     private static final List<String> SUBS = List.of(

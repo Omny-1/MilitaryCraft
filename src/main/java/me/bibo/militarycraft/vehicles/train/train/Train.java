@@ -35,7 +35,7 @@ import java.util.UUID;
  * {@link TrainPath}. Each tick the nose advances along the rails at cruise
  * speed, the path is extended ahead just enough to see an upcoming dead end,
  * and every car is posed from two "bogie" anchors read off the path at fixed
- * distances behind the nose — rigid couplings, no corner cutting.
+ * distances behind the nose - rigid couplings, no corner cutting.
  */
 public final class Train implements VehicleHandle {
 
@@ -62,7 +62,7 @@ public final class Train implements VehicleHandle {
     private long tickCount;
 
     // Rolling-distance counters per wheel class, in degrees (distance/radius),
-    // wrapped to keep the numbers small — this is what spins the wheels and
+    // wrapped to keep the numbers small - this is what spins the wheels and
     // orbits the coupling/piston rods in lock-step across every car.
     private double driverPhaseDeg;
     private double leadingPhaseDeg;

@@ -109,7 +109,7 @@ public final class TurretManager {
         turret.coolHeat(cfg); // barrels always shed heat, firing or not
 
         // (Re)acquire on the scan cadence, staggered per turret so they don't all
-        // scan on the same tick. Skip the scan for unfuelled turrets — they can't
+        // scan on the same tick. Skip the scan for unfuelled turrets - they can't
         // fire anyway, so there's no point scanning every entity in range.
         int interval = cfg.scanIntervalTicks;
         long phase = Math.floorMod(turret.id().hashCode(), interval);
@@ -147,7 +147,7 @@ public final class TurretManager {
                     ? targeting.ridingVehicleCore(target) : null;
 
             boolean aimedReady = turret.isAimed(cfg) && !turret.isOverheated();
-            // Bullets need a clear muzzle line. The anti-vehicle ROCKET does NOT —
+            // Bullets need a clear muzzle line. The anti-vehicle ROCKET does NOT -
             // it's a guided strike on the already-acquired vehicle, so it connects at
             // ANY distance (the low gun line grazing terrain no longer blocks it) and
             // the vehicle takes the same damage point-blank or at the edge of range.
@@ -155,7 +155,7 @@ public final class TurretManager {
                     && (vehicle != null || hasLineOfSight(turret, target, cfg));
             if (canFire) {
                 if (turret.incSpinUp()) {
-                    // just started spinning the barrels up — spool-up whir + a burst of sparks
+                    // just started spinning the barrels up - spool-up whir + a burst of sparks
                     Location spin = turret.muzzleWorld();
                     turret.world().playSound(spin, Sound.BLOCK_NOTE_BLOCK_BASS, 0.6f, 0.6f);
                     turret.world().spawnParticle(Particle.ELECTRIC_SPARK, spin, 10, 0.2, 0.2, 0.2, 0.05);
@@ -168,7 +168,7 @@ public final class TurretManager {
                             turret.addFireHeat(cfg);
                         }
                     } else if (turret.fireCooldown() <= 0 && turret.spendShot(cfg)) {
-                        // Fuel is spent ONLY here, on the actual shot — standby burns nothing.
+                        // Fuel is spent ONLY here, on the actual shot - standby burns nothing.
                         targeting.fireBurst(turret, target);
                         turret.setFireCooldown(cfg.fireIntervalTicks);
                         turret.addFireHeat(cfg);

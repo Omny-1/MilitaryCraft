@@ -28,7 +28,7 @@ import java.util.UUID;
  * Arcade driving for the motorcycle, mirroring the proven Kamaz controller: the
  * hull turns toward where the driver looks while moving forward; W/S are throttle.
  * The visual handlebar/front wheel follows the same steer angle. There is no
- * A/D bicycle model — you steer with the camera, exactly like the truck.
+ * A/D bicycle model - you steer with the camera, exactly like the truck.
  *
  * <p>The vertical model samples the ground under the three wheels and rides on the
  * highest support found, so the bike doesn't jitter on block edges or sink in.

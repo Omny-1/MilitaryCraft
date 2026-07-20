@@ -41,7 +41,7 @@ import java.util.UUID;
  * several Interaction hitboxes spread over the cabin/tail/rotor so the whole
  * craft is clickable/hittable, and a set of block-display model parts. Up to
  * {@code seats.capacity} players ride; only the FIRST to board (the pilot)
- * flies it — the rest are passengers. Full state is mirrored onto the core's
+ * flies it - the rest are passengers. Full state is mirrored onto the core's
  * persistent data so the helicopter survives chunk reloads and restarts.
  */
 public final class Helicopter implements VehicleHandle {
@@ -167,7 +167,7 @@ public final class Helicopter implements VehicleHandle {
             }
         }
         if (core == null) {
-            return null; // the anchor is gone — drop whatever is left of the group
+            return null; // the anchor is gone - drop whatever is left of the group
         }
 
         PersistentDataContainer pdc = core.getPersistentDataContainer();
@@ -479,7 +479,7 @@ public final class Helicopter implements VehicleHandle {
                         ? Transforms.forPart(part, q, rotorAngle)
                         : Transforms.forPart(part, q);
                 // Restart interpolation each tick so the transform EASES to its new
-                // angle instead of snapping — this is what keeps the continuously
+                // angle instead of snapping - this is what keeps the continuously
                 // spinning rotor (and turns) smooth. Without the delay reset a
                 // repeated setTransformation can apply instantly (the strobing look).
                 d.setInterpolationDelay(0);
@@ -504,7 +504,7 @@ public final class Helicopter implements VehicleHandle {
     /**
      * The main + tail rotor spin at a constant fast rate whenever the engine
      * is on (a pilot aboard, or unmanned-but-still-aloft), independent of
-     * forward speed — a helicopter's rotor never stops turning while hovering.
+     * forward speed - a helicopter's rotor never stops turning while hovering.
      * Stops only once the craft is parked and empty.
      */
     private boolean updateRotorAngle() {

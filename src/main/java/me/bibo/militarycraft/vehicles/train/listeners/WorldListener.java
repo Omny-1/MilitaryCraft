@@ -10,7 +10,7 @@ import org.bukkit.event.world.WorldUnloadEvent;
 
 /**
  * Housekeeping: train entities are transient (never saved), but if any
- * tagged stray ever loads with a chunk — e.g. after a crash mid-save — it is
+ * tagged stray ever loads with a chunk - e.g. after a crash mid-save - it is
  * swept away so no ghost carriages litter the world.
  */
 public final class WorldListener implements Listener {

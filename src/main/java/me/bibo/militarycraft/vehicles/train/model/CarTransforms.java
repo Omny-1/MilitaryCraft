@@ -36,7 +36,7 @@ public final class CarTransforms {
 
     /**
      * Car orientation: Minecraft yaw (0 = +Z/south) plus pitch, where positive
-     * pitch LIFTS the nose (+Z) — hence the sign flip on rotateX.
+     * pitch LIFTS the nose (+Z) - hence the sign flip on rotateX.
      */
     public static Quaternionf rotation(double yawDeg, double pitchDeg) {
         return new Quaternionf()
@@ -56,8 +56,8 @@ public final class CarTransforms {
     /**
      * As above, but applies the part's animation (if any): a WHEEL part gets
      * its spin angle added to its base pitch (rotating about its own local X
-     * — the axle), a ROD part orbits in the local Y-Z plane and a PISTON part
-     * slides along local Z — all driven by {@code phases}, so every part of
+     * - the axle), a ROD part orbits in the local Y-Z plane and a PISTON part
+     * slides along local Z - all driven by {@code phases}, so every part of
      * the same wheel class stays in lock-step no matter which car it's on.
      */
     public static Transformation forBlockPart(TrainPart part, double yawDeg, double pitchDeg, WheelPhases phases) {

@@ -270,7 +270,7 @@ kamaz:
 
   movement:
     # Top forward speed (blocks/tick). km/h in the HUD = speed * 72.
-    # 0.65 ≈ 47 km/h — fast, but it takes a while to get there (see acceleration).
+    # 0.65 ≈ 47 km/h - fast, but it takes a while to get there (see acceleration).
     max-forward-speed: 0.65
     # Top reverse speed.
     max-reverse-speed: 0.18
@@ -308,7 +308,7 @@ kamaz:
     min-speed: 0.05
     # Extra margin (blocks) around the body within which victims are caught.
     reach: 0.6
-    # Minimum time between hits on the SAME victim (ms) — keeps it punchy, not a grinder.
+    # Minimum time between hits on the SAME victim (ms) - keeps it punchy, not a grinder.
     hit-cooldown-ms: 600
     # Fraction of top speed at/above which the truck FLINGS instead of crushing.
     # 0.92 = you must be at nearly full throttle.
@@ -404,7 +404,7 @@ jet:
   #
   #  IMPORTANT: the jet can ONLY be destroyed by accumulated damage
   #  (calibrated so two creeper blasts = full HP). Crashing into
-  #  terrain deals damage too — it never instantly deletes the jet.
+  #  terrain deals damage too - it never instantly deletes the jet.
   # ============================================================
 
   # Ticks after boarding during which weapons are locked ("Loading ammunition"),
@@ -447,14 +447,14 @@ jet:
     # At or below this speed the jet STALLS and drops fast. ~0.14 b/t = 10 km/h.
     # (Used by the unmanned glide after a bail-out.)
     stall-speed: 0.14
-    # Downward speed (blocks/tick) while stalled. 0.7 = 14 b/s — falls quickly.
+    # Downward speed (blocks/tick) while stalled. 0.7 = 14 b/s - falls quickly.
     stall-sink: 0.7
     # Let the jet rest on the ground when slow and roughly level (landing).
     ground-rest: true
     # ----- Anti-camp altitude loss -----
     # While AIRBORNE, the jet must keep its speed up or it loses altitude. The
     # slower it goes the harder it drops. This does NOT apply near the ground, so
-    # taking off and landing are never affected — only players who slow to a crawl
+    # taking off and landing are never affected - only players who slow to a crawl
     # in mid-air (e.g. to aim) get pushed back down. Speeds are in km/h.
     stall:
       # Below this you begin to lose altitude.
@@ -550,7 +550,7 @@ jet:
     # Minimum ms between melee hits from the same attacker.
     weapon-melee-cooldown-ms: 250
 
-  # Atmosphere ceiling: above max-y the thin air slowly tears the jet apart — it
+  # Atmosphere ceiling: above max-y the thin air slowly tears the jet apart - it
   # takes damage over time and the pilot is warned. Keeps
   # players from escaping by flying absurdly high. enabled: false to disable.
   altitude:
@@ -720,7 +720,7 @@ helicopter:
       load: 12
       # One bomb is replenished every this-many ticks (90 = 4.5 s), up to load.
       # NOTE: this timer only advances while the drop cooldown has fully recovered
-      # (i.e. when you are NOT mid-drop) — it does not run in parallel with the
+      # (i.e. when you are NOT mid-drop) - it does not run in parallel with the
       # cooldown, so you can't bomb continuously forever; you refill only after you
       # stop dropping for a moment.
       regen-ticks: 90
@@ -756,7 +756,7 @@ helicopter:
     # Minimum ms between melee hits from the same attacker.
     weapon-melee-cooldown-ms: 250
 
-  # Atmosphere ceiling: above max-y the thin air slowly tears the helicopter apart — it
+  # Atmosphere ceiling: above max-y the thin air slowly tears the helicopter apart - it
   # takes damage over time and the pilot is warned. Keeps
   # players from escaping by floating absurdly high. enabled: false to disable.
   altitude:
@@ -844,7 +844,7 @@ airship:
   #
   #  IMPORTANT: the airship can ONLY be destroyed by accumulated
   #  damage, calibrated so ONE creeper blast at point blank = full
-  #  HP. Bumping terrain just stops it — it is never instant-killed.
+  #  HP. Bumping terrain just stops it - it is never instant-killed.
   # ============================================================
   
   flight:
@@ -919,7 +919,7 @@ airship:
       load: 12
       # One bomb is replenished every this-many ticks (90 = 4.5 s), up to load.
       # NOTE: this timer only advances while the attack cooldown has fully recovered
-      # (i.e. when you are NOT mid-drop) — it does not run in parallel with the
+      # (i.e. when you are NOT mid-drop) - it does not run in parallel with the
       # cooldown, so you can't bomb continuously forever; you refill only after you
       # stop dropping for a moment.
       regen-ticks: 90
@@ -956,7 +956,7 @@ airship:
     # Minimum ms between melee hits from the same attacker.
     weapon-melee-cooldown-ms: 250
   
-  # Atmosphere ceiling: above max-y the thin air slowly tears the airship apart — it
+  # Atmosphere ceiling: above max-y the thin air slowly tears the airship apart - it
   # takes damage over time and the pilot is warned. Keeps
   # players from escaping by floating absurdly high. enabled: false to disable.
   altitude:
@@ -1042,11 +1042,11 @@ drone:
   #  Distances in blocks, speeds in blocks/tick (1 b/t = 20 b/s).
   #  Angles in degrees.
   #
-  #  The UAV flies forward on its own (as if W were always held) —
+  #  The UAV flies forward on its own (as if W were always held) -
   #  you take control by right-clicking the UAV, ride it in first person and
   #  STEER ONLY WITH THE CAMERA (look up to climb, down to dive).
   #  Right-click fires a rocket (4 one-shot rockets, no reload). Left-click detonates.
-  #  2×Shift — leave (the UAV then keeps flying straight, doesn't fall).
+  #  2×Shift - leave (the UAV then keeps flying straight, doesn't fall).
   #  Ramming the nose into terrain or a target detonates the warhead.
   # ============================================================
   
@@ -1131,7 +1131,7 @@ drone:
     creepers-to-destroy: 1.0
   
   # Weapon damage TO THE UAV, percent of max HP per hit, so it can be shot down
-  # (occupied or empty) — arrows / melee / fireballs hit its hitbox.
+  # (occupied or empty) - arrows / melee / fireballs hit its hitbox.
   combat:
     weapon-melee-percent: 20.0
     weapon-arrow-percent: 25.0
@@ -1156,7 +1156,7 @@ drone:
     motor-interval-ticks: 3
     motor-volume: 0.6
     motor-pitch: 1.5
-    # Rear propeller spin speed (degrees/tick) — purely visual.
+    # Rear propeller spin speed (degrees/tick) - purely visual.
     prop-spin-per-tick: 90.0
     # Faint prop-wash particles behind the propeller.
     prop-wash: true
@@ -1716,7 +1716,7 @@ antiair:
     # Don't shoot players in creative/spectator.
     ignore-creative: true
     # Bullet damage vs players is multiplied by this (other modes keep full damage).
-    # 1.0 = full 3.2/bullet, 0.5 = half (1.6). 0.75 = 2.4/bullet — between the old
+    # 1.0 = full 3.2/bullet, 0.5 = half (1.6). 0.75 = 2.4/bullet - between the old
     # full damage and the halved value, so players are hit harder than the cut but
     # not as brutally as before.
     damage-multiplier: 0.75
@@ -1741,8 +1741,8 @@ antiair:
     spread-degrees: 0.6
   
   fuel:
-    # Fuel is spent ONLY when the turret actually fires. A standby turret — no
-    # target, or tracking / spinning up / overheated / no line of sight — burns
+    # Fuel is spent ONLY when the turret actually fires. A standby turret - no
+    # target, or tracking / spinning up / overheated / no line of sight - burns
     # nothing. No shooting = no fuel used.
     # Multiplier on vanilla burn times (how much burn ONE item yields).
     # 1.0 = a piece of coal carries its full 80s worth of burn (≈ shots below).

@@ -95,7 +95,7 @@ class MotorcycleModelTest {
         }
 
         // The front wheel sits ahead of the axis, so steering must ORBIT it about the
-        // shared pivot (not spin it in place) — that is what keeps it under the fork.
+        // shared pivot (not spin it in place) - that is what keeps it under the fork.
         MotorcyclePart frontWheel = parts.get(0);
         Vector3f steered = Transforms.articulatedLocalOffset(frontWheel, 32.0);
         assertNotEquals(frontWheel.offset.x, steered.x, EPS,

@@ -9,7 +9,7 @@ import org.bukkit.inventory.ItemStack;
 
 /**
  * Hides a seated operator's armour and held items from other players. The
- * operator's real inventory is never touched — we only send "this entity is
+ * operator's real inventory is never touched - we only send "this entity is
  * wearing nothing" equipment packets to every other client (pure Paper API, no
  * ProtocolLib). This complements {@code setInvisible} so the floating armour a
  * cloaked operator would otherwise leave behind disappears too.

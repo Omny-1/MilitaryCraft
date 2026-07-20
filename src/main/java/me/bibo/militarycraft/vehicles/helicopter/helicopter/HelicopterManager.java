@@ -268,7 +268,7 @@ public final class HelicopterManager {
             }
             String idStr = e.getPersistentDataContainer().get(Keys.SHIP_ID, PersistentDataType.STRING);
             if (idStr == null) {
-                continue; // e.g. a munition display (tagged but no helicopter id) — ignore
+                continue; // e.g. a munition display (tagged but no helicopter id) - ignore
             }
             UUID id;
             try {

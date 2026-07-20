@@ -23,7 +23,7 @@ import java.util.UUID;
 
 /**
  * Take control (right-click the UAV), fire rockets (right-click while flying),
- * detonate (left-click), and exit (double-tap Shift — the UAV then flies on).
+ * detonate (left-click), and exit (double-tap Shift - the UAV then flies on).
  */
 public final class InteractionListener implements Listener {
 
@@ -46,7 +46,7 @@ public final class InteractionListener implements Listener {
         event.setCancelled(true);
         Player player = event.getPlayer();
         // The operator sits inside this UAV's hitbox, so their own right-click lands
-        // here too — that's a rocket shot, not a re-entry.
+        // here too - that's a rocket shot, not a re-entry.
         if (plugin.drones().byDriver(player.getUniqueId()) == drone) {
             plugin.drones().fireRocket(drone);
             return;
@@ -101,7 +101,7 @@ public final class InteractionListener implements Listener {
 
     /**
      * Keep the operator glued to the UAV. We cancel every dismount we didn't
-     * ourselves initiate — that covers both Shift and the spurious client dismounts
+     * ourselves initiate - that covers both Shift and the spurious client dismounts
      * that happen flying fast across chunk borders (which used to drop the player
      * mid-flight). A deliberate Shift (the player is sneaking) counts toward the
      * double-tap exit; the spurious ones don't.

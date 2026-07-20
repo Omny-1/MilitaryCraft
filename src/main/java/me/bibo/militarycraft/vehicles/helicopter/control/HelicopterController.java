@@ -18,7 +18,7 @@ import org.bukkit.entity.Player;
  * given (neutral lift). The mouse steers heading (look left/right) and trims
  * altitude (look up to rise, down to sink); W/S throttle forward/reverse;
  * Space is the collective boost, limited by a heat gauge so you cannot climb
- * forever. Much snappier than the airship — quick turns, a livelier bank.
+ * forever. Much snappier than the airship - quick turns, a livelier bank.
  *
  * <p>Bumping terrain just stops the helicopter at low speed; ramming a wall
  * at speed is a kamikaze crash.
@@ -84,7 +84,7 @@ public final class HelicopterController {
 
         applyMotion(heli, cfg, speed, vSpeed);
         if (!heli.isActive()) {
-            return; // crashed into terrain this tick — nothing left to render
+            return; // crashed into terrain this tick - nothing left to render
         }
 
         // --- effects ---
@@ -105,7 +105,7 @@ public final class HelicopterController {
     /**
      * Drift after a mid-air bail-out: roll levels, the collective is untended
      * so the helicopter slowly loses lift and sinks while momentum bleeds
-     * away, until it settles on the ground and parks. No explosion — it is
+     * away, until it settles on the ground and parks. No explosion - it is
      * too gentle to crash on its own.
      */
     public static void glide(Helicopter heli, HelicopterConfig cfg) {

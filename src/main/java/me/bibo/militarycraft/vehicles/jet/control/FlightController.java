@@ -18,7 +18,7 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 /**
- * Arcade flight. The mouse (camera) steers where the nose points — look up to
+ * Arcade flight. The mouse (camera) steers where the nose points - look up to
  * climb, look down to dive. A/D roll the jet (hold for a full barrel roll); W
  * throttles up, S throttles down, Space is the afterburner (limited by engine
  * heat).
@@ -122,7 +122,7 @@ public final class FlightController {
         jet.setSpeed(speed);
 
         // --- vertical model: keep your speed up or lose altitude. This is the
-        //     anti-camp rule — slowing to a crawl to aim makes the jet sink, and
+        //     anti-camp rule - slowing to a crawl to aim makes the jet sink, and
         //     the slower it goes the harder it drops. It only applies once there
         //     is real clearance below, so taking off and landing are never
         //     penalised (otherwise the jet could never leave the ground). ---
@@ -136,7 +136,7 @@ public final class FlightController {
         } else {
             double kmh = speed * 72.0;
             if (kmh >= cfg.stallFallKmh) {
-                sink = 0.0;                   // fast enough — holds altitude
+                sink = 0.0;                   // fast enough - holds altitude
             } else if (kmh >= cfg.stallFastKmh) {
                 sink = cfg.stallSinkMild;     // < 90 km/h: starts losing altitude
             } else if (kmh >= cfg.stallCriticalKmh) {
@@ -415,7 +415,7 @@ public final class FlightController {
     /**
      * How many blocks of clear air sit directly below the jet, capped at
      * {@code max}. Used to tell "high in the air" (anti-camp sink applies) from
-     * "on/near the ground" (taking off or landing — never penalised).
+     * "on/near the ground" (taking off or landing - never penalised).
      */
     private static int clearanceBelowJet(World world, double x, double y, double z,
                                          Quaternionf orientation, int max) {

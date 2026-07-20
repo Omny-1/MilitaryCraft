@@ -71,7 +71,7 @@ public final class DroneController {
 
     /**
      * Lost-signal flight after the operator leaves (2×Shift) or a brown-out: the
-     * UAV keeps flying straight ahead — it does NOT fall — until it rams something
+     * UAV keeps flying straight ahead - it does NOT fall - until it rams something
      * or its loiter timer expires (then it self-destructs).
      */
     public static void glide(Drone drone, DroneManager manager, DroneConfig cfg) {
@@ -123,7 +123,7 @@ public final class DroneController {
                 manager.detonate(drone, nose);
                 return false;
             }
-            // Flying close to a target only detonates if explicitly enabled — otherwise
+            // Flying close to a target only detonates if explicitly enabled - otherwise
             // you can approach a target and shoot rockets without ramming it.
             double vehicleContactRadius = cfg.detonateOnEntityContact ? cfg.proximityRadius : 0.7;
             var vehicle = manager.vehicleImpact(nose, vehicleContactRadius, drone.id());
