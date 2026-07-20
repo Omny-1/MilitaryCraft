@@ -32,13 +32,20 @@ jobs:
           path: target/MilitaryCraft-*.jar
           if-no-files-found: error
 
-  # Compiles the same sources against later Paper APIs to show how far forward the plugin
-  # still resolves. It only proves that every API the code calls still exists in that
-  # version; it is not a substitute for actually running the plugin on that server.
+  # Compiles the same sources against a span of Paper APIs to measure the supported range
+  # instead of asserting it. A green cell means every API the code calls exists in that
+  # version. That is a strong signal, but it is not the same as running the plugin there.
   #
-  # This is informational and never fails the build. A red cell means that version removed
-  # or renamed something the code uses, which is exactly what is worth knowing early. Add
-  # newer Minecraft versions to the list as they are released.
+  # The list deliberately reaches below the version the jar is built against:
+  #
+  #   1.21.2  expected to fail. Player.getCurrentInput does not exist yet and the attribute
+  #           constants still carry their old names, so this cell is the evidence behind the
+  #           documented floor rather than a problem to fix.
+  #   1.21.3  the claimed minimum. If this one goes red, the documentation is wrong: some
+  #           change started using an API that only appears in 1.21.4 or later.
+  #
+  # Informational, never fails the build. Add newer Minecraft versions as they are released;
+  # a version that does not exist yet simply fails to resolve, which is harmless here.
   compatibility:
     name: Paper ${{ matrix.paper }}
     runs-on: ubuntu-latest
@@ -47,6 +54,8 @@ jobs:
       fail-fast: false
       matrix:
         paper:
+          - '1.21.2'
+          - '1.21.3'
           - '1.21.4'
           - '1.21.5'
           - '1.21.6'
