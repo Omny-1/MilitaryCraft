@@ -2,6 +2,7 @@ package me.bibo.militarycraft.vehicles.train.commands;
 
 import me.bibo.militarycraft.vehicles.train.TrainRuntime;
 import me.bibo.militarycraft.core.command.SubCommand;
+import me.bibo.militarycraft.core.util.CommandCoords;
 import me.bibo.militarycraft.vehicles.train.items.TrainItem;
 import me.bibo.militarycraft.vehicles.train.rail.RailTracer;
 import me.bibo.militarycraft.vehicles.train.train.Train;
@@ -142,22 +143,34 @@ public final class TrainCommand implements TabExecutor {
             return;
         }
 
-        int x;
-        int y;
-        int z;
+        double x;
+        double y;
+        double z;
         try {
-            x = parseBlockCoordinate(args[firstCoord], base == null ? 0.0 : base.getX());
-            y = parseBlockCoordinate(args[firstCoord + 1], base == null ? 0.0 : base.getY());
-            z = parseBlockCoordinate(args[firstCoord + 2], base == null ? 0.0 : base.getZ());
+            x = parseCoordinate(args[firstCoord], base == null ? 0.0 : base.getX());
+            y = parseCoordinate(args[firstCoord + 1], base == null ? 0.0 : base.getY());
+            z = parseCoordinate(args[firstCoord + 2], base == null ? 0.0 : base.getZ());
         } catch (NumberFormatException ex) {
             sender.sendMessage(Component.text("Coordinates must be numbers or relative values like ~ or ~3.",
                     NamedTextColor.RED));
             return;
         }
 
-        Block rail = railAt(world.getBlockAt(x, y, z));
+        // Same gate as every other place command: rejects NaN/Infinity, points outside the
+        // world border, and targets in ungenerated chunks that would generate terrain here.
+        Location target = CommandCoords.resolve(world, x, y, z);
+        if (target == null) {
+            sender.sendMessage(Component.text(
+                    "Those coordinates cannot be used. They must be finite numbers, inside the "
+                    + "world border, and in terrain that has already been generated.",
+                    NamedTextColor.RED));
+            return;
+        }
+
+        Block rail = railAt(target.getBlock());
         if (rail == null) {
-            sender.sendMessage(Component.text("No rails at these coordinates: " + x + " " + y + " " + z + ".",
+            sender.sendMessage(Component.text("No rails at these coordinates: "
+                    + target.getBlockX() + " " + target.getBlockY() + " " + target.getBlockZ() + ".",
                     NamedTextColor.RED));
             return;
         }
@@ -198,13 +211,18 @@ public final class TrainCommand implements TabExecutor {
                 || args[firstCoord + 2].startsWith("~");
     }
 
-    private static int parseBlockCoordinate(String raw, double base) {
+    /**
+     * Parses one coordinate argument, absolute or {@code ~} relative. The result is not
+     * validated here: {@link CommandCoords#resolve} is what rejects non-finite values,
+     * so this deliberately returns the raw double rather than truncating to a block.
+     */
+    private static double parseCoordinate(String raw, double base) {
         if (raw.startsWith("~")) {
             String offset = raw.substring(1);
             double relative = offset.isEmpty() ? 0.0 : Double.parseDouble(offset);
-            return (int) Math.floor(base + relative);
+            return base + relative;
         }
-        return (int) Math.floor(Double.parseDouble(raw));
+        return Double.parseDouble(raw);
     }
 
     private static Block railAt(Block block) {

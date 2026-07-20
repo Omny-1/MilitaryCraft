@@ -1,6 +1,7 @@
 package me.bibo.militarycraft.weapons.nuke;
 
 import me.bibo.militarycraft.core.airsupport.ChunkWindow;
+import me.bibo.militarycraft.core.util.Bounds;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Color;
@@ -118,26 +119,31 @@ public class NukeSequence extends BukkitRunnable {
         this.headingCos = (float) Math.cos(heading);
         this.headingSin = (float) Math.sin(heading);
 
+        // Every amplifying value below is capped, not just floored. The crater is built from
+        // a (2r+1)^2 column list assembled and sorted on the main thread before any block is
+        // touched, so an unbounded crater-radius is not a big explosion - it is an out-of-memory
+        // stall. damage-radius feeds a nearby-entity scan, and the per-tick budget decides how
+        // much of the crater is dug synchronously each tick.
         NukeSettings c = manager.settings();
-        this.bomberSpeed = Math.max(0.1, c.getDouble("bomber-speed", 1.0));
-        this.engineVolume = (float) c.getDouble("engine-sound-volume", 9.0);
-        this.bomberExitDistance = Math.max(20, c.getInt("bomber-exit-distance", 150));
-        this.bombMaxFall = Math.max(0.05, c.getDouble("bomb-fall-speed", 0.8));
-        this.bombAccelTicks = Math.max(1, c.getInt("bomb-accel-ticks", 16));
+        this.bomberSpeed = Bounds.ranged(c.getDouble("bomber-speed", 1.0), 0.1, 20.0, 1.0);
+        this.engineVolume = (float) Bounds.ranged(c.getDouble("engine-sound-volume", 9.0), 0.0, 12.0, 9.0);
+        this.bomberExitDistance = Bounds.ranged(c.getInt("bomber-exit-distance", 150), 20, 2048);
+        this.bombMaxFall = Bounds.ranged(c.getDouble("bomb-fall-speed", 0.8), 0.05, 10.0, 0.8);
+        this.bombAccelTicks = Bounds.ranged(c.getInt("bomb-accel-ticks", 16), 1, 1200);
         // Fraction of the descent by which the bomb is fully nose-down (tips gradually, vertical near the ground).
-        this.bombVerticalAt = Math.min(0.99, Math.max(0.1, c.getDouble("bomb-vertical-at", 0.85)));
-        this.fallVolume = (float) c.getDouble("fall-sound-volume", 6.0);
-        this.damageRadius = Math.max(1.0, c.getDouble("damage-radius", 128));
-        this.maxDamage = Math.max(0.0, c.getDouble("max-damage", 100.0));
-        this.maxKnockback = Math.max(0.0, c.getDouble("max-knockback", 3.5));
-        this.craterRadius = Math.max(0, c.getInt("crater-radius", 64));
-        this.craterDepth = Math.max(0, c.getInt("crater-depth", 24));
-        this.craterColumnsPerTick = Math.max(32, c.getInt("crater-columns-per-tick", 700));
-        this.blindnessRadius = Math.max(0.0, c.getDouble("blindness-radius", 64));
-        this.blindnessTicks = Math.max(0, c.getInt("blindness-seconds", 10)) * 20;
-        this.radiationSeconds = Math.max(0, c.getInt("radiation-seconds", 14));
+        this.bombVerticalAt = Bounds.ranged(c.getDouble("bomb-vertical-at", 0.85), 0.1, 0.99, 0.85);
+        this.fallVolume = (float) Bounds.ranged(c.getDouble("fall-sound-volume", 6.0), 0.0, 12.0, 6.0);
+        this.damageRadius = Bounds.ranged(c.getDouble("damage-radius", 128), 1.0, 512.0, 128);
+        this.maxDamage = Bounds.ranged(c.getDouble("max-damage", 100.0), 0.0, 10000.0, 100.0);
+        this.maxKnockback = Bounds.ranged(c.getDouble("max-knockback", 3.5), 0.0, 100.0, 3.5);
+        this.craterRadius = Bounds.ranged(c.getInt("crater-radius", 64), 0, 128);
+        this.craterDepth = Bounds.ranged(c.getInt("crater-depth", 24), 0, 96);
+        this.craterColumnsPerTick = Bounds.ranged(c.getInt("crater-columns-per-tick", 700), 32, 5000);
+        this.blindnessRadius = Bounds.ranged(c.getDouble("blindness-radius", 64), 0.0, 512.0, 64);
+        this.blindnessTicks = Bounds.ranged(c.getInt("blindness-seconds", 10), 0, 600) * 20;
+        this.radiationSeconds = Bounds.ranged(c.getInt("radiation-seconds", 14), 0, 600);
         this.warningEnabled = c.getBoolean("warning-enabled", true);
-        this.warningRadius = Math.max(0.0, c.getDouble("warning-radius", 200));
+        this.warningRadius = Bounds.ranged(c.getDouble("warning-radius", 200), 0.0, 1024.0, 200);
         this.inBlastTitle = c.getString("in-blast-title", "Do not hurry, you are already there");
     }
 

@@ -1,6 +1,5 @@
 package me.bibo.militarycraft.core.airsupport;
 
-import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.World;
@@ -91,9 +90,13 @@ public final class ChunkWindow {
     private void acquire(Key key) {
         // Shared refcount so Drone/Train/Airstrike/Nuke can all pin the same chunk safely.
         ChunkTickets.acquire(key.world(), plugin, key.x(), key.z());
-        Chunk chunk = key.world().getChunkAt(key.x(), key.z());
-        if (!chunk.isLoaded()) {
-            chunk.load();
+        // Never generate terrain from here. getChunkAt generates a missing chunk
+        // synchronously on the main thread, and an ordnance run near unexplored terrain can
+        // ask for dozens of them at once, so a strike would freeze the server. Chunks that
+        // already exist are fetched (the ticket then keeps them loaded); a chunk that does
+        // not exist yet is simply left out of the window.
+        if (key.world().isChunkGenerated(key.x(), key.z())) {
+            key.world().getChunkAt(key.x(), key.z());
         }
     }
 

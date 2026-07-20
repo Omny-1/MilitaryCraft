@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Live vehicle query surface. Every shipping module is an autonomous manager exposed
@@ -87,10 +89,18 @@ public final class VehicleServiceImpl implements VehicleService {
         int tracked = 0;
         int strays = 0;
         for (VehicleProvider provider : providers) {
-            PurgeResult removed = provider.purge();
-            if (removed != null) {
-                tracked += removed.tracked();
-                strays += removed.strays();
+            // One broken module must not stop the sweep. Without this, a single provider
+            // throwing leaves every module after it in the list uncleaned, which is the
+            // opposite of what an operator running a cleanup command asked for.
+            try {
+                PurgeResult removed = provider.purge();
+                if (removed != null) {
+                    tracked += removed.tracked();
+                    strays += removed.strays();
+                }
+            } catch (RuntimeException ex) {
+                Logger.getLogger("MilitaryCraft").log(Level.SEVERE,
+                        "A vehicle provider failed during cleanup; continuing with the rest.", ex);
             }
         }
         return new PurgeResult(tracked, strays);
