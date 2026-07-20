@@ -1,6 +1,6 @@
 # MilitaryCraft
 
-English · [Уззкий](README.ru.md) · [Українська](README.uk.md)
+English · [Уззкий](README.ru.md) · [Українська](README.ua.md)
 
 MilitaryCraft is a single Paper plugin that adds drivable vehicles, aircraft, placeable
 weapon emplacements, air support strikes and a set of infantry equipment to Minecraft

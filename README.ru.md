@@ -1,6 +1,6 @@
 # MilitaryCraft
 
-[English](README.md) · Уззкий · [Українська](README.uk.md)
+[English](README.md) · Уззкий · [Українська](README.ua.md)
 
 MilitaryCraft — это один плагин для Paper, который добавляет в Minecraft 1.21.4 управляемую
 технику, авиацию, стационарные огневые точки, авиационную поддержку и набор пехотного
