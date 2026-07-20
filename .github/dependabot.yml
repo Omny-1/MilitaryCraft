@@ -1,19 +1,16 @@
 version: 2
 updates:
+  # Only the CI actions are tracked, and they arrive as a single grouped pull request
+  # once a quarter. The Maven side is deliberately left out: paper-api is pinned to the
+  # Minecraft version this plugin targets and must move deliberately, and churning the
+  # build plugins or the test framework buys a one-person project nothing.
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: monthly
+      interval: quarterly
+    open-pull-requests-limit: 3
     commit-message:
       prefix: "ci"
-
-  - package-ecosystem: maven
-    directory: /
-    schedule:
-      interval: monthly
-    commit-message:
-      prefix: "build"
-    ignore:
-      # The Paper API is pinned to the Minecraft version the plugin targets,
-      # so it must be updated deliberately rather than automatically.
-      - dependency-name: io.papermc.paper:paper-api
+    groups:
+      actions:
+        patterns: ["*"]

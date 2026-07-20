@@ -1,77 +1,107 @@
 ============================================================
-  WarKit resource pack with 3D weapon models (Minecraft 1.21.4)
+  MilitaryCraft resource pack - 3D models for the equipment
+  Minecraft 1.21.4
 ============================================================
 
-All weapons work without this pack and use their vanilla appearance.
-Install the pack when you want custom 3D models in players' hands. It is
-already structured as a safe placeholder: until custom models are added,
-weapons keep their vanilla appearance.
+This pack gives the 38 infantry equipment items their custom 3D models. The
+models are complete and are built from vanilla block textures, so the pack
+carries no image or sound files and needs no external assets.
 
-Structure (Minecraft 1.21.4 item-model system):
+IMPORTANT: the pack is not optional for appearance.
+
+The plugin writes an item_model reference into every equipment item when the
+item is created, and it does so unconditionally. There is no configuration
+switch that turns this off. A player without the pack will therefore see the
+missing-model placeholder instead of the intended model. The items still work
+exactly as documented, and every command, permission and effect behaves the
+same way; only the rendering differs.
+
+------------------------------------------------------------
+STRUCTURE
+------------------------------------------------------------
 
   pack.mcmeta
-  assets/warkit/items/<id>.json          - item_model mapping for warkit:<id>
-  assets/warkit/models/item/<id>.json    - model definition (currently a vanilla parent)
-  assets/warkit/textures/item/<id>.png   - texture for a custom model
+  assets/warkit/items/<id>.json         item_model mapping for warkit:<id>
+  assets/warkit/models/item/<id>.json   the 3D model itself
 
-Item IDs: rifle, pistol, grenade_launcher, patriot, frag_grenade,
-smoke_grenade, flash_grenade, impulse_grenade, flamethrower,
-chemical_sprayer, maxim, barbed_wire.
+The warkit namespace is the identifier the plugin writes into items. It is
+kept as it is because changing it would break the appearance of every item
+that players are already carrying on running servers.
+
+Item ids, 38 in total:
+
+  Medical and consumable
+    medkit, painkiller, ration, combat_stim, repair_kit
+
+  Armour and wearables
+    vest, kevlar_helmet, exosuit, gas_mask, pads, camo_cloak, visor_helmet
+
+  Firearms
+    rifle, pistol, grenade_launcher, patriot, maxim, flamethrower,
+    chemical_sprayer
+
+  Thrown
+    frag_grenade, smoke_grenade, flash_grenade, impulse_grenade, molotov,
+    sleep_gas
+
+  Deployable and traps
+    barbed_wire, tripwire_trap, proximity_mine, sentry_gun, firing_wall,
+    c4, suicide_vest
+
+  Utility
+    marker, grappling_hook, jump_jet, recon_scanner, trench_shovel
+
+  Other modules
+    airstrike_beacon
 
 ------------------------------------------------------------
-STEP 1. Add custom models (optional)
+STEP 1. BUILD THE ARCHIVE
 ------------------------------------------------------------
 
-Create a weapon model in Blockbench using the "Java Block/Item" format.
-Export the model to assets/warkit/models/item/<id>.json and its texture
-to assets/warkit/textures/item/<id>.png. Do not change
-assets/warkit/items/<id>.json; it already points to warkit:item/<id>.
+Archive the contents of this directory. pack.mcmeta and the assets directory
+must sit at the root of the zip, not inside an extra folder. Name it whatever
+you like, for example MilitaryCraft.zip.
 
-Leave the placeholder files unchanged until a custom model is ready.
-
-------------------------------------------------------------
-STEP 2. Build the ZIP archive
-------------------------------------------------------------
-
-Archive the contents of the resourcepack directory. pack.mcmeta and the
-assets directory must be at the root of the ZIP, not inside an extra
-directory. For example, name the archive WarKit.zip.
+Do not zip the parent directory. If the archive opens to a single folder that
+then contains pack.mcmeta, Minecraft will not recognise it as a pack.
 
 ------------------------------------------------------------
-STEP 3. Distribute the pack
+STEP 2. DISTRIBUTE IT
 ------------------------------------------------------------
 
-Option A, automatic server distribution:
+Option A, served by the server:
 
-  1. Upload WarKit.zip to a direct-download URL.
-  2. Configure server.properties:
+  1. Upload the zip to a direct download address.
+  2. In server.properties:
 
        resource-pack=DIRECT_ZIP_URL
-       resource-pack-sha1=<file SHA-1>
+       resource-pack-sha1=<sha1 of the file>
        require-resource-pack=false
 
-     Use true for require-resource-pack when the pack must be mandatory.
-     On Windows, calculate the hash with:
+     Set require-resource-pack to true if players must accept it. Because the
+     models are applied unconditionally, true is the setting that matches how
+     the plugin behaves.
 
-       certutil -hashfile WarKit.zip SHA1
+     On Windows the hash is produced with:
 
-  3. Restart the server. Players can accept the pack when they connect.
+       certutil -hashfile MilitaryCraft.zip SHA1
 
-Option B, local installation:
+  3. Restart the server.
 
-Place WarKit.zip in .minecraft/resourcepacks and enable it in Minecraft.
+Option B, installed locally:
+
+  Place the zip in .minecraft/resourcepacks and enable it in the game.
 
 ------------------------------------------------------------
-STEP 4. Enable models in the plugin
+STEP 3. MODIFYING A MODEL
 ------------------------------------------------------------
 
-Set the following in plugins/WarKit/config.yml:
+Open the model in Blockbench using the Java Block/Item format, edit it, and
+export it back over assets/warkit/models/item/<id>.json. Leave the matching
+file in assets/warkit/items/ alone; it only points at the model.
 
-  resource-pack:
-    models: true
-
-Run /warkit reload, then issue fresh items with /warkit give so the new
-item_model is applied. Enable models only while the resource pack is
-being distributed; otherwise custom items can render as missing models.
+Items already in player inventories keep working after a model change. The
+reference written into the item is the id, not the geometry, so a rebuilt pack
+updates the appearance of existing items as soon as it is loaded.
 
 ============================================================

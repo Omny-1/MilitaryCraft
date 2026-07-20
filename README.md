@@ -55,8 +55,9 @@ in `plugin.yml`, since the module schedulers assume a single main thread.
 3. Start the server once. A default `plugins/MilitaryCraft/config.yml` is written on first run.
 4. Adjust the configuration if needed, then run `/mc reload` or restart the server.
 
-The resource pack is optional and is described in its own section below. Without it, all
-items keep their normal vanilla appearance and every function still works.
+The resource pack is described in its own section below. Install it as well if you want the
+equipment to look right: the plugin always writes a model reference into those items, so
+without the pack they render as the missing-model placeholder. They still work correctly.
 
 ## First steps
 
@@ -407,8 +408,13 @@ broken behaviour.
 
 ## Resource pack
 
-An optional resource pack gives the equipment items custom three-dimensional models and
-sounds. Every item works without it and simply uses its vanilla appearance.
+A resource pack gives the 38 equipment items their custom three-dimensional models, built
+from vanilla block textures, so the pack contains no image or sound files of its own.
+
+It is needed for appearance rather than for function. The plugin writes a model reference
+into every equipment item as it is created, and there is no setting that disables that, so
+a player without the pack sees the missing-model placeholder. Commands, permissions and
+effects are unaffected.
 
 The pack source is `resourcepack/warkit/`. It holds the item and model definitions plus a
 `HOW_TO_ENABLE.txt` that documents the process step by step. No prebuilt archive is
