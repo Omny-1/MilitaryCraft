@@ -40,7 +40,7 @@ so the server needs no client mod and no additional plugins.
 | --- | --- |
 | Server software | Paper 1.21.4 or later |
 | Verified range | 1.21.4 through 1.21.8 |
-| Java | 21, or 25 on Paper 1.21.9 and later |
+| Java | 21 |
 | Dependencies | None |
 | Folia | Not supported |
 
@@ -81,9 +81,12 @@ that version. That is a strong signal, but it is not a play test: it confirms th
 resolves, not that a tank drives correctly there. Reports from real servers are welcome as
 issues.
 
-One note on Java. The jar targets Java 21 and runs anywhere in the range. Paper itself
-raised its own requirement to Java 25 from 1.21.9 onward, so a server on those versions
-needs the newer Java for the server, not for this plugin.
+The range stops at 1.21.8 for a measured reason rather than a lack of interest. Building
+against 1.21.9, 1.21.10 and 1.21.11 fails. Paper also raised its own Java requirement to 25
+at 1.21.9, but that is not the cause: the builds still fail on a Java 25 compiler, and they
+fail while compiling rather than while setting up, so those releases changed something the
+plugin calls. Supporting them means working through those errors first, which has not been
+done. Until then the honest answer is 1.21.4 through 1.21.8.
 
 ## Installation
 

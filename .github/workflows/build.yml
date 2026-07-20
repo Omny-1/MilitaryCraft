@@ -36,13 +36,19 @@ jobs:
   # of asserting it. A green cell means every API the code calls exists in that version,
   # which is a strong signal but not the same as running the plugin there.
   #
-  # The floor was measured rather than assumed. 1.21.3 is published and does compile as a
-  # dependency, but building against it fails: something the code uses only appears in
-  # 1.21.4. That is why the list starts there and why 1.21.4 is both the build target and
-  # the documented minimum. Compiling against the floor is deliberate, since it makes it
-  # impossible to reach for a newer API without a cell going red.
+  # Both ends were measured rather than assumed.
   #
-  # Informational, never fails the build. Add newer Minecraft versions as they are released.
+  # Below: 1.21.3 is published and resolves, but building against it fails, so something the
+  # code uses only appears in 1.21.4. The build target is that same version on purpose, which
+  # makes it impossible to reach for a newer API without a cell going red.
+  #
+  # Above: 1.21.9, 1.21.10 and 1.21.11 do not compile. That was first assumed to be a
+  # toolchain problem, since Paper needs Java 25 from 1.21.9 onward, but the cells still fail
+  # on JDK 25 and they fail at the compile step rather than at setup, so those versions
+  # genuinely changed something the code calls. They are left out until someone works through
+  # the errors; adding them back needs JDK 25 here as well as the fix.
+  #
+  # Informational, never fails the build.
   compatibility:
     name: Paper ${{ matrix.paper }}
     runs-on: ubuntu-latest
@@ -56,22 +62,17 @@ jobs:
           - '1.21.6'
           - '1.21.7'
           - '1.21.8'
-          - '1.21.9'
-          - '1.21.10'
-          - '1.21.11'
 
     steps:
       - name: Check out the repository
         uses: actions/checkout@v4
 
-      # Built with JDK 25 because Paper from 1.21.9 onward is compiled for Java 25, and a
-      # JDK 21 compiler cannot read those class files at all. The plugin itself still
-      # targets Java 21 through maven.compiler.release, so the jar keeps running on the
-      # older servers in this range; only the compiler used to check it is newer.
-      - name: Set up JDK 25
+      # Matches the JDK the shipped jar is built with. Extending the matrix past 1.21.8 would
+      # need JDK 25 here, because Paper is compiled for Java 25 from 1.21.9 onward.
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: '25'
+          java-version: '21'
           distribution: temurin
           cache: maven
 
