@@ -28,7 +28,6 @@ so the server needs no client mod and no additional plugins.
 - [Configuration](#configuration)
 - [Resource pack](#resource-pack)
 - [Building from source](#building-from-source)
-- [Project layout](#project-layout)
 - [Limitations](#limitations)
 - [License](#license)
 
@@ -469,62 +468,18 @@ mvn -DskipTests package     # build without running tests
 mvn -o package              # build offline, once dependencies are cached
 ```
 
-The test suite covers the parts that can be verified without a running server: the
-mathematics behind artillery ballistics and target validation, motorcycle drive physics and
-its persistent index, nuclear strike settings, the vehicle provider, and a
-set of resource checks that parse `plugin.yml` and `config.yml` to confirm every module has
-a section, that no permission node is declared twice, and that every permission the command
-classes reference is actually declared.
-
-## Project layout
-
-```text
-src/main/java/me/bibo/militarycraft/
-    MilitaryCraftPlugin.java   entry point and module registration
-    core/                      shared foundation used by every module
-        combat/                vehicle damage, projectiles, explosions
-        command/               command tree, argument parsing, graphical menu
-        config/                configuration access and range checking
-        event/                 event distribution to modules
-        item/  key/  text/  util/
-    camera/                    third-person camera distance
-    vehicles/                  tank, kamaz, pickup, moto, train,
-                               jet, helicopter, airship, drone
-    weapons/                   antiair, tckbus, artillery, airstrike, nuke
-    gear/warkit/               infantry equipment
-src/main/resources/
-    plugin.yml                 commands and permission declarations
-    config.yml                 all settings
-src/test/java/                 unit and resource tests
-resourcepack/                  optional resource pack source
-```
-
-Modules are registered explicitly in `MilitaryCraftPlugin`, in a fixed order, with no
-classpath scanning. Each module implements a small interface with an identifier and enable,
-disable and reload steps, and it receives a single object holding the shared services:
-events, commands, item creation, vehicle registry, combat and camera. A module touches only
-its own configuration section and its own entities.
-
-Vehicles are built from display entities positioned by matrix transforms, with an invisible
-core entity holding the state. Vehicle state is stored in the entity's persistent data, so
-vehicles survive chunk unloads and server restarts and are rebuilt when their chunk loads
-again.
-
 ## Limitations
 
 These are known and intentional, listed so they are not discovered as surprises.
 
 - Paper only. Spigot and CraftBukkit will not work.
 - Folia is not supported.
-- Vehicle models are display entities, so they have no true collision volume. Contact is
-  handled by distance checks rather than by the physics engine.
-- The camera distance is set through an entity scale attribute, which also enlarges the
-  rider's hitbox. Vehicle modules hide the rider to compensate, but very large values can
-  still cause a ground vehicle's occupant to clip into terrain.
-- Automated tests cover mathematics, persistence and configuration integrity. Rendering,
-  driving and combat behaviour can only be verified on a running server.
-- The plugin writes its own persistent state for artillery sessions, motorcycle counts and
-  trap bus drops. Deleting the plugin's data directory resets those.
+- Vehicles have no solid collision. Players and mobs can walk through the bodywork, and
+  contact is decided by proximity rather than by the shape of the model.
+- Raising a vehicle's `camera-scale` too far also enlarges the driver's hitbox. On a ground
+  vehicle a large value can make the driver clip into terrain.
+- Artillery sessions, motorcycle counts and trap bus drops are stored in the plugin's data
+  directory. Deleting that directory resets them.
 
 ## Contributing
 
