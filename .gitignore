@@ -15,3 +15,8 @@ Thumbs.db
 
 # Local tooling output
 graphify-out/
+
+# Built resource pack archives. The pack source lives in resourcepack/; a built zip is
+# not committed, because a server pack can also carry third-party sounds and textures
+# whose licences are not this repository's to grant.
+*.zip

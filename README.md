@@ -410,11 +410,10 @@ broken behaviour.
 An optional resource pack gives the equipment items custom three-dimensional models and
 sounds. Every item works without it and simply uses its vanilla appearance.
 
-Two things are included in this repository:
-
-- `resourcepack/warkit/` holds the source layout, with the item and model definitions and a
-  `HOW_TO_ENABLE.txt` that documents the process in detail.
-- `WarKit-ResourcePack.zip` is a prepared archive containing models, textures and sounds.
+The pack source is `resourcepack/warkit/`. It holds the item and model definitions plus a
+`HOW_TO_ENABLE.txt` that documents the process step by step. No prebuilt archive is
+committed: build one by zipping the contents of that directory so that `pack.mcmeta` and
+`assets/` sit at the root of the archive, not inside an extra folder.
 
 To use it, host the zip at a direct download address and point the server at it in
 `server.properties`:
@@ -456,7 +455,7 @@ mvn -o package              # build offline, once dependencies are cached
 
 The test suite covers the parts that can be verified without a running server: the
 mathematics behind artillery ballistics and target validation, motorcycle drive physics and
-its persistent index, train routing, nuclear strike settings, the vehicle provider, and a
+its persistent index, nuclear strike settings, the vehicle provider, and a
 set of resource checks that parse `plugin.yml` and `config.yml` to confirm every module has
 a section, that no permission node is declared twice, and that every permission the command
 classes reference is actually declared.
