@@ -7,6 +7,24 @@ uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Removed
+
+- The prebuilt `WarKit-ResourcePack.zip` is no longer distributed. It bundled sounds and
+  overrides beyond this project's own models, including third-party material this
+  repository cannot license. Build a pack from `resourcepack/warkit/` instead.
+
+### Fixed
+
+- Train placement now uses the shared coordinate gate, so non-finite coordinates, points
+  outside the world border and ungenerated chunks are rejected rather than silently
+  turning into block 0 or the maximum integer.
+- Nuclear strike settings are capped as well as floored. An unbounded crater radius built
+  its column list on the main thread before changing any block, which stalled the server
+  rather than producing a larger explosion. Shipped defaults are unchanged.
+- Airstrike and nuclear strike no longer generate terrain synchronously while pinning the
+  chunks along their flight path.
+- Vehicle cleanup continues through the remaining modules when one of them fails.
+
 ### Changed
 
 - The impulse grenade now pushes every player within its radius in the same way. Previously
