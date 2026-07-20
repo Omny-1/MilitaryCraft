@@ -48,46 +48,6 @@ The plugin is compiled against the Paper API. Spigot and CraftBukkit are not sup
 because several modules rely on Paper-only calls. Folia is explicitly marked unsupported
 in `plugin.yml`, since the module schedulers assume a single main thread.
 
-### Why the range starts at 1.21.4
-
-The minimum is not a preference. It is where the APIs the plugin is built on first appear,
-and it is measured rather than estimated: a workflow compiles the sources against each Paper
-API in turn, and 1.21.3 does not build.
-
-The reasons older versions are out of reach at all are structural. Every vehicle reads its
-driver through `Player.getCurrentInput()`, which arrived in 1.21.3, and no earlier API
-reports which movement keys a player holds, so on older versions there is nothing to steer
-with short of intercepting packets and rewriting all eight controllers around a third-party
-library. The camera distance, vehicle health and armour values use attribute constants that
-were renamed around the same time, and the `SCALE` attribute behind the camera needs 1.20.5.
-Custom item models and item cooldown components need 1.21.2.
-
-Display entities, which every vehicle model is built from, go back to 1.19.4, so the models
-are not what sets the limit.
-
-The jar is compiled against 1.21.4, the same version as the floor. That is deliberate: it
-makes it impossible to start using a newer API by accident without the matrix turning red.
-
-### How far forward it goes
-
-There is no version-specific code anywhere in the project: no NMS, no CraftBukkit imports
-and no reflection into server internals. That is what makes one jar viable across versions
-instead of a separate build per release, and it is why no per-version downloads are offered.
-They would be identical files.
-
-Every push compiles the sources against each published Paper API from 1.21.4 upward, so the
-supported range is measured. A green result means every API the code calls still exists in
-that version. That is a strong signal, but it is not a play test: it confirms the plugin
-resolves, not that a tank drives correctly there. Reports from real servers are welcome as
-issues.
-
-The range stops at 1.21.8 for a measured reason rather than a lack of interest. Building
-against 1.21.9, 1.21.10 and 1.21.11 fails. Paper also raised its own Java requirement to 25
-at 1.21.9, but that is not the cause: the builds still fail on a Java 25 compiler, and they
-fail while compiling rather than while setting up, so those releases changed something the
-plugin calls. Supporting them means working through those errors first, which has not been
-done. Until then the honest answer is 1.21.4 through 1.21.8.
-
 ## Installation
 
 1. Download or build `MilitaryCraft-1.0.0.jar` (see [Building from source](#building-from-source)).
