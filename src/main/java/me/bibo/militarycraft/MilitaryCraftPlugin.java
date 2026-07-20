@@ -8,6 +8,7 @@ import me.bibo.militarycraft.core.command.CommandAccess;
 import me.bibo.militarycraft.core.command.RootCommand;
 import me.bibo.militarycraft.core.event.EventBus;
 import me.bibo.militarycraft.core.item.ItemFactory;
+import me.bibo.militarycraft.core.item.ItemModels;
 import me.bibo.militarycraft.core.key.Keys;
 import me.bibo.militarycraft.core.module.MilitaryModule;
 import me.bibo.militarycraft.core.module.ModuleManager;
@@ -55,6 +56,7 @@ public final class MilitaryCraftPlugin extends JavaPlugin {
         CameraServiceImpl camera = new CameraServiceImpl();
 
         this.core = new Core(this, events, rootCommand, items, vehicles, combat, camera);
+        ItemModels.refresh(core.config());
 
         PluginCommand command = getCommand("mc");
         if (command == null) {
@@ -99,6 +101,7 @@ public final class MilitaryCraftPlugin extends JavaPlugin {
     public java.util.List<String> reloadAll() {
         reloadConfig();
         core.refreshConfig();
+        ItemModels.refresh(core.config());
         return moduleManager.reloadAll(core);
     }
 

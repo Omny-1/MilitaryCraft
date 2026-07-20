@@ -7,14 +7,22 @@ This pack gives the 38 infantry equipment items their custom 3D models. The
 models are complete and are built from vanilla block textures, so the pack
 carries no image or sound files and needs no external assets.
 
-IMPORTANT: the pack is not optional for appearance.
+The pack is optional, and it is off by default.
 
-The plugin writes an item_model reference into every equipment item when the
-item is created, and it does so unconditionally. There is no configuration
-switch that turns this off. A player without the pack will therefore see the
-missing-model placeholder instead of the intended model. The items still work
-exactly as documented, and every command, permission and effect behaves the
-same way; only the rendering differs.
+Custom models are controlled by one setting in plugins/MilitaryCraft/config.yml:
+
+  resource-pack:
+    models: false
+
+While it is false, items keep the plain vanilla look of the material they are
+built from and nothing is missing or broken. Turn it on only while the pack is
+actually being served to players. The reason for the default is that a client
+without the pack cannot fall back gracefully: an unresolved model reference
+renders as the missing-model placeholder, not as the ordinary item.
+
+The setting applies when an item is created, so it does not change items that
+are already in inventories. After switching it, run /mc reload and hand out
+fresh items with /warkit give or /warkit giveall.
 
 ------------------------------------------------------------
 STRUCTURE
@@ -78,9 +86,9 @@ Option A, served by the server:
        resource-pack-sha1=<sha1 of the file>
        require-resource-pack=false
 
-     Set require-resource-pack to true if players must accept it. Because the
-     models are applied unconditionally, true is the setting that matches how
-     the plugin behaves.
+     Set require-resource-pack to true if players must accept it. Whichever
+     you choose, only set resource-pack.models to true in the plugin config
+     once players are actually receiving the pack.
 
      On Windows the hash is produced with:
 

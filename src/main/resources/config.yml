@@ -3,6 +3,23 @@
 # The `modules:` block below gates which modules actually enable
 # (ModuleManager checks modules.<id>.enabled, default true).
 
+resource-pack:
+  # Whether newly created equipment and airstrike beacons carry the custom 3D model
+  # from the resource pack in resourcepack/warkit/.
+  #
+  # false (default): items keep the plain vanilla look of the material they are built
+  #   from. Everything works; only the appearance is ordinary. This is the safe setting
+  #   when the pack is not being distributed, because a player without it would otherwise
+  #   see the missing-model placeholder.
+  #
+  # true: items get the pack model. Only turn this on while the pack is actually served
+  #   to players (server.properties resource-pack=...) or installed locally by everyone.
+  #
+  # The setting applies at the moment an item is created, so it does not change items
+  # already sitting in inventories. After switching it, run /mc reload and hand out fresh
+  # items with /warkit give or /warkit giveall.
+  models: false
+
 modules:
   tank:
     enabled: true

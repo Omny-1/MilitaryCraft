@@ -59,8 +59,9 @@ public class AirstrikeCommand implements CommandExecutor, TabCompleter {
                 Component.text("A Su-57 fighter will strike the target.", NamedTextColor.GRAY)
                         .decoration(TextDecoration.ITALIC, false)));
         meta.setEnchantmentGlintOverride(true);
-        // 3D model from the WarKit resource pack (warkit:airstrike_beacon) instead of a rocket-like item.
-        meta.setItemModel(new NamespacedKey("warkit", "airstrike_beacon"));
+        // 3D model from the resource pack, if the server has models turned on. Otherwise the
+        // beacon keeps the vanilla firework rocket look rather than a missing-model placeholder.
+        me.bibo.militarycraft.core.item.ItemModels.apply(meta, "airstrike_beacon");
         meta.getPersistentDataContainer().set(beaconKey(plugin), PersistentDataType.BYTE, (byte) 1);
         item.setItemMeta(meta);
         return item;

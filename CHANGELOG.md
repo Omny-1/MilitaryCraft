@@ -13,6 +13,14 @@ uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   overrides beyond this project's own models, including third-party material this
   repository cannot license. Build a pack from `resourcepack/warkit/` instead.
 
+### Added
+
+- `resource-pack.models`, off by default, decides whether newly created equipment and
+  airstrike beacons carry their custom model. Previously the model reference was written
+  unconditionally, so a player without the pack saw the missing-model placeholder instead
+  of the ordinary item. The plugin now looks correct out of the box, and servers that
+  distribute the pack turn the setting on.
+
 ### Fixed
 
 - Train placement now uses the shared coordinate gate, so non-finite coordinates, points

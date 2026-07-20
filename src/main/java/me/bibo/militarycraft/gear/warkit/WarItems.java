@@ -330,7 +330,7 @@ public final class WarItems {
 
     private void tag(ItemMeta m, String id) {
         m.getPersistentDataContainer().set(idKey, PersistentDataType.STRING, id);
-        m.setItemModel(new NamespacedKey("warkit", id));
+        me.bibo.militarycraft.core.item.ItemModels.apply(m, id);
     }
 
     /** Per-item cooldown group: native recharge animation. */

@@ -55,9 +55,8 @@ in `plugin.yml`, since the module schedulers assume a single main thread.
 3. Start the server once. A default `plugins/MilitaryCraft/config.yml` is written on first run.
 4. Adjust the configuration if needed, then run `/mc reload` or restart the server.
 
-The resource pack is described in its own section below. Install it as well if you want the
-equipment to look right: the plugin always writes a model reference into those items, so
-without the pack they render as the missing-model placeholder. They still work correctly.
+The resource pack is optional and is described in its own section below. Without it, all
+items keep their normal vanilla appearance and every function still works.
 
 ## First steps
 
@@ -408,13 +407,24 @@ broken behaviour.
 
 ## Resource pack
 
-A resource pack gives the 38 equipment items their custom three-dimensional models, built
-from vanilla block textures, so the pack contains no image or sound files of its own.
+An optional resource pack gives the 38 equipment items their custom three-dimensional
+models. The models are built from vanilla block textures, so the pack contains no image or
+sound files of its own.
 
-It is needed for appearance rather than for function. The plugin writes a model reference
-into every equipment item as it is created, and there is no setting that disables that, so
-a player without the pack sees the missing-model placeholder. Commands, permissions and
-effects are unaffected.
+Custom models are off by default and are controlled by one setting:
+
+```yaml
+resource-pack:
+  models: false
+```
+
+Leave it off unless the pack is actually being served to players. A client without the pack
+cannot fall back gracefully: an unresolved model reference renders as the missing-model
+placeholder rather than as the ordinary item. With the setting off, items simply look like
+the vanilla material they are built from, and nothing else changes.
+
+The setting takes effect when an item is created, so it does not alter items already in
+inventories. After changing it, run `/mc reload` and issue fresh items.
 
 The pack source is `resourcepack/warkit/`. It holds the item and model definitions plus a
 `HOW_TO_ENABLE.txt` that documents the process step by step. No prebuilt archive is

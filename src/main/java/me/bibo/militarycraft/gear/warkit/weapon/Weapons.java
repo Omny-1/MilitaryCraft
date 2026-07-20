@@ -584,8 +584,8 @@ public final class Weapons {
         applyModel(m, id);
     }
 
-    /** Custom 3D model from the warkit resource pack. */
+    /** Custom 3D model from the resource pack, when the server has models turned on. */
     private void applyModel(ItemMeta m, String id) {
-        m.setItemModel(new NamespacedKey("warkit", id));
+        me.bibo.militarycraft.core.item.ItemModels.apply(m, id);
     }
 }
