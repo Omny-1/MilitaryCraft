@@ -1,12 +1,3 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  org.bukkit.event.EventHandler
- *  org.bukkit.event.Listener
- *  org.bukkit.event.world.EntitiesLoadEvent
- *  org.bukkit.event.world.EntitiesUnloadEvent
- */
 package me.bibo.militarycraft.vehicles.pickup.listeners;
 
 import me.bibo.militarycraft.vehicles.pickup.PickupRuntime;
@@ -15,6 +6,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.world.EntitiesLoadEvent;
 import org.bukkit.event.world.EntitiesUnloadEvent;
 
+/**
+ * Follows pickups in and out of loaded chunks: rebuild one from its entities when its chunk comes
+ * back, and forget it when the chunk goes away. The vehicle itself lives in the world, not in a
+ * save file, so this is the whole of its persistence.
+ */
 public final class WorldListener
 implements Listener {
     private final PickupRuntime plugin;

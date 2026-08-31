@@ -1,23 +1,3 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  net.kyori.adventure.text.Component
- *  net.kyori.adventure.text.format.NamedTextColor
- *  net.kyori.adventure.text.format.TextColor
- *  org.bukkit.GameMode
- *  org.bukkit.Location
- *  org.bukkit.Sound
- *  org.bukkit.block.Block
- *  org.bukkit.entity.Player
- *  org.bukkit.event.EventHandler
- *  org.bukkit.event.EventPriority
- *  org.bukkit.event.Listener
- *  org.bukkit.event.block.Action
- *  org.bukkit.event.player.PlayerInteractEvent
- *  org.bukkit.inventory.EquipmentSlot
- *  org.bukkit.inventory.ItemStack
- */
 package me.bibo.militarycraft.vehicles.pickup.listeners;
 
 import me.bibo.militarycraft.vehicles.pickup.PickupRuntime;
@@ -39,6 +19,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
+/** Turns a right-click with the pickup item into a vehicle, if there is room for one there. */
 public final class PlacementListener
 implements Listener {
     private final PickupRuntime plugin;
@@ -65,7 +46,7 @@ implements Listener {
             return;
         }
         if (!player.hasPermission("pickupcraft.place")) {
-            player.sendActionBar((Component)Component.text((String)"You do not have permission to place a pickup", (TextColor)NamedTextColor.RED));
+            player.sendActionBar(Component.text("You do not have permission to place a pickup", NamedTextColor.RED));
             return;
         }
         Block clicked = event.getClickedBlock();
@@ -76,7 +57,7 @@ implements Listener {
         Location at = PickupCollision.anchorOnTop(clicked);
         PickupCollision.PlacementResult result = PickupCollision.validatePlacement(this.plugin.pickups().all(), null, at, yaw);
         if (!result.ok()) {
-            player.sendActionBar((Component)Component.text((String)result.message(), (TextColor)NamedTextColor.RED));
+            player.sendActionBar(Component.text(result.message(), NamedTextColor.RED));
             return;
         }
         this.plugin.pickups().create(at, yaw);

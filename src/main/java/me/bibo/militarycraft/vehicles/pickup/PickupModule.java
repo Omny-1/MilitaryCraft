@@ -17,6 +17,9 @@ import org.bukkit.event.Listener;
 
 import java.util.List;
 
+/**
+ * Wires the pickup into the plugin: config, listeners, command and the manager's tick loop.
+ */
 public final class PickupModule implements MilitaryModule {
 
     private Core core;

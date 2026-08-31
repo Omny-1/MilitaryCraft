@@ -32,6 +32,9 @@ uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Airstrike and nuclear strike no longer generate terrain synchronously while pinning the
   chunks along their flight path.
 - Vehicle cleanup continues through the remaining modules when one of them fails.
+- `PickupPart.material` dispatched on `role.ordinal()` instead of on the enum, so inserting
+  or reordering a `Role` would have silently repainted the whole vehicle. It switches on the
+  constants now, and the compiler points at the gap if one is ever added.
 
 ### Changed
 
@@ -39,6 +42,13 @@ uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   the thrower was a special case, pushed along their own look direction regardless of
   distance while other entities were pushed away from the blast centre. The default radius
   was lowered from 4.5 to 3.0 to suit the uniform behaviour.
+- The pickup module was carrying decompiler output rather than source: every file opened
+  with a CFR banner, and the code came with the artefacts that go with it - widening casts
+  on literals, `new ArrayList<Interaction>()` where the rest of the project writes `<>`,
+  classes calling their own static methods through their own name, imports of their own
+  package, and a `switch` on `role.ordinal()`. That is cleaned up, and the module's types
+  now carry the class documentation the other twelve modules already had. No behaviour
+  changed; the one latent hazard it hid is under Fixed.
 
 ## [1.0.0]
 

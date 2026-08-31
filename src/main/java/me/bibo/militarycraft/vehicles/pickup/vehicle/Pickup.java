@@ -1,34 +1,3 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  io.papermc.paper.entity.TeleportFlag
- *  io.papermc.paper.entity.TeleportFlag$EntityState
- *  org.bukkit.Location
- *  org.bukkit.Material
- *  org.bukkit.Particle
- *  org.bukkit.Sound
- *  org.bukkit.World
- *  org.bukkit.attribute.Attribute
- *  org.bukkit.attribute.AttributeInstance
- *  org.bukkit.block.Block
- *  org.bukkit.block.data.BlockData
- *  org.bukkit.block.data.Waterlogged
- *  org.bukkit.entity.ArmorStand
- *  org.bukkit.entity.BlockDisplay
- *  org.bukkit.entity.Display
- *  org.bukkit.entity.Display$Brightness
- *  org.bukkit.entity.Entity
- *  org.bukkit.entity.Interaction
- *  org.bukkit.entity.Player
- *  org.bukkit.persistence.PersistentDataContainer
- *  org.bukkit.persistence.PersistentDataType
- *  org.bukkit.plugin.Plugin
- *  org.bukkit.scheduler.BukkitRunnable
- *  org.bukkit.util.Transformation
- *  org.bukkit.util.Vector
- *  org.joml.Vector3f
- */
 package me.bibo.militarycraft.vehicles.pickup.vehicle;
 
 import io.papermc.paper.entity.TeleportFlag;
@@ -74,6 +43,15 @@ import org.bukkit.util.Transformation;
 import org.bukkit.util.Vector;
 import org.joml.Vector3f;
 
+/**
+ * One pickup truck: an invisible core the driver rides, seats for a passenger and a gunner,
+ * Interaction hitboxes covering the body so the whole thing can be clicked and shot, and the
+ * block-display parts that make up the model.
+ *
+ * <p>State lives on the entities themselves, in persistent data, rather than in a file. That is what
+ * lets a pickup survive a restart or a chunk unload without the plugin having to track where every
+ * vehicle in the world went.
+ */
 public final class Pickup implements VehicleHandle {
     private static final double WHEEL_SPIN_VISUAL_SCALE = 0.35;
     private static final double SEAT_MOTION_LEAD_TICKS = 1.15;
@@ -95,9 +73,9 @@ public final class Pickup implements VehicleHandle {
     private ArmorStand driverSeat;
     private ArmorStand passengerSeat;
     private ArmorStand gunnerSeat;
-    private final List<Interaction> hitboxes = new ArrayList<Interaction>();
-    private final List<Display> displays = new ArrayList<Display>();
-    private final List<PickupPart> partDefs = new ArrayList<PickupPart>();
+    private final List<Interaction> hitboxes = new ArrayList<>();
+    private final List<Display> displays = new ArrayList<>();
+    private final List<PickupPart> partDefs = new ArrayList<>();
     private boolean spawned;
     private UUID driver;
     private UUID passenger;
@@ -110,7 +88,7 @@ public final class Pickup implements VehicleHandle {
     private int submergedTicks;
     private boolean stateDirty;
     private int persistCooldown;
-    private final Map<UUID, Long> ramCooldown = new HashMap<UUID, Long>();
+    private final Map<UUID, Long> ramCooldown = new HashMap<>();
     private double lastX = Double.NaN;
     private double lastY;
     private double lastZ;
@@ -138,70 +116,75 @@ public final class Pickup implements VehicleHandle {
         return pickup;
     }
 
+    /** The slot a saved part belongs in, or null if the tag is missing or unreadable. */
+    private static Integer partIndex(Entity entity) {
+        return entity.getPersistentDataContainer().get(Keys.PART_INDEX, PersistentDataType.INTEGER);
+    }
+
+    /**
+     * Rebuild a pickup from the entities found in a freshly loaded chunk.
+     *
+     * <p>Returns null unless every piece is present: the three seats, an anchor hitbox and the full
+     * set of display parts. A pickup missing half its model is not something to hand back to a
+     * driver, so an incomplete set is left in the world for the cleanup pass instead.
+     */
     public static Pickup rehydrate(PickupRuntime plugin, UUID id, List<Entity> entities) {
         PickupConfig cfg = plugin.config();
         List<PickupPart> parts = PickupModel.parts();
         ArmorStand driverSeat = null;
         ArmorStand passengerSeat = null;
         ArmorStand gunnerSeat = null;
-        ArrayList<Interaction> allHitboxes = new ArrayList<Interaction>();
+        List<Interaction> allHitboxes = new ArrayList<>();
         Interaction[] hitboxArr = new Interaction[PickupModel.HITBOX_LOCAL.length];
         Display[] arr = new Display[parts.size()];
-        block14: for (Entity entity : entities) {
-            String role = (String)entity.getPersistentDataContainer().get(Keys.PICKUP_PART, PersistentDataType.STRING);
+
+        for (Entity entity : entities) {
+            String role = entity.getPersistentDataContainer().get(Keys.PICKUP_PART, PersistentDataType.STRING);
             if (role == null) continue;
             switch (role) {
-                case "driver_seat": {
-                    ArmorStand a;
-                    if (!(entity instanceof ArmorStand)) continue block14;
-                    driverSeat = a = (ArmorStand)entity;
-                    break;
+                case "driver_seat" -> {
+                    if (entity instanceof ArmorStand stand) driverSeat = stand;
                 }
-                case "passenger_seat": {
-                    ArmorStand a;
-                    if (!(entity instanceof ArmorStand)) continue block14;
-                    passengerSeat = a = (ArmorStand)entity;
-                    break;
+                case "passenger_seat" -> {
+                    if (entity instanceof ArmorStand stand) passengerSeat = stand;
                 }
-                case "gunner_seat": {
-                    ArmorStand a;
-                    if (!(entity instanceof ArmorStand)) continue block14;
-                    gunnerSeat = a = (ArmorStand)entity;
-                    break;
+                case "gunner_seat" -> {
+                    if (entity instanceof ArmorStand stand) gunnerSeat = stand;
                 }
-                case "hitbox": {
-                    if (!(entity instanceof Interaction)) continue block14;
-                    Interaction i = (Interaction)entity;
-                    allHitboxes.add(i);
-                    Integer idx = (Integer)entity.getPersistentDataContainer().get(Keys.PART_INDEX, PersistentDataType.INTEGER);
-                    if (idx == null || idx < 0 || idx >= hitboxArr.length) continue block14;
-                    hitboxArr[idx.intValue()] = i;
-                    break;
+                case "hitbox" -> {
+                    if (entity instanceof Interaction hitbox) {
+                        allHitboxes.add(hitbox);
+                        Integer idx = partIndex(entity);
+                        if (idx != null && idx >= 0 && idx < hitboxArr.length) hitboxArr[idx] = hitbox;
+                    }
                 }
-                case "part": {
-                    Integer idx = (Integer)entity.getPersistentDataContainer().get(Keys.PART_INDEX, PersistentDataType.INTEGER);
-                    if (!(entity instanceof Display)) continue block14;
-                    Display d = (Display)entity;
-                    if (idx == null || idx < 0 || idx >= arr.length) continue block14;
-                    arr[idx.intValue()] = d;
-                    break;
+                case "part" -> {
+                    if (entity instanceof Display display) {
+                        Integer idx = partIndex(entity);
+                        if (idx != null && idx >= 0 && idx < arr.length) arr[idx] = display;
+                    }
                 }
+                default -> { }
             }
         }
-        Interaction anchorHitbox = hitboxArr[0] != null ? hitboxArr[0] : (!allHitboxes.isEmpty() ? allHitboxes.get(0) : null);
+
+        // Anything missing means this is not a whole pickup - a half-loaded chunk, or someone
+        // deleted a part - and rebuilding half a vehicle is worse than leaving it alone.
+        Interaction anchorHitbox = hitboxArr[0] != null
+                ? hitboxArr[0]
+                : (allHitboxes.isEmpty() ? null : allHitboxes.get(0));
         if (driverSeat == null || passengerSeat == null || gunnerSeat == null || anchorHitbox == null) {
             return null;
         }
-        for (Display d : arr) {
-            if (d != null) continue;
-            return null;
+        for (Display display : arr) {
+            if (display == null) return null;
         }
         PersistentDataContainer persistentDataContainer = driverSeat.getPersistentDataContainer();
         double hull = persistentDataContainer.getOrDefault(Keys.STATE_HULL_YAW, PersistentDataType.DOUBLE, 0.0);
         double gYaw = persistentDataContainer.getOrDefault(Keys.STATE_GUN_YAW, PersistentDataType.DOUBLE, hull);
         double gPitch = persistentDataContainer.getOrDefault(Keys.STATE_GUN_PITCH, PersistentDataType.DOUBLE, 0.0);
         double hp = persistentDataContainer.getOrDefault(Keys.STATE_HEALTH, PersistentDataType.DOUBLE, plugin.config().maxHealth);
-        Location loc = Pickup.restoredAnchorLocation(driverSeat, anchorHitbox, hitboxArr, allHitboxes, hull, gYaw, gPitch);
+        Location loc = restoredAnchorLocation(driverSeat, anchorHitbox, hitboxArr, allHitboxes, hull, gYaw, gPitch);
         Pickup pickup = new Pickup(plugin, id, anchorHitbox.getWorld(), loc.getX(), loc.getY(), loc.getZ(), hull, gYaw, gPitch, hp);
         pickup.driverSeat = driverSeat;
         pickup.passengerSeat = passengerSeat;
@@ -234,17 +217,17 @@ public final class Pickup implements VehicleHandle {
         Double y = (Double)pdc.get(Keys.STATE_ANCHOR_Y, PersistentDataType.DOUBLE);
         Double z = (Double)pdc.get(Keys.STATE_ANCHOR_Z, PersistentDataType.DOUBLE);
         if (x != null && y != null && z != null) {
-            return new Location(stateHolder.getWorld(), x.doubleValue(), y.doubleValue(), z.doubleValue());
+            return new Location(stateHolder.getWorld(), x, y, z);
         }
         for (int i = 0; i < indexedHitboxes.length; ++i) {
             Interaction box = indexedHitboxes[i];
             if (box == null) continue;
-            return Pickup.anchorFromHitbox(box, i, hullYaw, gunYaw, gunPitch);
+            return anchorFromHitbox(box, i, hullYaw, gunYaw, gunPitch);
         }
         for (Interaction box : allHitboxes) {
             Integer idx = (Integer)box.getPersistentDataContainer().get(Keys.PART_INDEX, PersistentDataType.INTEGER);
             if (idx == null || idx < 0 || idx >= PickupModel.HITBOX_LOCAL.length) continue;
-            return Pickup.anchorFromHitbox(box, idx, hullYaw, gunYaw, gunPitch);
+            return anchorFromHitbox(box, idx, hullYaw, gunYaw, gunPitch);
         }
         return anchorHitbox.getLocation();
     }
@@ -269,9 +252,9 @@ public final class Pickup implements VehicleHandle {
             PickupPart part = parts.get(index);
             int idx = index++;
             Material mat = part.material(cfg);
-            Display d = (Display)this.world.spawn(base, BlockDisplay.class, b -> {
+            Display d = this.world.spawn(base, BlockDisplay.class, b -> {
                 b.setBlock(mat.createBlockData());
-                this.configureDisplay((Display)b, idx);
+                this.configureDisplay(b, idx);
             });
             this.displays.add(d);
             this.partDefs.add(part);
@@ -301,7 +284,7 @@ public final class Pickup implements VehicleHandle {
             if (scaleAttr != null) {
                 scaleAttr.setBaseValue(this.plugin.config().seatScale);
             }
-            this.tagEntity((Entity)a, role, zoneIndex);
+            this.tagEntity(a, role, zoneIndex);
         });
     }
 
@@ -315,7 +298,7 @@ public final class Pickup implements VehicleHandle {
                 in.setInteractionHeight(3.9f);
                 in.setResponsive(true);
                 in.setPersistent(true);
-                this.tagEntity((Entity)in, "hitbox", idx);
+                this.tagEntity(in, "hitbox", idx);
             });
             this.hitboxes.add(box);
         }
@@ -333,7 +316,7 @@ public final class Pickup implements VehicleHandle {
         d.setTeleportDuration(2);
         d.setInterpolationDuration(2);
         d.setPersistent(true);
-        this.tagEntity((Entity)d, "part", index);
+        this.tagEntity(d, "part", index);
     }
 
     private void tagEntity(Entity e, String role, int index) {
@@ -425,30 +408,21 @@ public final class Pickup implements VehicleHandle {
             }
         }
         for (int i = 0; i < this.displays.size(); ++i) {
-            boolean needTransform;
             Display d = this.displays.get(i);
             if (d == null || !d.isValid()) continue;
             if (moved) {
                 d.teleport(base);
             }
             PickupPart part = this.partDefs.get(i);
-            switch (part.group) {
-                case HULL: {
-                    needTransform = hullChanged || wheelChanged && part.rollsWithWheel || steerChanged && part.steersWithWheel;
-                    break;
-                }
-                case MOUNT: {
-                    needTransform = hullChanged || gunYawChanged;
-                    break;
-                }
-                case BARREL: {
-                    needTransform = hullChanged || gunYawChanged || gunPitchChanged;
-                    break;
-                }
-                default: {
-                    throw new MatchException(null, null);
-                }
-            }
+            // Only push a new transform to the parts that actually moved: the hull parts follow the
+            // body and the wheels, the mount follows the gunner's yaw, the barrel also its pitch.
+            boolean needTransform = switch (part.group) {
+                case HULL -> hullChanged
+                        || wheelChanged && part.rollsWithWheel
+                        || steerChanged && part.steersWithWheel;
+                case MOUNT -> hullChanged || gunYawChanged;
+                case BARREL -> hullChanged || gunYawChanged || gunPitchChanged;
+            };
             if (!needTransform) continue;
             Transformation t = Transforms.forPart(part, this.hullYaw, this.gunYaw, this.gunPitch, this.wheelSpin, this.wheelSteer);
             d.setInterpolationDelay(0);
@@ -521,7 +495,7 @@ public final class Pickup implements VehicleHandle {
         int bz = this.anchor.getBlockZ();
         for (double dy : new double[]{0.3, 1.0, 1.8}) {
             Block b = this.world.getBlockAt(bx, (int)Math.floor(this.anchor.getY() + dy), bz);
-            if (Pickup.isWater(b)) continue;
+            if (isWater(b)) continue;
             return false;
         }
         return true;
@@ -638,8 +612,8 @@ public final class Pickup implements VehicleHandle {
     private void flingDebris(Location c) {
         ThreadLocalRandom rng = ThreadLocalRandom.current();
         Material mat = this.plugin.config().hullBlock;
-        final ArrayList<BlockDisplay> chunks = new ArrayList<BlockDisplay>();
-        final ArrayList<Vector> velocities = new ArrayList<Vector>();
+        final ArrayList<BlockDisplay> chunks = new ArrayList<>();
+        final ArrayList<Vector> velocities = new ArrayList<>();
         for (int i = 0; i < 6; ++i) {
             BlockDisplay chunk = (BlockDisplay)this.world.spawn(c, BlockDisplay.class, b -> {
                 b.setBlock(mat.createBlockData());
@@ -721,7 +695,7 @@ public final class Pickup implements VehicleHandle {
     }
 
     public boolean mountDriver(Player player) {
-        if (this.driverSeat == null || !this.driverSeat.isValid() || !this.driverSeat.addPassenger((Entity)player)) {
+        if (this.driverSeat == null || !this.driverSeat.isValid() || !this.driverSeat.addPassenger(player)) {
             return false;
         }
         this.driver = player.getUniqueId();
@@ -730,7 +704,7 @@ public final class Pickup implements VehicleHandle {
     }
 
     public boolean mountPassenger(Player player) {
-        if (this.passengerSeat == null || !this.passengerSeat.isValid() || !this.passengerSeat.addPassenger((Entity)player)) {
+        if (this.passengerSeat == null || !this.passengerSeat.isValid() || !this.passengerSeat.addPassenger(player)) {
             return false;
         }
         this.passenger = player.getUniqueId();
@@ -738,7 +712,7 @@ public final class Pickup implements VehicleHandle {
     }
 
     public boolean mountGunner(Player player) {
-        if (this.gunnerSeat == null || !this.gunnerSeat.isValid() || !this.gunnerSeat.addPassenger((Entity)player)) {
+        if (this.gunnerSeat == null || !this.gunnerSeat.isValid() || !this.gunnerSeat.addPassenger(player)) {
             return false;
         }
         this.gunner = player.getUniqueId();
@@ -767,7 +741,7 @@ public final class Pickup implements VehicleHandle {
 
     public void ejectDriver() {
         if (this.driverSeat != null) {
-            for (Entity p : new ArrayList<Entity>(this.driverSeat.getPassengers())) {
+            for (Entity p : new ArrayList<>(this.driverSeat.getPassengers())) {
                 this.driverSeat.removePassenger(p);
             }
         }
@@ -776,7 +750,7 @@ public final class Pickup implements VehicleHandle {
 
     public void ejectPassenger() {
         if (this.passengerSeat != null) {
-            for (Entity p : new ArrayList<Entity>(this.passengerSeat.getPassengers())) {
+            for (Entity p : new ArrayList<>(this.passengerSeat.getPassengers())) {
                 this.passengerSeat.removePassenger(p);
             }
         }
@@ -785,7 +759,7 @@ public final class Pickup implements VehicleHandle {
 
     public void ejectGunner() {
         if (this.gunnerSeat != null) {
-            for (Entity p : new ArrayList<Entity>(this.gunnerSeat.getPassengers())) {
+            for (Entity p : new ArrayList<>(this.gunnerSeat.getPassengers())) {
                 this.gunnerSeat.removePassenger(p);
             }
         }
@@ -939,7 +913,7 @@ public final class Pickup implements VehicleHandle {
         if (Math.abs(signedDistance) < 1.0E-6) {
             return;
         }
-        double degrees = Math.toDegrees(signedDistance / (double)0.675f);
+        double degrees = Math.toDegrees(signedDistance / 0.675f);
         this.wheelSpin += degrees * 0.35;
         if (Math.abs(this.wheelSpin) > 3600.0) {
             this.wheelSpin %= 360.0;

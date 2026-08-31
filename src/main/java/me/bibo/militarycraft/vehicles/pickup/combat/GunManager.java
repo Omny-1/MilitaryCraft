@@ -1,24 +1,3 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  net.kyori.adventure.text.Component
- *  net.kyori.adventure.text.format.NamedTextColor
- *  net.kyori.adventure.text.format.TextColor
- *  org.bukkit.Color
- *  org.bukkit.FluidCollisionMode
- *  org.bukkit.Location
- *  org.bukkit.Particle
- *  org.bukkit.Particle$DustOptions
- *  org.bukkit.Sound
- *  org.bukkit.World
- *  org.bukkit.entity.Entity
- *  org.bukkit.entity.LivingEntity
- *  org.bukkit.entity.Player
- *  org.bukkit.persistence.PersistentDataType
- *  org.bukkit.util.RayTraceResult
- *  org.bukkit.util.Vector
- */
 package me.bibo.militarycraft.vehicles.pickup.combat;
 
 import java.util.UUID;
@@ -43,8 +22,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
+/**
+ * The pintle-mounted machine gun: one burst per call, hitscan, with spread and a heat budget.
+ *
+ * <p>Rounds are traced instantly rather than fired as entities - a projectile entity per round at
+ * this rate of fire is a lot of network traffic for something the shooter never sees in flight. The
+ * gun overheats if it is held down, which is what stops the pickup from being the only weapon anyone
+ * needs.
+ */
 public final class GunManager {
-    private static final Particle.DustOptions TRACER_DUST = new Particle.DustOptions(Color.fromRGB((int)255, (int)214, (int)120), 0.55f);
+    private static final Particle.DustOptions TRACER_DUST = new Particle.DustOptions(Color.fromRGB(255, 214, 120), 0.55f);
 
     private GunManager() {
     }
@@ -56,7 +43,7 @@ public final class GunManager {
             return false;
         }
         Location muzzle = pickup.muzzleLocation();
-        Vector aimDir = GunManager.directionFromYawPitch(pickup.gunYaw(), pickup.gunPitch());
+        Vector aimDir = directionFromYawPitch(pickup.gunYaw(), pickup.gunPitch());
         if (cfg.spreadDegrees > 0.0) {
             ThreadLocalRandom rng = ThreadLocalRandom.current();
             double t = Math.tan(Math.toRadians(cfg.spreadDegrees)) * 0.5;
@@ -71,22 +58,22 @@ public final class GunManager {
         world.spawnParticle(Particle.FLASH, muzzle, 1, 0.0, 0.0, 0.0, 0.0);
         world.playSound(muzzle, Sound.ENTITY_GENERIC_EXPLODE, 1.4f, 1.9f);
         world.playSound(muzzle, Sound.ITEM_CROSSBOW_SHOOT, 2.0f, 1.6f);
-        Hit hit = GunManager.trace(plugin, world, pickup, muzzle, aimDir, cfg.bulletRange);
+        Hit hit = trace(plugin, world, pickup, muzzle, aimDir, cfg.bulletRange);
         Location location = impact = hit != null ? hit.location() : muzzle.clone().add(aimDir.clone().multiply(cfg.bulletRange));
         if (cfg.tracerEffects) {
-            GunManager.drawTracer(world, muzzle, impact);
+            drawTracer(world, muzzle, impact);
         }
         if (hit != null) {
-            GunManager.impactFx(world, hit.location());
+            impactFx(world, hit.location());
             if (hit.vehicle() != null) {
                 plugin.bukkitPlugin().core().combat().directDamage(hit.vehicle(), cfg.pickupDamage);
             } else if (hit.living() != null) {
-                hit.living().damage(cfg.bulletDamage, (Entity)gunner);
+                hit.living().damage(cfg.bulletDamage, gunner);
             }
         }
         pickup.setGunCooldown(cfg.fireCooldownTicks);
         if (pickup.recordShotAndCheckOverheat(cfg)) {
-            GunManager.overheatFx(world, muzzle, gunner);
+            overheatFx(world, muzzle, gunner);
         }
         return true;
     }
@@ -96,7 +83,7 @@ public final class GunManager {
         world.playSound(muzzle, Sound.BLOCK_FIRE_EXTINGUISH, 1.2f, 0.6f);
         world.playSound(muzzle, Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 1.0f, 0.7f);
         if (gunner != null) {
-            gunner.sendActionBar((Component)Component.text((String)"\ud83d\udd25 Machine gun overheated!", (TextColor)NamedTextColor.RED));
+            gunner.sendActionBar(Component.text("\ud83d\udd25 Machine gun overheated!", NamedTextColor.RED));
         }
     }
 
@@ -113,7 +100,7 @@ public final class GunManager {
         RayTraceResult blockResult = world.rayTraceBlocks(from, direction, range, FluidCollisionMode.NEVER, true);
         double blockDist = blockResult != null && blockResult.getHitPosition() != null ? from.toVector().distance(blockResult.getHitPosition()) : Double.MAX_VALUE;
         Hit best = blockResult != null && blockResult.getHitPosition() != null
-                ? new Hit(GunManager.vectorLocation(world, blockResult.getHitPosition()), null, null)
+                ? new Hit(vectorLocation(world, blockResult.getHitPosition()), null, null)
                 : null;
         double bestDistance = blockDist;
 
@@ -125,14 +112,14 @@ public final class GunManager {
         }
 
         RayTraceResult entityResult = world.rayTraceEntities(
-                from, direction, range, 0.4, e -> GunManager.canHit(plugin, shooter, e));
+                from, direction, range, 0.4, e -> canHit(plugin, shooter, e));
         if (entityResult != null && entityResult.getHitEntity() instanceof LivingEntity living) {
             Vector hitPos = entityResult.getHitPosition() != null
                     ? entityResult.getHitPosition()
                     : living.getLocation().toVector();
             double entityDistance = from.toVector().distance(hitPos);
             if (entityDistance <= bestDistance) {
-                best = new Hit(GunManager.vectorLocation(world, hitPos), null, living);
+                best = new Hit(vectorLocation(world, hitPos), null, living);
             }
         }
         return best;
@@ -144,7 +131,7 @@ public final class GunManager {
         }
         if (e instanceof LivingEntity) {
             LivingEntity living = (LivingEntity)e;
-            return !GunManager.isSameCrew(shooter, living.getUniqueId());
+            return !isSameCrew(shooter, living.getUniqueId());
         }
         return false;
     }
@@ -168,7 +155,7 @@ public final class GunManager {
         Location cursor = from.clone();
         for (int i = 0; i < points; ++i) {
             cursor.add(step.clone().multiply(1.3));
-            world.spawnParticle(Particle.DUST, cursor, 1, 0.0, 0.0, 0.0, 0.0, (Object)TRACER_DUST);
+            world.spawnParticle(Particle.DUST, cursor, 1, 0.0, 0.0, 0.0, 0.0, TRACER_DUST);
         }
     }
 

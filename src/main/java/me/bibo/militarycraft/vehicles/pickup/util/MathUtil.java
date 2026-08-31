@@ -1,8 +1,6 @@
-/*
- * Decompiled with CFR 0.152.
- */
 package me.bibo.militarycraft.vehicles.pickup.util;
 
+/** Angle and rate helpers. {@code approachAngle} takes the short way round, which is the whole point. */
 public final class MathUtil {
     private MathUtil() {
     }
@@ -26,11 +24,11 @@ public final class MathUtil {
     }
 
     public static double approachAngle(double current, double target, double maxStep) {
-        double diff = MathUtil.wrapDegrees(target - current);
+        double diff = wrapDegrees(target - current);
         if (Math.abs(diff) <= maxStep) {
-            return MathUtil.wrapDegrees(target);
+            return wrapDegrees(target);
         }
-        return MathUtil.wrapDegrees(current + Math.signum(diff) * maxStep);
+        return wrapDegrees(current + Math.signum(diff) * maxStep);
     }
 
     public static double clamp(double v, double min, double max) {

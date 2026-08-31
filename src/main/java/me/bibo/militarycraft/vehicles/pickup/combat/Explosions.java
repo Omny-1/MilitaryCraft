@@ -1,9 +1,3 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  org.bukkit.Location
- */
 package me.bibo.militarycraft.vehicles.pickup.combat;
 
 import me.bibo.militarycraft.vehicles.pickup.PickupRuntime;
@@ -11,6 +5,12 @@ import me.bibo.militarycraft.vehicles.pickup.config.PickupConfig;
 import me.bibo.militarycraft.vehicles.pickup.vehicle.Pickup;
 import org.bukkit.Location;
 
+/**
+ * How a pickup takes explosive damage, and what an impact looks like afterwards.
+ *
+ * <p>Blast damage falls off with distance from the charge, so a grenade at the wheel is not the same
+ * hit as one under the engine.
+ */
 public final class Explosions {
     private Explosions() {
     }

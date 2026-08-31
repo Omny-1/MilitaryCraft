@@ -1,17 +1,13 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  org.bukkit.Material
- *  org.joml.Vector3f
- */
 package me.bibo.militarycraft.vehicles.pickup.model;
 
 import me.bibo.militarycraft.vehicles.pickup.config.PickupConfig;
-import me.bibo.militarycraft.vehicles.pickup.model.PartGroup;
 import org.bukkit.Material;
 import org.joml.Vector3f;
 
+/**
+ * One block-display part of the model: where it sits, how big it is, and whether it spins or steers
+ * with the wheels.
+ */
 public final class PickupPart {
     public final PartGroup group;
     public final Role role;
@@ -56,20 +52,20 @@ public final class PickupPart {
     }
 
     public Material material(PickupConfig cfg) {
-        return switch (this.role.ordinal()) {
-            default -> throw new MatchException(null, null);
-            case 0 -> cfg.hullBlock;
-            case 1 -> cfg.frameBlock;
-            case 2 -> cfg.detailBlock;
-            case 3 -> cfg.seatBlock;
-            case 4 -> cfg.wheelBlock;
-            case 5 -> cfg.lightBlock;
-            case 6 -> cfg.mountBlock;
-            case 7 -> cfg.barrelBlock;
+        return switch (role) {
+            case HULL -> cfg.hullBlock;
+            case FRAME -> cfg.frameBlock;
+            case DETAIL -> cfg.detailBlock;
+            case SEAT -> cfg.seatBlock;
+            case WHEEL -> cfg.wheelBlock;
+            case LIGHT -> cfg.lightBlock;
+            case MOUNT -> cfg.mountBlock;
+            case BARREL -> cfg.barrelBlock;
         };
     }
 
-    public static enum Role {
+    /** What a part is made of; the config names the block for each. */
+    public enum Role {
         HULL,
         FRAME,
         DETAIL,

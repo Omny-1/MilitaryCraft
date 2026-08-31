@@ -1,24 +1,3 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  org.bukkit.entity.Creeper
- *  org.bukkit.entity.EnderCrystal
- *  org.bukkit.entity.Entity
- *  org.bukkit.entity.Fireball
- *  org.bukkit.entity.Player
- *  org.bukkit.entity.Projectile
- *  org.bukkit.entity.TNTPrimed
- *  org.bukkit.event.EventHandler
- *  org.bukkit.event.EventPriority
- *  org.bukkit.event.Listener
- *  org.bukkit.event.block.BlockExplodeEvent
- *  org.bukkit.event.entity.EntityDamageByEntityEvent
- *  org.bukkit.event.entity.EntityDamageEvent
- *  org.bukkit.event.entity.EntityDamageEvent$DamageCause
- *  org.bukkit.event.entity.EntityExplodeEvent
- *  org.bukkit.projectiles.ProjectileSource
- */
 package me.bibo.militarycraft.vehicles.pickup.listeners;
 
 import java.util.UUID;
@@ -41,6 +20,12 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.projectiles.ProjectileSource;
 
+/**
+ * Everything that can hurt a pickup: direct damage to its hitboxes, and explosions nearby.
+ *
+ * <p>Explosions are caught before they resolve so the blast can be applied to the vehicle rather
+ * than to the invisible entities it is built from - those would simply be deleted.
+ */
 public final class DamageListener
 implements Listener {
     private final PickupRuntime plugin;
@@ -60,7 +45,7 @@ implements Listener {
             this.plugin.pickups().damagePickupsFromAntiAir(event.getLocation());
             return;
         }
-        this.plugin.pickups().damagePickupsFromExplosion(event.getLocation(), DamageListener.powerFor(src));
+        this.plugin.pickups().damagePickupsFromExplosion(event.getLocation(), powerFor(src));
     }
 
     @EventHandler(priority=EventPriority.HIGH, ignoreCancelled=true)
@@ -87,7 +72,7 @@ implements Listener {
             if (seated == null) {
                 return;
             }
-            if (!DamageListener.shouldPickupAbsorb(event)) {
+            if (!shouldPickupAbsorb(event)) {
                 return;
             }
             event.setCancelled(true);

@@ -1,23 +1,18 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  org.bukkit.Input
- *  org.bukkit.Location
- *  org.bukkit.entity.Player
- */
 package me.bibo.militarycraft.vehicles.pickup.control;
 
 import me.bibo.militarycraft.vehicles.pickup.PickupRuntime;
 import me.bibo.militarycraft.vehicles.pickup.combat.GunManager;
 import me.bibo.militarycraft.vehicles.pickup.config.PickupConfig;
-import me.bibo.militarycraft.vehicles.pickup.control.Hud;
 import me.bibo.militarycraft.vehicles.pickup.util.MathUtil;
 import me.bibo.militarycraft.vehicles.pickup.vehicle.Pickup;
 import org.bukkit.Input;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+/**
+ * Points the gun where the gunner is looking, within the limits of the mount, and turns their camera
+ * into a turret control while they are in the seat.
+ */
 public final class GunnerController {
     private GunnerController() {
     }

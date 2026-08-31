@@ -1,15 +1,9 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  org.bukkit.NamespacedKey
- *  org.bukkit.plugin.Plugin
- */
 package me.bibo.militarycraft.vehicles.pickup.util;
 
 import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.Plugin;
 
+/** The pickup's NamespacedKeys: what marks its entities and what its saved state is stored under. */
 public final class Keys {
     public static NamespacedKey PICKUP_ID;
     public static NamespacedKey PICKUP_PART;

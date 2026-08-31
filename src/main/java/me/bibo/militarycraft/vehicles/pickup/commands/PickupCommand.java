@@ -1,22 +1,3 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  net.kyori.adventure.text.Component
- *  net.kyori.adventure.text.TextComponent
- *  net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
- *  org.bukkit.Bukkit
- *  org.bukkit.FluidCollisionMode
- *  org.bukkit.Location
- *  org.bukkit.World
- *  org.bukkit.block.Block
- *  org.bukkit.command.Command
- *  org.bukkit.command.CommandSender
- *  org.bukkit.command.TabExecutor
- *  org.bukkit.entity.Player
- *  org.bukkit.inventory.ItemStack
- *  org.bukkit.util.Vector
- */
 package me.bibo.militarycraft.vehicles.pickup.commands;
 
 import java.util.ArrayList;
@@ -43,6 +24,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
+/**
+ * {@code /pickup}: hand out the item, spawn or remove a vehicle, list what is loaded, sweep up
+ * leftovers, reload the config. Each subcommand carries its own permission.
+ */
 public final class PickupCommand
 implements TabExecutor {
     private static final List<String> ROOT_SUBS =
@@ -112,7 +97,7 @@ implements TabExecutor {
             return;
         }
         if (args.length >= 2) {
-            target = Bukkit.getPlayerExact((String)args[1]);
+            target = Bukkit.getPlayerExact(args[1]);
             if (target == null) {
                 this.msg(sender, "&cPlayer not found.");
                 return;
@@ -124,7 +109,7 @@ implements TabExecutor {
             this.msg(sender, "&cSpecify a player: /pickup give <player>");
             return;
         }
-        if (!(leftovers = new HashMap<Integer, ItemStack>(target.getInventory().addItem(new ItemStack[]{PickupItem.create(this.plugin)}))).isEmpty()) {
+        if (!(leftovers = new HashMap<>(target.getInventory().addItem(new ItemStack[]{PickupItem.create(this.plugin)}))).isEmpty()) {
             leftovers.values().forEach(item -> target.getWorld().dropItemNaturally(target.getLocation(), item));
             this.msg(sender, "&eThe player's inventory is full: the Pickup item was dropped near &f" + target.getName());
             return;
@@ -194,7 +179,7 @@ implements TabExecutor {
             world = (World)Bukkit.getWorlds().get(0);
             yaw = -90.0;
         }
-        Location at = new Location(world, x.doubleValue(), y.doubleValue(), z.doubleValue());
+        Location at = new Location(world, x, y, z);
         PickupCollision.PlacementResult result = PickupCollision.validatePlacement(this.plugin.pickups().all(), null, at, yaw);
         if (!result.ok()) {
             this.msg(sender, "&c" + result.message());
@@ -273,11 +258,11 @@ implements TabExecutor {
 
     private void msg(CommandSender sender, String legacy) {
         TextComponent c = LegacyComponentSerializer.legacyAmpersand().deserialize(legacy);
-        sender.sendMessage((Component)c);
+        sender.sendMessage(c);
     }
 
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        ArrayList<String> out = new ArrayList<String>();
+        ArrayList<String> out = new ArrayList<>();
         if (args.length == 1) {
             String prefix = args[0].toLowerCase(Locale.ROOT);
             for (String s : List.of("give", "spawn", "place", "remove", "cleanup", "list", "reload", "migrate")) {

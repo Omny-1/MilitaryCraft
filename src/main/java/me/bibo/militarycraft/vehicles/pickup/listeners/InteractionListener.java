@@ -1,24 +1,3 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  net.kyori.adventure.text.Component
- *  net.kyori.adventure.text.format.NamedTextColor
- *  net.kyori.adventure.text.format.TextColor
- *  org.bukkit.entity.Entity
- *  org.bukkit.entity.Player
- *  org.bukkit.event.EventHandler
- *  org.bukkit.event.EventPriority
- *  org.bukkit.event.Listener
- *  org.bukkit.event.entity.EntityDismountEvent
- *  org.bukkit.event.player.PlayerAnimationEvent
- *  org.bukkit.event.player.PlayerAnimationType
- *  org.bukkit.event.player.PlayerInteractEntityEvent
- *  org.bukkit.event.player.PlayerInteractEvent
- *  org.bukkit.event.player.PlayerQuitEvent
- *  org.bukkit.inventory.EquipmentSlot
- *  org.bukkit.persistence.PersistentDataType
- */
 package me.bibo.militarycraft.vehicles.pickup.listeners;
 
 import me.bibo.militarycraft.vehicles.pickup.PickupRuntime;
@@ -42,6 +21,10 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.persistence.PersistentDataType;
 
+/**
+ * Boarding, leaving and using the pickup: which seat a right-click means, who is allowed in it, and
+ * what happens when a rider dismounts, swings, or disconnects while aboard.
+ */
 public final class InteractionListener
 implements Listener {
     private final PickupRuntime plugin;
@@ -69,30 +52,30 @@ implements Listener {
         int n = zone = partIndex != null ? partIndex : 0;
         if (zone == 1) {
             if (!player.hasPermission("pickupcraft.gun")) {
-                player.sendActionBar((Component)Component.text((String)"You do not have permission to use the machine gun", (TextColor)NamedTextColor.RED));
+                player.sendActionBar(Component.text("You do not have permission to use the machine gun", NamedTextColor.RED));
                 return;
             }
             if (!this.plugin.pickups().enterGunner(pickup, player)) {
-                player.sendActionBar((Component)Component.text((String)"The gunner seat is occupied", (TextColor)NamedTextColor.RED));
+                player.sendActionBar(Component.text("The gunner seat is occupied", NamedTextColor.RED));
             }
             return;
         }
         if (zone == 2 && pickup.isDriverSeatOccupied()) {
             if (!player.hasPermission("pickupcraft.passenger")) {
-                player.sendActionBar((Component)Component.text((String)"You do not have permission to ride as a passenger", (TextColor)NamedTextColor.RED));
+                player.sendActionBar(Component.text("You do not have permission to ride as a passenger", NamedTextColor.RED));
                 return;
             }
             if (!this.plugin.pickups().enterPassenger(pickup, player)) {
-                player.sendActionBar((Component)Component.text((String)"The passenger seat is occupied", (TextColor)NamedTextColor.RED));
+                player.sendActionBar(Component.text("The passenger seat is occupied", NamedTextColor.RED));
             }
             return;
         }
         if (!player.hasPermission("pickupcraft.drive")) {
-            player.sendActionBar((Component)Component.text((String)"You do not have permission to drive the pickup", (TextColor)NamedTextColor.RED));
+            player.sendActionBar(Component.text("You do not have permission to drive the pickup", NamedTextColor.RED));
             return;
         }
         if (!this.plugin.pickups().enterDriver(pickup, player)) {
-            player.sendActionBar((Component)Component.text((String)"The driver's seat is occupied", (TextColor)NamedTextColor.RED));
+            player.sendActionBar(Component.text("The driver's seat is occupied", NamedTextColor.RED));
         }
     }
 

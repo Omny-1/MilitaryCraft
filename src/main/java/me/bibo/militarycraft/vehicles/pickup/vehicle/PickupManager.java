@@ -1,29 +1,3 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  org.bukkit.Bukkit
- *  org.bukkit.FluidCollisionMode
- *  org.bukkit.Location
- *  org.bukkit.NamespacedKey
- *  org.bukkit.Particle
- *  org.bukkit.Sound
- *  org.bukkit.World
- *  org.bukkit.entity.AbstractArrow
- *  org.bukkit.entity.Entity
- *  org.bukkit.entity.Fireball
- *  org.bukkit.entity.Firework
- *  org.bukkit.entity.Player
- *  org.bukkit.entity.Projectile
- *  org.bukkit.persistence.PersistentDataContainer
- *  org.bukkit.persistence.PersistentDataType
- *  org.bukkit.plugin.Plugin
- *  org.bukkit.projectiles.ProjectileSource
- *  org.bukkit.scheduler.BukkitTask
- *  org.bukkit.util.BoundingBox
- *  org.bukkit.util.RayTraceResult
- *  org.bukkit.util.Vector
- */
 package me.bibo.militarycraft.vehicles.pickup.vehicle;
 
 import java.util.ArrayList;
@@ -41,7 +15,6 @@ import me.bibo.militarycraft.vehicles.pickup.config.PickupConfig;
 import me.bibo.militarycraft.vehicles.pickup.control.DriveController;
 import me.bibo.militarycraft.vehicles.pickup.control.GunnerController;
 import me.bibo.militarycraft.vehicles.pickup.util.Keys;
-import me.bibo.militarycraft.vehicles.pickup.vehicle.Pickup;
 import org.bukkit.Bukkit;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
@@ -64,18 +37,22 @@ import org.bukkit.util.BoundingBox;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
+/**
+ * Every pickup on the server: spawning, the per-tick loop that drives them, crew bookkeeping, and
+ * the sweep that removes parts left behind by a crash or a manually deleted entity.
+ */
 public final class PickupManager {
-    private static final double HALF_WIDTH = (double)1.35f;
-    private static final double HALF_LENGTH = (double)3.2f;
+    private static final double HALF_WIDTH = 1.35f;
+    private static final double HALF_LENGTH = 3.2f;
     private final PickupRuntime plugin;
-    private final Map<UUID, Pickup> pickups = new LinkedHashMap<UUID, Pickup>();
-    private final Map<UUID, UUID> driverToPickup = new HashMap<UUID, UUID>();
-    private final Map<UUID, UUID> passengerToPickup = new HashMap<UUID, UUID>();
-    private final Map<UUID, UUID> gunnerToPickup = new HashMap<UUID, UUID>();
+    private final Map<UUID, Pickup> pickups = new LinkedHashMap<>();
+    private final Map<UUID, UUID> driverToPickup = new HashMap<>();
+    private final Map<UUID, UUID> passengerToPickup = new HashMap<>();
+    private final Map<UUID, UUID> gunnerToPickup = new HashMap<>();
     private BukkitTask task;
     private boolean internalExplosion;
     private long tickCounter;
-    private final Map<UUID, Long> meleeCd = new HashMap<UUID, Long>();
+    private final Map<UUID, Long> meleeCd = new HashMap<>();
 
     public PickupManager(PickupRuntime plugin) {
         this.plugin = plugin;
@@ -112,7 +89,7 @@ public final class PickupManager {
 
     public void shutdown() {
         this.stop();
-        for (Pickup pickup : new ArrayList<Pickup>(this.pickups.values())) {
+        for (Pickup pickup : new ArrayList<>(this.pickups.values())) {
             pickup.ejectDriver();
             pickup.ejectPassenger();
             pickup.ejectGunner();
@@ -164,8 +141,8 @@ public final class PickupManager {
                 }
             }
             if ((driverId = pickup.driver()) != null) {
-                Player driver = Bukkit.getPlayer((UUID)driverId);
-                if (driver == null || !driver.isOnline() || driver.getVehicle() == null || !driver.getVehicle().equals((Object)pickup.driverSeat())) {
+                Player driver = Bukkit.getPlayer(driverId);
+                if (driver == null || !driver.isOnline() || driver.getVehicle() == null || !driver.getVehicle().equals(pickup.driverSeat())) {
                     pickup.clearDriver();
                     this.driverToPickup.remove(driverId);
                 } else {
@@ -182,13 +159,13 @@ public final class PickupManager {
                     }
                 }
             }
-            if (!((passengerId = pickup.passenger()) == null || (passenger = Bukkit.getPlayer((UUID)passengerId)) != null && passenger.isOnline() && passenger.getVehicle() != null && passenger.getVehicle().equals((Object)pickup.passengerSeat()))) {
+            if (!((passengerId = pickup.passenger()) == null || (passenger = Bukkit.getPlayer(passengerId)) != null && passenger.isOnline() && passenger.getVehicle() != null && passenger.getVehicle().equals(pickup.passengerSeat()))) {
                 pickup.clearPassenger();
                 this.passengerToPickup.remove(passengerId);
             }
             if ((gunnerId = pickup.gunner()) != null) {
-                Player gunner = Bukkit.getPlayer((UUID)gunnerId);
-                if (gunner == null || !gunner.isOnline() || gunner.getVehicle() == null || !gunner.getVehicle().equals((Object)pickup.gunnerSeat())) {
+                Player gunner = Bukkit.getPlayer(gunnerId);
+                if (gunner == null || !gunner.isOnline() || gunner.getVehicle() == null || !gunner.getVehicle().equals(pickup.gunnerSeat())) {
                     pickup.clearGunner();
                     this.gunnerToPickup.remove(gunnerId);
                 } else {
@@ -251,7 +228,7 @@ public final class PickupManager {
         for (Entity entity : entities) {
             UUID id;
             String idStr;
-            if (!entity.getScoreboardTags().contains("pickupcraft_entity") || (idStr = (String)entity.getPersistentDataContainer().get(Keys.PICKUP_ID, PersistentDataType.STRING)) == null) continue;
+            if (!entity.getScoreboardTags().contains("pickupcraft_entity") || (idStr = entity.getPersistentDataContainer().get(Keys.PICKUP_ID, PersistentDataType.STRING)) == null) continue;
             try {
                 id = UUID.fromString(idStr);
             }
@@ -279,24 +256,24 @@ public final class PickupManager {
         }
         String wanted = id.toString();
         World world = seed.get(0).getWorld();
-        LinkedHashMap<UUID, Entity> found = new LinkedHashMap<UUID, Entity>();
+        LinkedHashMap<UUID, Entity> found = new LinkedHashMap<>();
         for (Entity e : seed) {
             found.put(e.getUniqueId(), e);
         }
         for (Entity e : world.getEntities()) {
             String idStr;
-            if (found.containsKey(e.getUniqueId()) || !e.getScoreboardTags().contains("pickupcraft_entity") || !wanted.equals(idStr = (String)e.getPersistentDataContainer().get(Keys.PICKUP_ID, PersistentDataType.STRING))) continue;
+            if (found.containsKey(e.getUniqueId()) || !e.getScoreboardTags().contains("pickupcraft_entity") || !wanted.equals(idStr = e.getPersistentDataContainer().get(Keys.PICKUP_ID, PersistentDataType.STRING))) continue;
             found.put(e.getUniqueId(), e);
         }
-        return new ArrayList<Entity>(found.values());
+        return new ArrayList<>(found.values());
     }
 
     public void onEntitiesUnload(Collection<Entity> entities) {
         for (Entity e : entities) {
             Pickup pickup;
             String idStr;
-            String role = (String)e.getPersistentDataContainer().get(Keys.PICKUP_PART, PersistentDataType.STRING);
-            if (!"driver_seat".equals(role) || (idStr = (String)e.getPersistentDataContainer().get(Keys.PICKUP_ID, PersistentDataType.STRING)) == null) continue;
+            String role = e.getPersistentDataContainer().get(Keys.PICKUP_PART, PersistentDataType.STRING);
+            if (!"driver_seat".equals(role) || (idStr = e.getPersistentDataContainer().get(Keys.PICKUP_ID, PersistentDataType.STRING)) == null) continue;
             try {
                 pickup = this.pickups.get(UUID.fromString(idStr));
             }
@@ -339,7 +316,7 @@ public final class PickupManager {
     }
 
     public Pickup byEntity(Entity entity) {
-        String id = (String)entity.getPersistentDataContainer().get(Keys.PICKUP_ID, PersistentDataType.STRING);
+        String id = entity.getPersistentDataContainer().get(Keys.PICKUP_ID, PersistentDataType.STRING);
         if (id == null) {
             return null;
         }
@@ -427,7 +404,7 @@ public final class PickupManager {
 
     public void damagePickupsFromExplosion(Location loc, double power, UUID ignoredPickupId) {
         PickupConfig cfg = this.plugin.config();
-        for (Pickup pickup : new ArrayList<Pickup>(this.pickups.values())) {
+        for (Pickup pickup : new ArrayList<>(this.pickups.values())) {
             if (ignoredPickupId != null && ignoredPickupId.equals(pickup.id())) continue;
             Explosions.applyBlastTo(pickup, loc, power, cfg);
         }
@@ -435,7 +412,7 @@ public final class PickupManager {
 
     public void damagePickupsFromAntiAir(Location loc) {
         PickupConfig cfg = this.plugin.config();
-        for (Pickup pickup : new ArrayList<Pickup>(this.pickups.values())) {
+        for (Pickup pickup : new ArrayList<>(this.pickups.values())) {
             if (!pickup.isActive() || pickup.world() != loc.getWorld() || !(pickup.anchor().clone().add(0.0, 1.0, 0.0).distance(loc) <= 8.0)) continue;
             pickup.damage(cfg.creeperDamage);
         }
@@ -473,7 +450,7 @@ public final class PickupManager {
         if (w.rayTraceBlocks(eye, dir, Math.max(0.1, bestDist - 0.05), FluidCollisionMode.NEVER, true) != null) {
             return;
         }
-        this.meleeDamageFromEntity((Entity)attacker, best, new Location(w, hitAt.getX(), hitAt.getY(), hitAt.getZ()));
+        this.meleeDamageFromEntity(attacker, best, new Location(w, hitAt.getX(), hitAt.getY(), hitAt.getZ()));
     }
 
     public void meleeDamageFromEntity(Entity attacker, Pickup target, Location hitAt) {
@@ -499,7 +476,7 @@ public final class PickupManager {
         PickupConfig cfg = this.plugin.config();
         for (Entity e : pickup.world().getNearbyEntities(this.pickupBodySearchBox(pickup, 0.4))) {
             Projectile proj;
-            if (!(e instanceof Projectile) || !PickupManager.isWeaponProjectile(proj = (Projectile)e) || !this.insidePickupBody(pickup, proj.getLocation().toVector(), 0.4) || this.isOwnCrewShot(pickup, proj)) continue;
+            if (!(e instanceof Projectile) || !isWeaponProjectile(proj = (Projectile)e) || !this.insidePickupBody(pickup, proj.getLocation().toVector(), 0.4) || this.isOwnCrewShot(pickup, proj)) continue;
             double pct = proj instanceof Fireball ? cfg.weaponFireballPercent : cfg.weaponArrowPercent;
             Location at = proj.getLocation();
             proj.remove();
@@ -537,7 +514,7 @@ public final class PickupManager {
     }
 
     private RayHit rayTracePickupBody(Pickup pickup, Vector origin, Vector direction, double reach, double pad) {
-        BoundingBox localBox = new BoundingBox((double)-1.35f - pad, -pad, (double)-3.2f - pad, (double)1.35f + pad, (double)3.3f + pad, (double)3.2f + pad);
+        BoundingBox localBox = new BoundingBox((double)-1.35f - pad, -pad, (double)-3.2f - pad, 1.35f + pad, 3.3f + pad, 3.2f + pad);
         RayTraceResult r = localBox.rayTrace(this.worldToPickupLocal(pickup, origin), this.worldDirToPickupLocal(pickup, direction), reach);
         if (r == null) {
             return null;
@@ -548,15 +525,15 @@ public final class PickupManager {
 
     private boolean insidePickupBody(Pickup pickup, Vector world, double pad) {
         Vector local = this.worldToPickupLocal(pickup, world);
-        return local.getX() >= (double)-1.35f - pad && local.getX() <= (double)1.35f + pad && local.getY() >= -pad && local.getY() <= (double)3.3f + pad && local.getZ() >= (double)-3.2f - pad && local.getZ() <= (double)3.2f + pad;
+        return local.getX() >= (double)-1.35f - pad && local.getX() <= 1.35f + pad && local.getY() >= -pad && local.getY() <= 3.3f + pad && local.getZ() >= (double)-3.2f - pad && local.getZ() <= 3.2f + pad;
     }
 
     private BoundingBox pickupBodySearchBox(Pickup pickup, double pad) {
         Location a = pickup.anchor();
-        double halfWidth = (double)1.35f + pad;
-        double halfLength = (double)3.2f + pad;
+        double halfWidth = 1.35f + pad;
+        double halfLength = 3.2f + pad;
         double radius = Math.sqrt(halfWidth * halfWidth + halfLength * halfLength);
-        return new BoundingBox(a.getX() - radius, a.getY() - pad, a.getZ() - radius, a.getX() + radius, a.getY() + (double)3.3f + pad, a.getZ() + radius);
+        return new BoundingBox(a.getX() - radius, a.getY() - pad, a.getZ() - radius, a.getX() + radius, a.getY() + 3.3f + pad, a.getZ() + radius);
     }
 
     private Vector worldToPickupLocal(Pickup pickup, Vector world) {
@@ -624,12 +601,12 @@ public final class PickupManager {
             for (Entity e : world.getEntities()) {
                 UUID id;
                 if (e.getScoreboardTags().contains("jeepcraft_entity")) {
-                    id = PickupManager.safeUuid((String)e.getPersistentDataContainer().get(Keys.LEGACY_PICKUP_ID, PersistentDataType.STRING));
+                    id = safeUuid(e.getPersistentDataContainer().get(Keys.LEGACY_PICKUP_ID, PersistentDataType.STRING));
                     if (id == null) continue;
                     legacyGroups.computeIfAbsent(id, k -> new ArrayList<>()).add(e);
                     continue;
                 }
-                if (!e.getScoreboardTags().contains("pickupcraft_entity") || (id = PickupManager.safeUuid((String)e.getPersistentDataContainer().get(Keys.PICKUP_ID, PersistentDataType.STRING))) == null || this.pickups.containsKey(id)) continue;
+                if (!e.getScoreboardTags().contains("pickupcraft_entity") || (id = safeUuid(e.getPersistentDataContainer().get(Keys.PICKUP_ID, PersistentDataType.STRING))) == null || this.pickups.containsKey(id)) continue;
                 staleGroups.computeIfAbsent(id, k -> new ArrayList<>()).add(e);
             }
         }
@@ -663,7 +640,7 @@ public final class PickupManager {
         Double x = (Double)pdc.get(ax, PersistentDataType.DOUBLE);
         Double y = (Double)pdc.get(ay, PersistentDataType.DOUBLE);
         Double z = (Double)pdc.get(az, PersistentDataType.DOUBLE);
-        Location loc = x != null && y != null && z != null ? new Location(stateHolder.getWorld(), x.doubleValue(), y.doubleValue(), z.doubleValue()) : stateHolder.getLocation();
+        Location loc = x != null && y != null && z != null ? new Location(stateHolder.getWorld(), x, y, z) : stateHolder.getLocation();
         int count = group.size();
         for (Entity e : group) {
             e.remove();
@@ -686,7 +663,7 @@ public final class PickupManager {
 
     public int[] purgeAll() {
         int pickupCount = this.pickups.size();
-        for (Pickup pickup : new ArrayList<Pickup>(this.pickups.values())) {
+        for (Pickup pickup : new ArrayList<>(this.pickups.values())) {
             pickup.ejectDriver();
             pickup.ejectPassenger();
             pickup.ejectGunner();

@@ -1,11 +1,3 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  org.bukkit.Material
- *  org.bukkit.configuration.file.FileConfiguration
- *  org.bukkit.plugin.Plugin
- */
 package me.bibo.militarycraft.vehicles.pickup.config;
 
 import java.util.logging.Level;
@@ -13,6 +5,12 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 
+/**
+ * The pickup's section of config.yml, read once into typed fields.
+ *
+ * <p>Values are read at load and on reload rather than per tick: the drive loop touches a dozen of
+ * these every tick for every pickup, and a map lookup per read adds up fast.
+ */
 public final class PickupConfig {
     public final double maxForwardSpeed;
     public final double maxReverseSpeed;
@@ -143,14 +141,14 @@ public final class PickupConfig {
         this.explosionPower = (float)Math.max(0.0, c.getDouble("destruction.explosion-power", 1.6));
         this.breakBlocks = c.getBoolean("destruction.break-blocks", false);
         this.setFire = c.getBoolean("destruction.set-fire", false);
-        this.hullBlock = PickupConfig.block(plugin, c.getString("model.hull-block"), Material.WHITE_CONCRETE);
-        this.frameBlock = PickupConfig.block(plugin, c.getString("model.frame-block"), Material.POLISHED_BLACKSTONE);
-        this.detailBlock = PickupConfig.block(plugin, c.getString("model.detail-block"), Material.MOSS_BLOCK);
-        this.seatBlock = PickupConfig.block(plugin, c.getString("model.seat-block"), Material.BLACK_WOOL);
-        this.wheelBlock = PickupConfig.block(plugin, c.getString("model.wheel-block"), Material.BLACK_CONCRETE);
-        this.lightBlock = PickupConfig.block(plugin, c.getString("model.light-block"), Material.SHROOMLIGHT);
-        this.mountBlock = PickupConfig.block(plugin, c.getString("model.mount-block"), Material.POLISHED_BLACKSTONE);
-        this.barrelBlock = PickupConfig.block(plugin, c.getString("model.barrel-block"), Material.POLISHED_BLACKSTONE);
+        this.hullBlock = block(plugin, c.getString("model.hull-block"), Material.WHITE_CONCRETE);
+        this.frameBlock = block(plugin, c.getString("model.frame-block"), Material.POLISHED_BLACKSTONE);
+        this.detailBlock = block(plugin, c.getString("model.detail-block"), Material.MOSS_BLOCK);
+        this.seatBlock = block(plugin, c.getString("model.seat-block"), Material.BLACK_WOOL);
+        this.wheelBlock = block(plugin, c.getString("model.wheel-block"), Material.BLACK_CONCRETE);
+        this.lightBlock = block(plugin, c.getString("model.light-block"), Material.SHROOMLIGHT);
+        this.mountBlock = block(plugin, c.getString("model.mount-block"), Material.POLISHED_BLACKSTONE);
+        this.barrelBlock = block(plugin, c.getString("model.barrel-block"), Material.POLISHED_BLACKSTONE);
         this.driverSeatHeight = Math.max(-3.0, c.getDouble("model.driver-seat-height", 1.0));
         this.gunnerSeatHeight = Math.max(-3.0, c.getDouble("model.gunner-seat-height", 1.8));
         this.seatScale = Math.max(0.0625, Math.min(1.0, c.getDouble("model.seat-scale", 0.5)));
@@ -161,7 +159,7 @@ public final class PickupConfig {
         if (name == null || name.isBlank()) {
             return fallback;
         }
-        Material m = Material.matchMaterial((String)name.trim());
+        Material m = Material.matchMaterial(name.trim());
         if (m == null || !m.isBlock()) {
             plugin.getLogger().log(Level.WARNING, "Invalid block material '" + name + "', using " + String.valueOf(fallback));
             return fallback;

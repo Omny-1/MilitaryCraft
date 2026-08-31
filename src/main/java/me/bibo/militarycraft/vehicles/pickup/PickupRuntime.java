@@ -11,6 +11,11 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.util.logging.Logger;
 
+/**
+ * What the rest of the pickup code holds instead of the plugin itself - config, the manager and the
+ * few server handles it needs. Keeping the module behind this makes it obvious how little of the
+ * plugin a pickup is allowed to reach into.
+ */
 public final class PickupRuntime {
 
     private static final String MODULE_ID = "pickup";
